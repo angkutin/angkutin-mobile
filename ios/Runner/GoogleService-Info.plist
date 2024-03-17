@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCO--Euwi0ZUSBJrXbJuvT4WIbMeyJNY80</string>
+	<key>GCM_SENDER_ID</key>
+	<string>185926635205</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.angkutin</string>
+	<key>PROJECT_ID</key>
+	<string>angkutin-7fc40</string>
+	<key>STORAGE_BUCKET</key>
+	<string>angkutin-7fc40.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:185926635205:ios:3ee9d2a527cf9b91472aac</string>
+</dict>
+</plist>

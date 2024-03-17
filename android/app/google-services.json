@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "185926635205",
+    "project_id": "angkutin-7fc40",
+    "storage_bucket": "angkutin-7fc40.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185926635205:android:533527ade37dbfe9472aac",
+        "android_client_info": {
+          "package_name": "com.example.angkutin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJWTJvxZHta_jIUf76G7CjDnbSTfv2Cj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

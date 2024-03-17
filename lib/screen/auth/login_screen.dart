@@ -1,3 +1,6 @@
+import 'package:angkutin/screen/auth/just_destination_screen.dart';
+import 'package:angkutin/screen/auth/service/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../common/constant.dart';
@@ -38,7 +41,15 @@ class LoginScreen extends StatelessWidget {
                         backgroundColor: cGreenStrong,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12))),
-                    onPressed: () {},
+                    onPressed: () async {
+                      final googleUser = await signInWithGoogle();
+                      print("Logged in as : ${googleUser.user?.displayName}");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => JustDestination()),
+                      );
+                    },
                     child: const Text(
                       "Masuk dengan Google",
                       style: TextStyle(color: Colors.white),
