@@ -5,9 +5,11 @@ class JustDestination extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        child: Text("Hello :)"),
+    return Scaffold(
+      body: Center(
+        child: Container(
+          child: Text("Hello :)"),
+        ),
       ),
     );
   }
