@@ -1,5 +1,6 @@
-import 'package:angkutin/screen/auth/just_destination_screen.dart';
+import 'package:angkutin/database/realtime_database.dart';
 import 'package:angkutin/screen/auth/service/google_sign_in.dart';
+import 'package:angkutin/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -42,13 +43,26 @@ class LoginScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12))),
                     onPressed: () async {
-                      final googleUser = await signInWithGoogle();
+                      try {
+                        final googleUser = await signInWithGoogle();
+
                       print("Logged in as : ${googleUser.user?.displayName}");
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => JustDestination()),
-                      );
+
+                      // simpan data
+                      await saveUserData(googleUser.user?.displayName ?? "",
+                          googleUser.user?.email ?? "", "masyarakat");
+
+                      // Navigasi ke HomeScreen
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                        );
+                      });
+                      } catch (e) {
+                        print("Error login : $e");
+                      }
+                      
                     },
                     child: const Text(
                       "Masuk dengan Google",

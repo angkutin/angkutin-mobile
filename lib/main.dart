@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:angkutin/firebase_options.dart';
-import 'package:angkutin/screen/auth/just_destination_screen.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +19,7 @@ Future<void> main() async {
 // initial screen
   print("Current User : ${FirebaseAuth.instance.currentUser}");
   Widget initialScreen = authProvider.isLoggedIn()
-      ? ChangeNotifierProvider.value(value: authProvider, child: HomeScreen())
+      ? ChangeNotifierProvider.value(value: authProvider, child: const HomeScreen())
       : const LoginScreen();
 
   runApp(
