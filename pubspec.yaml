@@ -17,10 +17,14 @@ dependencies:
   cloud_firestore: ^4.15.9
   firebase_database: ^10.4.10
   flutter_dotenv: ^5.1.0
-  flutter_svg: ^2.0.10+1
-  flutter_form_builder: ^9.2.1
+  # flutter_svg: ^2.0.10+1
+  # flutter_form_builder: ^9.2.1
   shared_preferences: ^2.2.3
-  cached_network_image: ^3.3.1
+  # cached_network_image: ^3.3.1
+  permission_handler: ^11.0.1
+  device_info_plus: ^9.1.1
+  flutter_image_compress: ^2.1.0
+  path_provider: ^2.1.1
 
 
 dev_dependencies:
