@@ -2,7 +2,7 @@
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
-import 'package:angkutin/screen/home_screen.dart';
+import 'package:angkutin/screen/user/user_home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +31,7 @@ bool isLoggedIn = authProvider.currentUser != null;
 
   Widget initialScreen = isLoggedIn
       ? ChangeNotifierProvider.value(
-          value: authProvider, child: const HomeScreen())
+          value: authProvider, child: const UserHomeScreen())
       : const LoginScreen();
 
   runApp(
@@ -39,7 +39,7 @@ bool isLoggedIn = authProvider.currentUser != null;
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: FillUserDataScreen(),
+          initialScreen: initialScreen,
         ),
       ),
     ),

@@ -41,8 +41,19 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TitleSectionBlue(
-                      title: 'Data ${screenIndex + 1}/3 ',
+                    Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              setState(() {
+                                screenIndex > 0 ? screenIndex-- : null;
+                              });
+                            },
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded)),
+                        TitleSectionBlue(
+                          title: 'Data ${screenIndex + 1}/3 ',
+                        ),
+                      ],
                     ),
                     Text(
                       subtitleContent[screenIndex],
@@ -72,7 +83,6 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                     setState(() {
                       screenIndex < 2 ? screenIndex++ : null;
                     });
-                    print(screenIndex);
                   },
                 ),
               ),
