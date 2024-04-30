@@ -1,74 +1,135 @@
-import 'package:angkutin/database/realtime_database.dart';
-import 'package:angkutin/screen/auth/service/google_sign_in.dart';
-import 'package:angkutin/screen/home_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:angkutin/common/constant.dart';
+import 'package:angkutin/common/state_enum.dart';
+import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
-import '../../common/constant.dart';
 import '../../common/utils.dart';
+import '../../provider/auth/auth_provider.dart';
+import '../../widget/CustomButton.dart';
+import '../../widget/TitleSectionBlue.dart';
 
 class LoginScreen extends StatelessWidget {
+  static const ROUTE_NAME = '/login';
+
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final signInProvider = Provider.of<AuthenticationProvider>(context);
+    String? imageUrl = dotenv.env['LOGIN_URL_IMAGES'];
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Selamat Datang !",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            const Text(
-              "Saatnya untuk memulai perjalanan Anda dalam memberdayakan lingkungan, satu langkah di satu waktu. Siap untuk memulai?",
-              textAlign: TextAlign.start,
-            ),
-            const SizedBox(
-              height: 52,
-            ),
-            SizedBox(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 36,
+              ),
+              const TitleSectionBlue(
+                title: 'Masuk',
+              ),
+              const Text(
+                "Saatnya untuk memulai perjalanan Anda dalam memberdayakan lingkungan. Sebelum itu, daftar dulu yuk",
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(
+                height: 54,
+              ),
+              SizedBox(
                 width: mediaQueryWidth(context),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        padding:
-                            const EdgeInsetsDirectional.symmetric(vertical: 14),
-                        backgroundColor: cGreenStrong,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12))),
-                    onPressed: () async {
-                      try {
-                        final googleUser = await signInWithGoogle();
+                height: mediaQueryHeight(context) / 2.5,
+                // color: Colors.amber,
+                child: Image.network(imageUrl!)
+              ),
+              const Spacer(),
+              signInProvider.isLoading == true
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SizedBox(
+                      width: mediaQueryWidth(context),
+                      child: CustomButton(
+                        title: 'Masuk dengan Google',
+                        onPressed: () async {
+                          try {
+                            await signInProvider.signInWithGoogleProv();
 
-                      print("Logged in as : ${googleUser.user?.displayName}");
+                            if (signInProvider.state == ResultState.success) {
+                              // Navigation after successful sign-in
+                              Future.delayed(const Duration(milliseconds: 500),
+                                  () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const FillUserDataScreen(),
+                                  ),
+                                );
+                              });
+                            } else {
+                              // Handle non-success states (loading, error)
+                              if (signInProvider.state == ResultState.loading) {
+                                showInfoSnackbar(context, "Memproses masuk...");
+                              } else if (signInProvider.state ==
+                                  ResultState.error) {
+                                showInfoSnackbar(
+                                    context, "Terjadi kesalahan ketika masuk");
+                              }
+                            }
+                          } on Exception catch (error) {
+                            showInfoSnackbar(context,
+                                "Terjadi kesalahan ketika masuk: Exception");
+                            print(error.toString()); // Log error for debugging
+                          }
+                        },
+                      ),
+                    ),
+              const SizedBox(
+                height: 16,
+              ),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: 'Dengan masuk, kamu menyetujui ',
 
-                      // simpan data
-                      await saveUserData(googleUser.user?.displayName ?? "",
-                          googleUser.user?.email ?? "", "masyarakat");
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ), // Mengubah warna teks
 
-                      // Navigasi ke HomeScreen
-                      Future.delayed(const Duration(milliseconds: 500), () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
-                        );
-                      });
-                      } catch (e) {
-                        print("Error login : $e");
-                      }
-                      
-                    },
-                    child: const Text(
-                      "Masuk dengan Google",
-                      style: TextStyle(color: Colors.white),
-                    )))
-          ],
+                  children: [
+                    TextSpan(
+                      text: 'Privasi',
+                      style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: blueApkColor),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          showInfoSnackbar(context, "Privasi clicked !");
+                        },
+                    ),
+                    const TextSpan(text: ' dan '),
+                    TextSpan(
+                      text: 'Terms & Condition',
+                      style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: blueApkColor),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          showInfoSnackbar(context, "Terms and Cond clicked !");
+                        },
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
