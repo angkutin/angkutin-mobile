@@ -34,7 +34,7 @@ class CustomTextField extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 5),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 4),
             width: width,

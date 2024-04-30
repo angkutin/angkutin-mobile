@@ -16,6 +16,11 @@ class FillUserDataScreen extends StatefulWidget {
 
 class _FillDataScreenState extends State<FillUserDataScreen> {
   int screenIndex = 0;
+  List<String> subtitleContent = [
+    "Sepertinya anda baru disini! Isi data diri anda",
+    "Foto tampak depan rumah anda untuk kami kenali",
+    "Pilih titik lokasi rumah anda di peta"
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +31,28 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
           padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
                 height: 36,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TitleSectionBlue(
+                      title: 'Data ${screenIndex + 1}/3 ',
+                    ),
+                    Text(
+                      subtitleContent[screenIndex],
+                      textAlign: TextAlign.start,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 54,
               ),
               Expanded(
                 child: IndexedStack(
@@ -61,116 +84,91 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
   }
 
   Widget userDataScreen1() {
-    return Column(
-      children: [
-        const TitleSectionBlue(
-          title: 'Data 1/3 ',
-        ),
-        const Text(
-          "Sepertinya anda baru disini! Isi data diri anda",
-          textAlign: TextAlign.start,
-        ),
-        const SizedBox(
-          height: 54,
-        ),
-        Expanded(
-          child: Column(
-            children: [
-              CustomTextField(
-                text: "Nama Lengkap",
-                controller: TextEditingController(),
-                width: mediaQueryWidth(context) / 1.2,
-              ),
-              CustomTextField(
-                text: "Nomor Aktif",
-                controller: TextEditingController(),
-                keyboardType: TextInputType.phone,
-                width: mediaQueryWidth(context) / 1.2,
-              ),
-              CustomTextField(
-                text: "Nomor Cadangan (opsional)",
-                controller: TextEditingController(),
-                keyboardType: TextInputType.phone,
-                width: mediaQueryWidth(context) / 1.2,
-              ),
-            ],
+    return SizedBox(
+      width: mediaQueryWidth(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CustomTextField(
+            text: "Nama Lengkap",
+            controller: TextEditingController(),
+            width: mediaQueryWidth(context) / 1.2,
           ),
-        ),
-      ],
+          CustomTextField(
+            text: "Nomor Aktif",
+            controller: TextEditingController(),
+            keyboardType: TextInputType.phone,
+            width: mediaQueryWidth(context) / 1.2,
+          ),
+          CustomTextField(
+            text: "Nomor Cadangan (opsional)",
+            controller: TextEditingController(),
+            keyboardType: TextInputType.phone,
+            width: mediaQueryWidth(context) / 1.2,
+          ),
+        ],
+      ),
     );
   }
 
   Widget userDataScreen2() {
-    return Column(
-      children: [
-        const TitleSectionBlue(
-          title: 'Data 2/3 ',
-        ),
-        const Text(
-          "Foto tampak depan rumah anda untuk kami kenali",
-          textAlign: TextAlign.start,
-        ),
-        const SizedBox(
-          height: 54,
-        ),
-        GestureDetector(
-          onTap: () {
-            print("Pilih gambar");
-          },
-          child: Container(
-            width: mediaQueryWidth(context) / 1.2,
-            height: mediaQueryWidth(context) / 1.2,
-            decoration: BoxDecoration(
-              border: Border.all(color: mainColor),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Image.network(dotenv.env['USER_HOME_URL_IMAGES']!),
-                const Text("Tap untuk memilih gambar"),
-              ],
+    return SizedBox(
+      width: mediaQueryWidth(context),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              print("Pilih gambar");
+            },
+            child: Container(
+              width: mediaQueryWidth(context) / 1.2,
+              height: mediaQueryWidth(context) / 1.2,
+              decoration: BoxDecoration(
+                border: Border.all(color: mainColor),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Image.network(dotenv.env['USER_HOME_URL_IMAGES']!),
+                  const Text("Tap untuk memilih gambar"),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget userDataScreen3() {
-    return Column(
-      children: [
-        const TitleSectionBlue(
-          title: 'Data 3/3 ',
-        ),
-        const Text(
-          "Foto tampak depan rumah anda untuk kami kenali",
-          textAlign: TextAlign.start,
-        ),
-        const SizedBox(
-          height: 54,
-        ),
-        GestureDetector(
-          onTap: () {
-            print("Pilih lokasi");
-          },
-          child: Container(
-            width: mediaQueryWidth(context) / 1.2,
-            height: mediaQueryWidth(context) / 1.2,
-            decoration: BoxDecoration(
-              border: Border.all(color: mainColor),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Image.network(dotenv.env['USER_HOME_LOC_IMAGES']!),
-                const Text("Tap untuk menentukan lokasi rumah ada"),
-              ],
+    return SizedBox(
+      width: mediaQueryWidth(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {
+              print("Pilih lokasi");
+            },
+            child: Container(
+              width: mediaQueryWidth(context) / 1.2,
+              height: mediaQueryWidth(context) / 1.2,
+              decoration: BoxDecoration(
+                border: Border.all(color: mainColor),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Image.network(dotenv.env['USER_HOME_LOC_IMAGES']!),
+                  const Text("Tap untuk menentukan lokasi rumah ada"),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
