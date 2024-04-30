@@ -39,7 +39,7 @@ bool isLoggedIn = authProvider.currentUser != null;
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: LoginScreen(),
+          initialScreen: FillUserDataScreen(),
         ),
       ),
     ),
