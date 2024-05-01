@@ -1,6 +1,7 @@
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -32,7 +33,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(
                 height: 36,
               ),
-              const TitleSectionBlue(
+              const TitleSection(
                 title: 'Masuk',
               ),
               const Text(
@@ -46,7 +47,13 @@ class LoginScreen extends StatelessWidget {
                 width: mediaQueryWidth(context),
                 height: mediaQueryHeight(context) / 2.5,
                 // color: Colors.amber,
-                child: Image.network(imageUrl!)
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl!,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
               ),
               const Spacer(),
               signInProvider.isLoading == true

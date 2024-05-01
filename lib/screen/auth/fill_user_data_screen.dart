@@ -1,5 +1,6 @@
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/widget/CustomTextField.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -50,7 +51,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                               });
                             },
                             icon: const Icon(Icons.arrow_back_ios_new_rounded)),
-                        TitleSectionBlue(
+                        TitleSection(
                           title: 'Data ${screenIndex + 1}/3 ',
                         ),
                       ],
@@ -140,7 +141,15 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Image.network(dotenv.env['USER_HOME_URL_IMAGES']!),
+                  CachedNetworkImage(
+                    imageUrl: dotenv.env['USER_HOME_URL_IMAGES']!,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
                   const Text("Tap untuk memilih gambar"),
                 ],
               ),
@@ -171,7 +180,15 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Image.network(dotenv.env['USER_HOME_LOC_IMAGES']!),
+                  CachedNetworkImage(
+                    imageUrl: dotenv.env['USER_HOME_LOC_IMAGES']!, 
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
                   const Text("Tap untuk menentukan lokasi rumah ada"),
                 ],
               ),

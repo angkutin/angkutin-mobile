@@ -2,6 +2,7 @@
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
+import 'package:angkutin/screen/introduction_screen.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,6 +26,7 @@ Future<void> main() async {
 // auth provider
   AuthenticationProvider authProvider = AuthenticationProvider();
 
+
 // initial screen
 await authProvider.readUserDataLocally();
 bool isLoggedIn = authProvider.currentUser != null;
@@ -39,7 +41,7 @@ bool isLoggedIn = authProvider.currentUser != null;
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: initialScreen,
+          initialScreen: OnBoardingScreen(),
         ),
       ),
     ),
