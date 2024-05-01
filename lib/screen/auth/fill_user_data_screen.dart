@@ -9,6 +9,7 @@ import '../../widget/CustomButton.dart';
 import '../../widget/TitleSectionBlue.dart';
 
 class FillUserDataScreen extends StatefulWidget {
+    static const ROUTE_NAME = '/fill-data';
   const FillUserDataScreen({Key? key}) : super(key: key);
 
   @override

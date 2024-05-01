@@ -9,6 +9,8 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class UserHomeScreen extends StatelessWidget {
+  static const ROUTE_NAME = '/user-homescreen';
+
   const UserHomeScreen({super.key});
 
   @override

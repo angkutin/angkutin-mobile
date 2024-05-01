@@ -2,7 +2,7 @@
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
-import 'package:angkutin/screen/introduction_screen.dart';
+import 'package:angkutin/screen/onboarding_screen.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../data/model/UserModel.dart' as user_model;
 
-
 Future<void> main() async {
   // env
   await dotenv.load(fileName: ".env");
@@ -22,14 +21,13 @@ Future<void> main() async {
   // init firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
 // auth provider
   AuthenticationProvider authProvider = AuthenticationProvider();
 
-
 // initial screen
-await authProvider.readUserDataLocally();
-bool isLoggedIn = authProvider.currentUser != null;
+  await authProvider.readUserDataLocally();
+  bool isLoggedIn = authProvider.currentUser != null;
 
   Widget initialScreen = isLoggedIn
       ? ChangeNotifierProvider.value(
@@ -58,17 +56,31 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
-        ],
-        child: MaterialApp(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
+      ],
+      child: MaterialApp(
           home: initialScreen,
           navigatorObservers: [routeObserver],
           onGenerateRoute: (RouteSettings settings) {
-            switch(settings.name){
+            switch (settings.name) {
+              // onboarding
+              case OnBoardingScreen.ROUTE_NAME:
+                return MaterialPageRoute(
+                    builder: (_) => const OnBoardingScreen());
+
               // login
               case LoginScreen.ROUTE_NAME:
-              return MaterialPageRoute(builder: (_) => const LoginScreen());
+                return MaterialPageRoute(builder: (_) => const LoginScreen());
+
+              case FillUserDataScreen.ROUTE_NAME:
+                return MaterialPageRoute(
+                    builder: (_) => const FillUserDataScreen());
+
+              // user
+              case UserHomeScreen.ROUTE_NAME:
+                return MaterialPageRoute(
+                    builder: (_) => const UserHomeScreen());
 
               //  case AbsensiScreen.ROUTE_NAME:
               // final List<String> arguments = settings.arguments as List<String>;
@@ -81,16 +93,15 @@ class MainApp extends StatelessWidget {
               //         ));
 
               default:
-              return MaterialPageRoute(builder: (_) {
-                return const Scaffold(
-                  body: Center(
-                    child: Text('Page not found :('),
-                  ),
-                );
-              });
+                return MaterialPageRoute(builder: (_) {
+                  return const Scaffold(
+                    body: Center(
+                      child: Text('Page not found :('),
+                    ),
+                  );
+                });
             }
-            
           }),
-        );
+    );
   }
 }
