@@ -98,4 +98,18 @@ class AuthenticationProvider with ChangeNotifier {
     print("user data deleted locally");
     notifyListeners();
   }
+
+// save onboarding state
+  final String onBoardingKey = 'onboarding_key';
+
+  Future<void> saveOnBoardingState(bool state) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(onBoardingKey, state);
+  }
+
+  Future<bool> getOnBoardingState() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(onBoardingKey) ?? false;
+  }
 }
+

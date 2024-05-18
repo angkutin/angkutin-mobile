@@ -29,17 +29,23 @@ Future<void> main() async {
   await authProvider.readUserDataLocally();
   bool isLoggedIn = authProvider.currentUser != null;
 
-  Widget initialScreen = isLoggedIn
+  // onboarding state
+  Future<bool> isOnboarding = authProvider.getOnBoardingState();
+
+  Widget initialScreen = await isOnboarding ? 
+  isLoggedIn
       ? ChangeNotifierProvider.value(
           value: authProvider, child: const UserHomeScreen())
-      : const LoginScreen();
+      : const LoginScreen()
+    : const OnBoardingScreen();
+    
 
   runApp(
     ChangeNotifierProvider(
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: OnBoardingScreen(),
+          initialScreen: initialScreen,
         ),
       ),
     ),

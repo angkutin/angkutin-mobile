@@ -1,5 +1,6 @@
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             "Sekarang",
             "Atasi sampah menumpuk, ajukan pengangkutan sekarang!"),
       ],
-      onDone: () {
+      onDone: () async {
+        AuthenticationProvider authProvider = AuthenticationProvider();
+        await authProvider.saveOnBoardingState(true);
         Navigator.pushReplacementNamed(context, LoginScreen.ROUTE_NAME);
       },
       // showSkipButton: true,
