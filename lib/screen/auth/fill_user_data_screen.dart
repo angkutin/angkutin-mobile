@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/widget/CustomTextField.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,7 +11,7 @@ import '../../widget/CustomButton.dart';
 import '../../widget/TitleSectionBlue.dart';
 
 class FillUserDataScreen extends StatefulWidget {
-    static const ROUTE_NAME = '/fill-data';
+  static const ROUTE_NAME = '/fill-data';
   const FillUserDataScreen({Key? key}) : super(key: key);
 
   @override
@@ -23,6 +25,13 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
     "Foto tampak depan rumah anda untuk kami kenali",
     "Pilih titik lokasi rumah anda di peta"
   ];
+
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _activeNumberController = TextEditingController();
+  final TextEditingController _optNumberController = TextEditingController();
+
+  File? image;
+  final ImageService imageService = ImageService();
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +91,29 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                 child: CustomButton(
                   title: 'Berikutnya',
                   onPressed: () {
-                    setState(() {
-                      screenIndex < 2 ? screenIndex++ : null;
-                    });
+                    if (screenIndex == 0) {
+                      if (_fullNameController.text.isNotEmpty ||
+                          _activeNumberController.text.isNotEmpty) {
+                        setState(() {
+                          screenIndex++;
+                        });
+                      } else {
+                        showInfoSnackbar(context,
+                            "Nama Lengkap atau Nomor Telepon Aktif tidak boleh kosong");
+                      }
+                    } else if (screenIndex == 1) {
+                      if (image != null) {
+                        setState(() => screenIndex++);
+                      } else {
+                        showInfoSnackbar(context,
+                            "Harap masukkan foto depan rumah Anda agar mudah dikenali");
+                      }
+                    } else if (screenIndex == 2) {
+                      showInfoSnackbar(context, "Belom diatr");
+                    }
+                    // setState(() {
+                    //   screenIndex < 2 ? screenIndex++ : null;
+                    // });
                   },
                 ),
               ),
@@ -103,18 +132,18 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
         children: [
           CustomTextField(
             text: "Nama Lengkap",
-            controller: TextEditingController(),
+            controller: _fullNameController,
             width: mediaQueryWidth(context) / 1.2,
           ),
           CustomTextField(
             text: "Nomor Aktif",
-            controller: TextEditingController(),
+            controller: _activeNumberController,
             keyboardType: TextInputType.phone,
             width: mediaQueryWidth(context) / 1.2,
           ),
           CustomTextField(
             text: "Nomor Cadangan (opsional)",
-            controller: TextEditingController(),
+            controller: _optNumberController,
             keyboardType: TextInputType.phone,
             width: mediaQueryWidth(context) / 1.2,
           ),
@@ -129,8 +158,13 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () {
-              print("Pilih gambar");
+            onTap: () async {
+              await imageService.pickImageFromGallery();
+              Future.delayed(const Duration(milliseconds: 500), () {
+                setState(() {
+                  image = imageService.image;
+                });
+              });
             },
             child: Container(
               width: mediaQueryWidth(context) / 1.2,
@@ -142,15 +176,20 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: dotenv.env['USER_HOME_URL_IMAGES']!,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            CircularProgressIndicator(
-                                value: downloadProgress.progress),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
+                  image != null
+                      ? Image.file(
+                          image!,
+                          fit: BoxFit.cover,
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: dotenv.env['USER_HOME_URL_IMAGES']!,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
                   const Text("Tap untuk memilih gambar"),
                 ],
               ),
@@ -182,7 +221,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   CachedNetworkImage(
-                    imageUrl: dotenv.env['USER_HOME_LOC_IMAGES']!, 
+                    imageUrl: dotenv.env['USER_HOME_LOC_IMAGES']!,
                     progressIndicatorBuilder:
                         (context, url, downloadProgress) =>
                             CircularProgressIndicator(

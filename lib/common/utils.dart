@@ -4,6 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -20,7 +21,7 @@ void showInfoSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 1000),
       ),
     );
   }
@@ -85,5 +86,32 @@ Future<bool> storagePermission(Permission permission) async {
         return false;
       }
     }
+  }
+}
+
+// Image Service
+class ImageService {
+  File? image;
+  Future<File?> pickImageFromGallery() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? imagePicked =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (imagePicked != null) {
+      File originalImage = File(imagePicked.path);
+      File? compressedImage = await compressImage(originalImage, 800);
+
+      if (compressedImage != null) {
+        image = File(compressedImage.path);
+        int imageSize = await image!.length();
+        int originalImageSize = await originalImage.length();
+
+        print('Image Size Original: ${originalImageSize} bytes');
+        print('Image Size Compressed: $imageSize bytes');
+      } else {
+        print("Image picking canceled");
+      }
+    }
+    return null;
   }
 }
