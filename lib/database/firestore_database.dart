@@ -1,3 +1,4 @@
+import 'package:angkutin/common/state_enum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../data/model/UserModel.dart';
@@ -26,18 +27,14 @@ Future<User?> getUserFromFirebaseOrCreateNewUser(String email) async {
     await FirebaseFirestore.instance.collection('users').doc(userId).set({
       'email': email,
       'name': name,
-      'fullName': "",
-      'address': "",
-      'role': "not set",
+      'role': "Masyarakat",
       // 'created_at': FieldValue.serverTimestamp(),
     });
 
     final Map<String, dynamic> newUser = {
       'email': email,
       'name': name,
-      'fullName': "",
-      'address': "",
-      'role': "not set",
+      'role': "Masyarakat",
       // 'created_at': FieldValue.serverTimestamp(),
     };
 

@@ -28,7 +28,7 @@ class AuthenticationProvider with ChangeNotifier {
     try {
       final user = await signInWithGoogle();
       _userData = user;
-      await saveUserDataLocally(user);
+      // await saveUserDataLocally(user);
 
       _state = ResultState.success;
       notifyListeners();
@@ -38,7 +38,7 @@ class AuthenticationProvider with ChangeNotifier {
       notifyListeners();
     } finally {
       _isLoading = false;
-      print("Provider : current user : ${_userData}");
+      print("Provider : current user | name ${_userData?.name} | email  ${_userData?.email} | role ${_userData?.role}");
     }
   }
 

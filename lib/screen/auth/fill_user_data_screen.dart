@@ -87,41 +87,43 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                 ),
               ),
               SizedBox(
-                width: mediaQueryWidth(context),
-                child: CustomButton(
-                  title: 'Berikutnya',
-                  onPressed: () {
-                    if (screenIndex == 0) {
-                      if (_fullNameController.text.isNotEmpty ||
-                          _activeNumberController.text.isNotEmpty) {
-                        setState(() {
-                          screenIndex++;
-                        });
-                      } else {
-                        showInfoSnackbar(context,
-                            "Nama Lengkap atau Nomor Telepon Aktif tidak boleh kosong");
-                      }
-                    } else if (screenIndex == 1) {
-                      if (image != null) {
-                        setState(() => screenIndex++);
-                      } else {
-                        showInfoSnackbar(context,
-                            "Harap masukkan foto depan rumah Anda agar mudah dikenali");
-                      }
-                    } else if (screenIndex == 2) {
-                      showInfoSnackbar(context, "Belom diatr");
-                    }
-                    // setState(() {
-                    //   screenIndex < 2 ? screenIndex++ : null;
-                    // });
-                  },
-                ),
-              ),
+                  width: mediaQueryWidth(context),
+                  child: CustomButton(
+                    title: 'Berikutnya',
+                    onPressed: _nextScreen,
+                  )),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _nextScreen() {
+    String? errorMessage;
+
+    if (screenIndex == 0) {
+      if (_fullNameController.text.isEmpty ||
+          _activeNumberController.text.isEmpty) {
+        errorMessage =
+            "Nama Lengkap atau Nomor Telepon Aktif tidak boleh kosong";
+      }
+    } else if (screenIndex == 1) {
+      if (image == null) {
+        errorMessage =
+            "Harap masukkan foto depan rumah Anda agar mudah dikenali";
+      }
+    } else if (screenIndex == 2) {
+      errorMessage = "Belum diatur";
+    }
+
+    if (errorMessage != null) {
+      showInfoSnackbar(context, errorMessage);
+    } else {
+      setState(() {
+        screenIndex++;
+      });
+    }
   }
 
   Widget userDataScreen1() {
@@ -176,10 +178,12 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  image != null
+                   SizedBox(
+                    height: 200,
+                    child:  image != null
                       ? Image.file(
                           image!,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                         )
                       : CachedNetworkImage(
                           imageUrl: dotenv.env['USER_HOME_URL_IMAGES']!,
@@ -190,6 +194,8 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
                         ),
+                  ),
+                 
                   const Text("Tap untuk memilih gambar"),
                 ],
               ),
