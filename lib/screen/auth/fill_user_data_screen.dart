@@ -9,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../common/constant.dart';
 import '../../widget/CustomButton.dart';
 import '../../widget/TitleSectionBlue.dart';
+import 'map_screen.dart';
 
 class FillUserDataScreen extends StatefulWidget {
   static const ROUTE_NAME = '/fill-data';
@@ -26,12 +27,19 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
     "Pilih titik lokasi rumah anda di peta"
   ];
 
+  // Fill data 1
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _activeNumberController = TextEditingController();
   final TextEditingController _optNumberController = TextEditingController();
 
+  // Fill data 2
   File? image;
   final ImageService imageService = ImageService();
+
+  // Fill data 3
+  String? address;
+  String? kecamatan;
+  String? coordinate;
 
   @override
   Widget build(BuildContext context) {
@@ -178,24 +186,23 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                   SizedBox(
+                  SizedBox(
                     height: 200,
-                    child:  image != null
-                      ? Image.file(
-                          image!,
-                          fit: BoxFit.fill,
-                        )
-                      : CachedNetworkImage(
-                          imageUrl: dotenv.env['USER_HOME_URL_IMAGES']!,
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) =>
-                                  CircularProgressIndicator(
-                                      value: downloadProgress.progress),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
+                    child: image != null
+                        ? Image.file(
+                            image!,
+                            fit: BoxFit.fill,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: dotenv.env['USER_HOME_URL_IMAGES']!,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
                   ),
-                 
                   const Text("Tap untuk memilih gambar"),
                 ],
               ),
@@ -207,15 +214,37 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
   }
 
   Widget userDataScreen3() {
+    void _openMapScreen() async {
+       final Map<String, dynamic>? result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserFillDataMapScreen(),
+              ),
+            );
+
+      if (result != null) {
+        setState(() {
+          coordinate = result['coordinates'].toString();
+          address = result['address'];
+          kecamatan = result['kecamatan'];
+        });
+        print("Koordinat : ${coordinate?.toString() ?? 'Not selected'}");
+        print('Address: ${address ?? 'Not selected'}');
+        print('Kecamatan: ${kecamatan ?? 'Not selected'}');
+      } else{
+        print("Koordinat null: ${coordinate?.toString() ?? 'Not selected'}");
+        print('Address: ${address ?? 'Not selected'}');
+        print('Kecamatan: ${kecamatan ?? 'Not selected'}');
+      }
+    }
+
     return SizedBox(
       width: mediaQueryWidth(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () {
-              print("Pilih lokasi");
-            },
+            onTap: _openMapScreen,
             child: Container(
               width: mediaQueryWidth(context) / 1.2,
               height: mediaQueryWidth(context) / 1.2,

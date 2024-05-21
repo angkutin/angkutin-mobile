@@ -2,9 +2,9 @@
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
+import 'package:angkutin/screen/auth/map_screen.dart';
 import 'package:angkutin/screen/onboarding_screen.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +12,6 @@ import 'package:angkutin/firebase_options.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../../data/model/UserModel.dart' as user_model;
 
 Future<void> main() async {
   // env
@@ -45,7 +44,7 @@ Future<void> main() async {
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: initialScreen,
+          initialScreen: UserFillDataMapScreen(),
         ),
       ),
     ),
