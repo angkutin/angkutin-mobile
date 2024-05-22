@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:angkutin/database/firestore_database.dart';
 import 'package:angkutin/screen/auth/service/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/model/UserModel.dart' as user_model;
 import '../../common/state_enum.dart';
+import 'package:path/path.dart' as path;
 
 class AuthenticationProvider with ChangeNotifier {
   ResultState? _state;
@@ -38,7 +42,8 @@ class AuthenticationProvider with ChangeNotifier {
       notifyListeners();
     } finally {
       _isLoading = false;
-      print("Provider : current user | name ${_userData?.name} | email  ${_userData?.email} | role ${_userData?.role}");
+      print(
+          "Provider : current user | name ${_userData?.name} | email  ${_userData?.email} | role ${_userData?.role}");
     }
   }
 
@@ -111,5 +116,34 @@ class AuthenticationProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(onBoardingKey) ?? false;
   }
+
+// save login state
+  final String loginKey = 'login_key';
+
+  Future<void> saveLoginState(bool state) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(loginKey, state);
+  }
+
+  Future<bool> getLoginState() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(loginKey) ?? false;
+  }
+
+  
+// save fill data state
+  final String fillDataKey = 'fill_data_key';
+
+  Future<void> saveFillDataState(bool state) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(fillDataKey, state);
+  }
+
+  Future<bool> getFillDataState() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(fillDataKey) ?? false;
+  }
+
+
 }
 

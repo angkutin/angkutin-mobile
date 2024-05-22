@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
+import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
 import 'package:angkutin/screen/auth/map_screen.dart';
 import 'package:angkutin/screen/onboarding_screen.dart';
@@ -26,25 +27,25 @@ Future<void> main() async {
 
 // initial screen
   await authProvider.readUserDataLocally();
-  bool isLoggedIn = authProvider.currentUser != null;
 
   // onboarding state
-  Future<bool> isOnboarding = authProvider.getOnBoardingState();
-
-  Widget initialScreen = await isOnboarding ? 
-  isLoggedIn
-      ? ChangeNotifierProvider.value(
-          value: authProvider, child: const UserHomeScreen())
-      : const LoginScreen()
-    : const OnBoardingScreen();
-    
+  bool isOnboarding = await authProvider.getOnBoardingState();
+  bool isLoggedIn = await authProvider.getLoginState();
+  // Future<bool> isFillData = authProvider.getFillDataState();
+print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
+  Widget initialScreen =  isOnboarding
+      ?  isLoggedIn
+          ? ChangeNotifierProvider.value(
+              value: authProvider, child: const UserHomeScreen())
+          : const LoginScreen()
+      : const OnBoardingScreen();
 
   runApp(
     ChangeNotifierProvider(
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: UserFillDataMapScreen(),
+          initialScreen: initialScreen,
         ),
       ),
     ),
@@ -63,6 +64,7 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
+        ChangeNotifierProvider(create: (_) => UploadProvider()),
       ],
       child: MaterialApp(
           home: initialScreen,

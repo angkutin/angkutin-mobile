@@ -86,8 +86,7 @@ void dispose() {
 
         // Navigate back to the previous screen with data
         Navigator.pop(context, {
-          'latitude': _userLocation?.latitude,
-          'longitude': _userLocation?.longitude,
+          'coordinates' : LatLng(_userLocation!.latitude, _userLocation!.longitude),
           'address': _address,
           'district': _district,
         });

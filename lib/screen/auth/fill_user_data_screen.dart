@@ -1,10 +1,16 @@
 import 'dart:io';
 
+import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/provider/auth/auth_provider.dart';
+import 'package:angkutin/provider/upload_provider.dart';
+import 'package:angkutin/screen/user/user_home_screen.dart';
 import 'package:angkutin/widget/CustomTextField.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/constant.dart';
 import '../../widget/CustomButton.dart';
@@ -38,11 +44,13 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
 
   // Fill data 3
   String? address;
-  String? kecamatan;
-  String? coordinate;
+  String? district;
+  LatLng? coordinate;
 
   @override
   Widget build(BuildContext context) {
+    final uploadProvider = Provider.of<UploadProvider>(context, listen: true);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -94,12 +102,14 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                   ],
                 ),
               ),
-              SizedBox(
-                  width: mediaQueryWidth(context),
-                  child: CustomButton(
-                    title: 'Berikutnya',
-                    onPressed: _nextScreen,
-                  )),
+              uploadProvider.isLoading == true
+                  ? const Center(child: CircularProgressIndicator())
+                  : SizedBox(
+                      width: mediaQueryWidth(context),
+                      child: CustomButton(
+                        title: 'Berikutnya',
+                        onPressed: _nextScreen,
+                      )),
             ],
           ),
         ),
@@ -107,7 +117,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
     );
   }
 
-  void _nextScreen() {
+  void _nextScreen() async {
     String? errorMessage;
 
     if (screenIndex == 0) {
@@ -122,6 +132,35 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
             "Harap masukkan foto depan rumah Anda agar mudah dikenali";
       }
     } else if (screenIndex == 2) {
+      if (coordinate != null && address != null && district != null) {
+        // Notice the change here
+        final uploadProvider =
+            Provider.of<UploadProvider>(context, listen: false);
+        final authProvider =
+            Provider.of<AuthenticationProvider>(context, listen: false);
+
+        await uploadProvider.uploadDataRegister(
+            docId: 'famuh97@gmail.com',
+            fullName: _fullNameController.text,
+            activePhoneNumber: int.parse(_activeNumberController.text),
+            optionalPhoneNumber: _optNumberController.text.isNotEmpty
+                ? int.parse(_optNumberController.text)
+                : null,
+            image: image!,
+            latitude: coordinate!.latitude,
+            longitude: coordinate!.longitude);
+
+        if (uploadProvider.state == ResultState.success) {
+          authProvider.saveLoginState(true);
+          showInfoSnackbar(context, "Berhasil mengunggah data");
+          Future.delayed(Duration(seconds: 1), () {
+            Navigator.pushReplacementNamed(context, UserHomeScreen.ROUTE_NAME);
+          });
+        } else {
+          showInfoSnackbar(context, "Gagal mengunggah data, coba lagi nanti");
+          print("Error gagal unggah data : ${uploadProvider.errorMessage}");
+        }
+      }
       errorMessage = "Belum diatur";
     }
 
@@ -215,26 +254,26 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
 
   Widget userDataScreen3() {
     void _openMapScreen() async {
-       final Map<String, dynamic>? result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserFillDataMapScreen(),
-              ),
-            );
+      final Map<String, dynamic>? result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UserFillDataMapScreen(),
+        ),
+      );
 
       if (result != null) {
         setState(() {
-          coordinate = result['coordinates'].toString();
+          coordinate = result['coordinates'];
           address = result['address'];
-          kecamatan = result['kecamatan'];
+          district = result['district'];
         });
         print("Koordinat : ${coordinate?.toString() ?? 'Not selected'}");
         print('Address: ${address ?? 'Not selected'}');
-        print('Kecamatan: ${kecamatan ?? 'Not selected'}');
-      } else{
+        print('Kecamatan: ${district ?? 'Not selected'}');
+      } else {
         print("Koordinat null: ${coordinate?.toString() ?? 'Not selected'}");
         print('Address: ${address ?? 'Not selected'}');
-        print('Kecamatan: ${kecamatan ?? 'Not selected'}');
+        print('Kecamatan: ${district ?? 'Not selected'}');
       }
     }
 
