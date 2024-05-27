@@ -14,6 +14,7 @@ import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'screen/user/request_accepted_screen.dart';
 import 'screen/user/request_service_screen.dart';
 
 Future<void> main() async {
@@ -48,7 +49,7 @@ Future<void> main() async {
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: UserHomeScreen(),
+          initialScreen: RequestAcceptedScreen(),
         ),
       ),
     ),

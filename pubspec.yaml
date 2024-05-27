@@ -46,6 +46,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    # - assets/images/successfuly_image.png
     - .env
   
 
