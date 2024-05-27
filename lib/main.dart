@@ -14,6 +14,8 @@ import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'screen/user/request_service_screen.dart';
+
 Future<void> main() async {
   // env
   await dotenv.load(fileName: ".env");
@@ -33,9 +35,9 @@ Future<void> main() async {
   bool isLoggedIn = await authProvider.getLoginState();
   // Future<bool> isFillData = authProvider.getFillDataState();
 
-print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
-  Widget initialScreen =  isOnboarding
-      ?  isLoggedIn
+  print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
+  Widget initialScreen = isOnboarding
+      ? isLoggedIn
           ? ChangeNotifierProvider.value(
               value: authProvider, child: const UserHomeScreen())
           : const LoginScreen()
@@ -90,6 +92,12 @@ class MainApp extends StatelessWidget {
                 return MaterialPageRoute(
                     builder: (_) => const UserHomeScreen());
 
+              case RequestServiceScreen.ROUTE_NAME:
+                final titleScreen = settings.arguments as String;
+                return MaterialPageRoute(
+                    builder: (_) => RequestServiceScreen(
+                          titleScreen: titleScreen,
+                        ));
               //  case AbsensiScreen.ROUTE_NAME:
               // final List<String> arguments = settings.arguments as List<String>;
               // final screenTitle = arguments[0];

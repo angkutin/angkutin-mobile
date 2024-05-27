@@ -1,19 +1,16 @@
 import 'package:angkutin/common/constant.dart';
-import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:angkutin/widget/DailyCarbageCard.dart';
-import 'package:angkutin/widget/TitleSectionBlue.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 import '../../widget/CarbageHaulCard.dart';
+import '../../widget/CustomDrawerItem.dart';
 import '../../widget/ServiceCard.dart';
+import 'request_service_screen.dart';
 
 class UserHomeScreen extends StatelessWidget {
   static const ROUTE_NAME = '/user-homescreen';
@@ -57,12 +54,12 @@ class UserHomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            ListTile(
-              title: const Text('Item 1'),
+            CustomDrawerItem(
+              title: "Beranda",
               onTap: () {},
             ),
-            ListTile(
-              title: const Text('Item 2'),
+            CustomDrawerItem(
+              title: "Riwayat",
               onTap: () {},
             ),
 
@@ -100,7 +97,7 @@ class UserHomeScreen extends StatelessWidget {
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
-              icon: Icon(Icons.menu_rounded));
+              icon: const Icon(Icons.menu_rounded));
         }),
         // Expanded(child: Image.asset("assets/angkutin_logo_fill_mini.png"),),
 
@@ -147,13 +144,19 @@ class UserHomeScreen extends StatelessWidget {
                 title: "Minta Angkut",
                 subtitle: "Butuh petugas angkut sampahmu? Klik disini!",
                 imageUrl: dotenv.env['ANGKUT_SAMPAH_ILUSTRASI_IMAGE']!,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, RequestServiceScreen.ROUTE_NAME,
+                  arguments: "Permintaan Angkut Sampah");
+                },
               ),
               ServiceCard(
                 title: "Lapor Sampah Liar",
                 subtitle: "Lapor dengan cepat dan mudah!",
                 imageUrl: dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
-                onPressed: () {},
+                onPressed: () {
+                    Navigator.pushNamed(context, RequestServiceScreen.ROUTE_NAME,
+                  arguments: "Lapor Sampah Liar");
+                },
               ),
             ],
           ),
@@ -162,4 +165,3 @@ class UserHomeScreen extends StatelessWidget {
     );
   }
 }
-

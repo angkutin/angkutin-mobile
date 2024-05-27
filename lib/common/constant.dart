@@ -12,15 +12,18 @@ const Color blueApkColor = Color(0xFF3997DA);
 const Color blackColor = Color(0xFF2C3131);
 const Color softBlackColor = Color(0xFF626262);
 const Color softBlueColor = Color(0xFF31B4AA);
-const List<Color> mainApkGradientList =
-   [Color(0xFF3997DA), Color(0xFF31B4AA)];
+const List<Color> mainApkGradientList = [Color(0xFF3997DA), Color(0xFF31B4AA)];
 
-    // const mainApkLinearGradient = LinearGradient(
-    //   colors: [Colors.blue, Colors.green], // Sesuaikan dengan warna gradient yang diinginkan
-    //   begin: Alignment.topLeft,
-    //   end: Alignment.bottomRight,
-    // );
-    const mainApkLinearGradient = LinearGradient(
-colors: [Color(0xFF3997DA), Color(0xFF31B4AA)],       begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    );
+// const mainApkLinearGradient = LinearGradient(
+//   colors: [Colors.blue, Colors.green], // Sesuaikan dengan warna gradient yang diinginkan
+//   begin: Alignment.topLeft,
+//   end: Alignment.bottomRight,
+// );
+const mainApkLinearGradient = LinearGradient(
+  colors: [Color(0xFF3997DA), Color(0xFF31B4AA)],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);
+
+const TextStyle basicTextStyleBlack =
+    TextStyle(fontWeight: FontWeight.w500, color: blackColor);
