@@ -23,26 +23,32 @@ class DailyCarbageCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           color: cBlueSoft,
         ),
-        child:  Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Angkut Harian',
+                  'Pengangkutan Harian',
                   style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
-                      color: blackColor),
+                      color: secondaryColor),
                 ),
-                 Text(
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
                   status,
                   style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 18),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: secondaryColor),
                 ),
-                 Text(
+                Text(
                   description,
+                  style: const TextStyle(color: Colors.black54),
                 ),
               ],
             )

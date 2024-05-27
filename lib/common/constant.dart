@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 const Color cGreenStrong = Color(0xFF0E403C);
 const Color cGreenSoft = Color(0xFF98E49B);
-const Color cBlueSoft = Color(0xFF7DB6DF);
+const Color cBlueSoft = Color(0xFFA8CEEA);
 const Color whiteColor = Color(0xFFFFFFFF);
 const Color mainColor = Color(0xFF35A7C2);
 const Color secondaryColor = Color(0xFF15434E);

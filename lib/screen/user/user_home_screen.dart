@@ -126,8 +126,8 @@ class UserHomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DailyCarbageCard(
-                status: "Belum Ada",
-                description: "Petugas sedang anu",
+                status: "Petugas akan datang",
+                description: "Siapkan sampah yang akan diangkut",
               ),
               CarbageHaulCard(
                 onPressed: () => print("pantau clicked"),
