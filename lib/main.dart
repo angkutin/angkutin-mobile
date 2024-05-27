@@ -32,6 +32,7 @@ Future<void> main() async {
   bool isOnboarding = await authProvider.getOnBoardingState();
   bool isLoggedIn = await authProvider.getLoginState();
   // Future<bool> isFillData = authProvider.getFillDataState();
+
 print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
   Widget initialScreen =  isOnboarding
       ?  isLoggedIn
@@ -45,7 +46,7 @@ print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: initialScreen,
+          initialScreen: UserHomeScreen(),
         ),
       ),
     ),

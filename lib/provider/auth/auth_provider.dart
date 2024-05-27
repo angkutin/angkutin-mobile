@@ -130,7 +130,6 @@ class AuthenticationProvider with ChangeNotifier {
     return prefs.getBool(loginKey) ?? false;
   }
 
-  
 // save fill data state
   final String fillDataKey = 'fill_data_key';
 
@@ -143,7 +142,4 @@ class AuthenticationProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(fillDataKey) ?? false;
   }
-
-
 }
-

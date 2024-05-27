@@ -6,18 +6,23 @@ import '../common/constant.dart';
 class CustomButton extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
+  final double? paddingVertical;
+  final double? paddingHorizontal;
   const CustomButton({
     Key? key,
     required this.title,
     required this.onPressed,
+    this.paddingVertical,
+    this.paddingHorizontal
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-            padding: const EdgeInsetsDirectional.symmetric(
-                vertical: 14),
+            padding:  EdgeInsetsDirectional.symmetric(
+                vertical: paddingVertical ?? 0,
+                horizontal: paddingHorizontal ?? 0),
             backgroundColor: secondaryColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12))),

@@ -2,8 +2,6 @@ import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
-import 'package:angkutin/widget/DailyCarbageCard.dart';
-import 'package:angkutin/widget/TitleSectionBlue.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,12 +11,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 import '../../widget/CarbageHaulCard.dart';
-import '../../widget/ServiceCard.dart';
 
-class UserHomeScreen extends StatelessWidget {
-  static const ROUTE_NAME = '/user-homescreen';
+class DriverHomeScreen extends StatelessWidget {
+  static const ROUTE_NAME = '/driver-homescreen';
 
-  const UserHomeScreen({super.key});
+  const DriverHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +24,7 @@ class UserHomeScreen extends StatelessWidget {
     // final User? user = authProvider.currentUser;
 
     return Scaffold(
+      
       drawer: Drawer(
         child: Column(
           children: [
@@ -92,7 +90,7 @@ class UserHomeScreen extends StatelessWidget {
       ),
       appBar: AppBar(
         title: Text(
-          "Hai, Nama",
+          "INI DRIVER",
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         leading: Builder(builder: (context) {
@@ -123,38 +121,73 @@ class UserHomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DailyCarbageCard(
-                status: "Belum Ada",
-                description: "Petugas sedang anu",
+              Card(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    // color: Colors.green,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Angkut Harian',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    color: Colors.black54),
+                              ),
+                              const Text(
+                                'Belum ada',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                              const Text(
+                                'Petugas sedang anu',
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
               ),
               CarbageHaulCard(
                 onPressed: () => print("pantau clicked"),
                 status: "Diterima",
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Layanan",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: blackColor),
-              ),
-              ServiceCard(
-                title: "Minta Angkut",
-                subtitle: "Butuh petugas angkut sampahmu? Klik disini!",
-                imageUrl: dotenv.env['ANGKUT_SAMPAH_ILUSTRASI_IMAGE']!,
-                onPressed: () {},
-              ),
-              ServiceCard(
-                title: "Lapor Sampah Liar",
-                subtitle: "Lapor dengan cepat dan mudah!",
-                imageUrl: dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
-                onPressed: () {},
-              ),
+              Card(
+                child: Container(
+                    width: mediaQueryWidth(context),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      // color: Colors.green,
+                    ),
+                    child: ListTile(
+                      leading: CachedNetworkImage(
+                        imageUrl: dotenv.env['INTRODUCTION_2_IMAGES']!,
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) =>
+                                CircularProgressIndicator(
+                                    value: downloadProgress.progress),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      ),
+                      title: Text("Minta Angkut"),
+                      subtitle: Text("minta angkut blablabla"),
+                    )),
+              )
             ],
           ),
         ),
@@ -162,4 +195,3 @@ class UserHomeScreen extends StatelessWidget {
     );
   }
 }
-
