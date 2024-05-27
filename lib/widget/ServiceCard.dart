@@ -28,35 +28,29 @@ class ServiceCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: blueApkColor,
-                width: 1.5
-              ),
+              border: Border.all(color: blueApkColor, width: 1.5),
               // gradient: mainApkLinearGradient
               color: Colors.white,
             ),
             child: ListTile(
               leading: CachedNetworkImage(
                 imageUrl: imageUrl,
-                progressIndicatorBuilder:
-                    (context, url, downloadProgress) =>
-                        CircularProgressIndicator(
-                            value: downloadProgress.progress),
-                errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
-              title: Text(title, 
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: blackColor
-              ),),
-              subtitle:
-                  Text(subtitle,style:const  TextStyle(
-                // fontWeight: FontWeight.w500,
-                color: softBlackColor
-              ),),
+              title: Text(
+                title,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500, color: blackColor),
+              ),
+              subtitle: Text(
+                subtitle,
+                style: const TextStyle(
+                    // fontWeight: FontWeight.w500,
+                    color: softBlackColor),
+              ),
             )),
-            
       ),
     );
   }

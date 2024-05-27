@@ -115,8 +115,27 @@ class ImageService {
     }
     return null;
   }
+
+  Future<File?> pickImageFromCamera() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? imagePicked =
+        await _picker.pickImage(source: ImageSource.camera);
+
+    if (imagePicked != null) {
+      File originalImage = File(imagePicked.path);
+      File? compressedImage = await compressImage(originalImage, 800);
+
+      if (compressedImage != null) {
+        image = File(compressedImage.path);
+        int imageSize = await image!.length();
+        int originalImageSize = await originalImage.length();
+
+        print('Image Size Original: ${originalImageSize} bytes');
+        print('Image Size Compressed: $imageSize bytes');
+      } else {
+        print("Image picking canceled");
+      }
+    }
+    return null;
+  }
 }
-
-
-
-

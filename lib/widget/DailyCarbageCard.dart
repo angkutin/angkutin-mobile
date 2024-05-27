@@ -3,6 +3,7 @@ import 'package:angkutin/common/constant.dart';
 import 'package:flutter/material.dart';
 
 import '../common/utils.dart';
+import 'SmallTextGrey.dart';
 
 class DailyCarbageCard extends StatelessWidget {
   final String status;
@@ -46,10 +47,7 @@ class DailyCarbageCard extends StatelessWidget {
                       fontSize: 18,
                       color: secondaryColor),
                 ),
-                Text(
-                  description,
-                  style: const TextStyle(color: Colors.black54),
-                ),
+                SmallTextGrey(description: description),
               ],
             )
           ],
