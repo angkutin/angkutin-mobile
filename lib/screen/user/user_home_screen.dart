@@ -1,6 +1,7 @@
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
+import 'package:angkutin/screen/user/user_history_screen.dart';
 import 'package:angkutin/widget/DailyCarbageCard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -56,11 +57,11 @@ class UserHomeScreen extends StatelessWidget {
             ),
             CustomDrawerItem(
               title: "Beranda",
-              onTap: () {},
+              onTap: () => Navigator.pop(context),
             ),
             CustomDrawerItem(
               title: "Riwayat",
-              onTap: () {},
+              onTap: () => Navigator.pushNamed(context, UserHistoryScreen.ROUTE_NAME),
             ),
 
             // spacer

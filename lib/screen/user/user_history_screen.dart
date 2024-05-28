@@ -2,6 +2,8 @@ import 'package:angkutin/common/constant.dart';
 import 'package:flutter/material.dart';
 
 class UserHistoryScreen extends StatelessWidget {
+    static const ROUTE_NAME = '/user-history-screen';
+
   const UserHistoryScreen({super.key});
 
   @override
@@ -44,18 +46,29 @@ class UserHaulHistory extends StatelessWidget {
     return ListView.builder(
       itemCount: 2,
       itemBuilder: (context, index) {
-        return Card(
-          child: Container(
-            // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            decoration: containerBorderWithRadius,
-            child: ListTile(
-              title: Text("data"),
-              subtitle: Text("Selasa, 8 Mei 2024 | 16.00 WIB"),
-              trailing: Text("Selesai"),
-            ),
-          ),
-        );
+        return _historyItemCard();
       },
+    );
+  }
+}
+
+class _historyItemCard extends StatelessWidget {
+  const _historyItemCard({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Container(
+        // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: containerBorderWithRadius,
+        child: ListTile(
+          title: Text("data"),
+          subtitle: Text("Selasa, 8 Mei 2024 | 16.00 WIB"),
+          trailing: Text("Selesai"),
+        ),
+      ),
     );
   }
 }
@@ -68,17 +81,7 @@ class UserReportHistory extends StatelessWidget {
     return ListView.builder(
       itemCount: 2,
       itemBuilder: (context, index) {
-        return Card(
-          child: Container(
-            // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            decoration: containerBorderWithRadius,
-            child: ListTile(
-              title: Text("data"),
-              subtitle: Text("Selasa, 8 Mei 2024 | 16.00 WIB"),
-              trailing: Text("Selesai"),
-            ),
-          ),
-        );
+        return _historyItemCard();
       },
     );
   }

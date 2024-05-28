@@ -50,7 +50,7 @@ Future<void> main() async {
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: UserHistoryScreen(),
+          initialScreen: UserHomeScreen(),
         ),
       ),
     ),
@@ -94,6 +94,10 @@ class MainApp extends StatelessWidget {
                 return MaterialPageRoute(
                     builder: (_) => const UserHomeScreen());
 
+              case UserHistoryScreen.ROUTE_NAME:
+                return MaterialPageRoute(
+                    builder: (_) => const UserHistoryScreen());
+                    
               case RequestServiceScreen.ROUTE_NAME:
                 final titleScreen = settings.arguments as String;
                 return MaterialPageRoute(
