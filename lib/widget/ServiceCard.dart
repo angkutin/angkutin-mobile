@@ -26,12 +26,7 @@ class ServiceCard extends StatelessWidget {
         child: Container(
             width: mediaQueryWidth(context),
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: blueApkColor, width: 1.5),
-              // gradient: mainApkLinearGradient
-              color: Colors.white,
-            ),
+            decoration: containerBorderWithRadius,
             child: ListTile(
               leading: CachedNetworkImage(
                 imageUrl: imageUrl,

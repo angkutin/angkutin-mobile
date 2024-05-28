@@ -5,6 +5,7 @@ import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
 import 'package:angkutin/screen/auth/map_screen.dart';
 import 'package:angkutin/screen/onboarding_screen.dart';
+import 'package:angkutin/screen/user/user_history_screen.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ Future<void> main() async {
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: RequestAcceptedScreen(),
+          initialScreen: UserHistoryScreen(),
         ),
       ),
     ),

@@ -27,3 +27,10 @@ const mainApkLinearGradient = LinearGradient(
 
 const TextStyle basicTextStyleBlack =
     TextStyle(fontWeight: FontWeight.w500, color: blackColor);
+
+BoxDecoration containerBorderWithRadius = BoxDecoration(
+  borderRadius: BorderRadius.circular(12),
+  border: Border.all(color: blueApkColor, width: 1.5),
+  // gradient: mainApkLinearGradient
+  color: Colors.white,
+);
