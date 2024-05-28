@@ -23,11 +23,12 @@ class _UserFillDataMapScreenState extends State<UserFillDataMapScreen> {
   // Marker position variable
   Set<Marker> markers = {};
 
-@override
-void dispose() {
-  _mapController?.dispose();
-  super.dispose();
-}
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -86,7 +87,8 @@ void dispose() {
 
         // Navigate back to the previous screen with data
         Navigator.pop(context, {
-          'coordinates' : LatLng(_userLocation!.latitude, _userLocation!.longitude),
+          'coordinates':
+              LatLng(_userLocation!.latitude, _userLocation!.longitude),
           'address': _address,
           'district': _district,
         });

@@ -7,6 +7,7 @@ import 'package:angkutin/screen/auth/map_screen.dart';
 import 'package:angkutin/screen/onboarding_screen.dart';
 import 'package:angkutin/screen/user/user_history_screen.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
+import 'package:angkutin/screen/user/user_profile_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -97,7 +98,11 @@ class MainApp extends StatelessWidget {
               case UserHistoryScreen.ROUTE_NAME:
                 return MaterialPageRoute(
                     builder: (_) => const UserHistoryScreen());
-                    
+
+              case UserProfileScreen.ROUTE_NAME:
+                return MaterialPageRoute(
+                    builder: (_) => const UserProfileScreen());
+
               case RequestServiceScreen.ROUTE_NAME:
                 final titleScreen = settings.arguments as String;
                 return MaterialPageRoute(

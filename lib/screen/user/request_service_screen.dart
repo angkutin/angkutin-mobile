@@ -37,6 +37,12 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
   LatLng? coordinate;
 
   @override
+  void dispose() {
+    _descController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       // resizeToAvoidBottomInset: false,

@@ -48,6 +48,14 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
   LatLng? coordinate;
 
   @override
+  void dispose() {
+    _fullNameController.dispose();
+    _activeNumberController.dispose();
+    _optNumberController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final uploadProvider = Provider.of<UploadProvider>(context, listen: true);
 

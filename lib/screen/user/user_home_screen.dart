@@ -1,16 +1,19 @@
-import 'package:angkutin/common/constant.dart';
-import 'package:angkutin/provider/auth/auth_provider.dart';
-import 'package:angkutin/screen/auth/login_screen.dart';
-import 'package:angkutin/screen/user/user_history_screen.dart';
-import 'package:angkutin/widget/DailyCarbageCard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
+import 'package:angkutin/common/constant.dart';
+import 'package:angkutin/provider/auth/auth_provider.dart';
+import 'package:angkutin/screen/auth/login_screen.dart';
+import 'package:angkutin/screen/user/user_history_screen.dart';
+import 'package:angkutin/screen/user/user_profile_screen.dart';
+import 'package:angkutin/widget/DailyCarbageCard.dart';
+
 import '../../widget/CarbageHaulCard.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../../widget/ServiceCard.dart';
+import '../../data/model/UserModel.dart' as UserModel;
 import 'request_service_screen.dart';
 
 class UserHomeScreen extends StatelessWidget {
@@ -22,7 +25,7 @@ class UserHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
     // Handle potential null user
-    // final User? user = authProvider.currentUser;
+    final UserModel.User? user = authProvider.currentUser;
 
     return Scaffold(
       drawer: Drawer(
@@ -44,14 +47,15 @@ class UserHomeScreen extends StatelessWidget {
                       ).createShader(bounds);
                     },
                     child: Text(
-                      authProvider.currentUser?.name ?? "none",
+                      user?.name ?? "none",
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold, height: 1),
                     ),
                   ),
-                  subtitle: Text("email@gmail.com"),
+                  subtitle: Text(user?.email ?? "none@mail.com"),
                   trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                  onTap: () => print("Profile on tap"),
+                  onTap: () => Navigator.pushNamed(
+                      context, UserProfileScreen.ROUTE_NAME),
                 ),
               ),
             ),
@@ -61,7 +65,8 @@ class UserHomeScreen extends StatelessWidget {
             ),
             CustomDrawerItem(
               title: "Riwayat",
-              onTap: () => Navigator.pushNamed(context, UserHistoryScreen.ROUTE_NAME),
+              onTap: () =>
+                  Navigator.pushNamed(context, UserHistoryScreen.ROUTE_NAME),
             ),
 
             // spacer
@@ -147,7 +152,7 @@ class UserHomeScreen extends StatelessWidget {
                 imageUrl: dotenv.env['ANGKUT_SAMPAH_ILUSTRASI_IMAGE']!,
                 onPressed: () {
                   Navigator.pushNamed(context, RequestServiceScreen.ROUTE_NAME,
-                  arguments: "Permintaan Angkut Sampah");
+                      arguments: "Permintaan Angkut Sampah");
                 },
               ),
               ServiceCard(
@@ -155,8 +160,8 @@ class UserHomeScreen extends StatelessWidget {
                 subtitle: "Lapor dengan cepat dan mudah!",
                 imageUrl: dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
                 onPressed: () {
-                    Navigator.pushNamed(context, RequestServiceScreen.ROUTE_NAME,
-                  arguments: "Lapor Sampah Liar");
+                  Navigator.pushNamed(context, RequestServiceScreen.ROUTE_NAME,
+                      arguments: "Lapor Sampah Liar");
                 },
               ),
             ],
