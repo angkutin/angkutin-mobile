@@ -35,6 +35,7 @@ dependencies:
   location: ^6.0.2
   firebase_storage: ^11.7.6
   font_awesome_flutter: ^10.7.0
+  lottie: ^3.1.2
 
 
 dev_dependencies:
@@ -46,6 +47,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/lotties/succesfully-lottie.json
     # - assets/images/successfuly_image.png
     - .env
   

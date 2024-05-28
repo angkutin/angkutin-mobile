@@ -1,8 +1,13 @@
 import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/screen/user/user_home_screen.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/SmallTextGrey.dart';
 import 'package:angkutin/widget/TitleSectionBlue.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+
+import '../../common/AnimatedWidgetWrapper.dart';
+
 
 class RequestAcceptedScreen extends StatelessWidget {
   const RequestAcceptedScreen({super.key});
@@ -17,19 +22,21 @@ class RequestAcceptedScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("assets/images/successfuly_image.png"),
+            Lottie.asset('assets/lotties/succesfully-lottie.json'),
             const SizedBox(
               height: 40,
             ),
-            const TitleSection(title: "Permintaan Terkirim!"),
-            const SmallTextGrey(
-                description: "Selanjutnya tunggu update status permintaan ya"),
+            const AnimatedWidgetWrapper(child:  TitleSection(title: "Permintaan Terkirim!")),
+            const AnimatedWidgetWrapper(
+              child:  SmallTextGrey(
+                  description: "Selanjutnya tunggu update status permintaan ya"),
+            ),
             const SizedBox(
               height: 30,
             ),
             SizedBox(
                 width: 100,
-                child: CustomButton(title: "Oke !", onPressed: () {})),
+                child: CustomButton(title: "Oke !", onPressed: () => Navigator.pushReplacementNamed(context, UserHomeScreen.ROUTE_NAME))),
             const SizedBox(
               height: 100,
             ),
