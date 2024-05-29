@@ -1,3 +1,4 @@
+import 'package:angkutin/screen/user/user_monitor_request_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -133,7 +134,7 @@ class UserHomeScreen extends StatelessWidget {
                 description: "Siapkan sampah yang akan diangkut",
               ),
               CarbageHaulCard(
-                onPressed: () => print("pantau clicked"),
+                onPressed: () => Navigator.pushNamed(context, UserMonitorRequestScreen.ROUTE_NAME),
                 status: "Diterima",
               ),
               const SizedBox(

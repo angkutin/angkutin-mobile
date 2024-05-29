@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../common/constant.dart';
+import '../../widget/CustomListTile.dart';
 
 class UserProfileScreen extends StatelessWidget {
   static const ROUTE_NAME = '/user-profile-screen';
@@ -69,24 +70,3 @@ class UserProfileScreen extends StatelessWidget {
   }
 }
 
-class CustomListTile extends StatelessWidget {
-  final String title;
-  final String value;
-  final Widget? trailing;
-  const CustomListTile(
-      {Key? key, required this.title, required this.value, this.trailing})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title,
-          style: basicTextStyleBlack.copyWith(
-            color: blackColor,
-          )),
-      subtitle: Text(value,
-          style: basicTextStyleBlack.copyWith(color: softBlueColor)),
-      trailing: trailing,
-    );
-  }
-}
