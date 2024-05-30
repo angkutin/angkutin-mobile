@@ -10,6 +10,8 @@ import '../../common/AnimatedWidgetWrapper.dart';
 
 
 class RequestAcceptedScreen extends StatelessWidget {
+    static const ROUTE_NAME = '/user-requestacc';
+
   const RequestAcceptedScreen({super.key});
 
   @override

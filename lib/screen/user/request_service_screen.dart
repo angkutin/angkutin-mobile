@@ -2,13 +2,21 @@
 import 'dart:io';
 
 import 'package:angkutin/common/constant.dart';
+import 'package:angkutin/common/state_enum.dart';
+import 'package:angkutin/data/model/RequestModel.dart';
+import 'package:angkutin/database/storage_service.dart';
+import 'package:angkutin/provider/upload_provider.dart';
+import 'package:angkutin/provider/user/user_request_provider.dart';
+import 'package:angkutin/screen/user/request_accepted_screen.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/SmallTextGrey.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/utils.dart';
 import '../../widget/CustomBasicTextField.dart';
@@ -44,6 +52,8 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final requestServiceProvider = Provider.of<UserRequestProvider>(context);
+
     return Scaffold(
       // resizeToAvoidBottomInset: false,
 
@@ -85,8 +95,10 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                   FontAwesomeIcons.locationDot,
                   color: cGreenStrong,
                 ),
-                title: const Text(
-                  "Lokasinya dimana?",
+                title: Text(
+                  coordinate != null
+                      ? coordinate.toString()
+                      : "Lokasinya dimana?",
                   style: TextStyle(color: mainColor),
                 ),
                 onTap: () async {
@@ -118,11 +130,11 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
               const Divider(),
               ListTile(
                 leading: const FaIcon(
-                  FontAwesomeIcons.trash,
+                  FontAwesomeIcons.camera,
                   color: cGreenStrong,
                 ),
-                title: const Text(
-                  "Fotoin dong!",
+                title: Text(
+                  image != null ? "Oke!" : "Fotoin dong!",
                   style: TextStyle(color: mainColor),
                 ),
                 onTap: () => _showImagePickerDialog(context),
@@ -135,11 +147,55 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
               const SizedBox(
                 height: 10,
               ),
-              CustomButton(
-                  title: "Ajukan",
-                  onPressed: () {
-                    print("Ajukan");
-                  })
+              requestServiceProvider.isLoading == true
+                  ? const Center(child: CircularProgressIndicator())
+                  : CustomButton(
+                      title: "Ajukan",
+                      onPressed: () async {
+                        if (coordinate != null && image != null) {
+                          final requestId = "1"; // bakalan diganti
+                          final userId = "1";
+                          final now = Timestamp.now();
+
+                          final storageService = StorageService();
+
+                          final imgUrl = await storageService.uploadImage(
+                              "requests", "carbage/$requestId", image!);
+
+                          final request = RequestService(
+                              requestId: requestId,
+                              userId: userId,
+                              name: "Jamal",
+                              date: now,
+                              imageUrl: imgUrl,
+                              description: _descController.text,
+                              userLoc: GeoPoint(
+                                  coordinate!.latitude, coordinate!.longitude),
+                              type: 1,
+                              isDelivered: true,
+                              isDone: false);
+                          // upload
+                          await requestServiceProvider.createRequest(
+                              requestService: request);
+
+                          if (requestServiceProvider.state ==
+                              ResultState.success) {
+                            Future.delayed(Duration(seconds: 1), () {
+                              Navigator.pushNamed(
+                                  context, RequestAcceptedScreen.ROUTE_NAME);
+                            });
+                          } else {
+                            showInfoSnackbar(context,
+                                "Gagal mengunggah data, coba lagi nanti");
+                            print(
+                                "Error gagal unggah permintaan : ${requestServiceProvider.errorMessage}");
+                          }
+                        } else {
+                          showInfoSnackbar(context,
+                              "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
+                        }
+                        print("Ajukan");
+                      })
             ],
           ),
         ),

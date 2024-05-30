@@ -3,6 +3,7 @@ import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/upload_provider.dart';
+import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
 import 'package:angkutin/screen/auth/map_screen.dart';
 import 'package:angkutin/screen/onboarding_screen.dart';
@@ -75,6 +76,7 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
         ChangeNotifierProvider(create: (_) => UploadProvider(storageService)),
+        ChangeNotifierProvider(create: (_) => UserRequestProvider(storageService)),
       ],
       child: MaterialApp(
           home: initialScreen,
@@ -106,6 +108,10 @@ class MainApp extends StatelessWidget {
               case UserProfileScreen.ROUTE_NAME:
                 return MaterialPageRoute(
                     builder: (_) => const UserProfileScreen());
+
+              case RequestAcceptedScreen.ROUTE_NAME:
+                return MaterialPageRoute(
+                    builder: (_) => const RequestAcceptedScreen());
 
               case UserMonitorRequestScreen.ROUTE_NAME:
                 return MaterialPageRoute(
