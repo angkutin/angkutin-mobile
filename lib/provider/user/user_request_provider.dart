@@ -35,10 +35,17 @@ class UserRequestProvider with ChangeNotifier {
     try {
       // untuk gamabr dilakukan di ui, provider menerima url aja utk diinput ke firestore
       // final imageUrl = await storageService.uploadImage("docId", image);
+      final now = DateTime.now();
+      final formattedDate = now.toString().split(' ')[0]; // Get the date part only
 
-      final CollectionReference usersCollection =
-          FirebaseFirestore.instance.collection('requests');
-      await usersCollection.doc(requestService?.requestId).set(
+
+      final CollectionReference requestsCollection  = FirebaseFirestore.instance
+      .collection('requests')
+      .doc('carbage')
+      .collection(formattedDate);
+
+
+      await requestsCollection .doc(requestService?.requestId).set(
         requestService?.toFirestore()
       );
 

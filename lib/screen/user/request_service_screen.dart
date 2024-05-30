@@ -193,6 +193,9 @@ bool isLoading = false;
                                   context, RequestAcceptedScreen.ROUTE_NAME);
                             });
                           } else {
+                            setState(() {
+                            isLoading = false;
+                          });
                             showInfoSnackbar(context,
                                 "Gagal mengunggah data, coba lagi nanti");
                             print(
