@@ -1,6 +1,7 @@
 import 'package:angkutin/common/state_enum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../data/model/RequestModel.dart';
 import '../data/model/UserModel.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 
@@ -50,4 +51,11 @@ Future<void> updateUserData(String email, Map<String, dynamic> data) async {
   } catch (e) {
     print(e);
   }
+}
+
+Future<void> createRequest(RequestService request) async {
+  await FirebaseFirestore.instance
+      .collection('requests')
+      .doc(request.requestId)
+      .set(request.toFirestore());
 }

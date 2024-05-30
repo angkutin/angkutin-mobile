@@ -5,8 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart' as path;
 
 import '../common/state_enum.dart';
+import '../database/storage_service.dart';
 
 class UploadProvider with ChangeNotifier {
+    final StorageService storageService;
+    UploadProvider(this.storageService);
+
   ResultState? _state;
   String? _errorMessage;
   bool? _isLoading = false;
@@ -15,16 +19,16 @@ class UploadProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool? get isLoading => _isLoading;
 
-  Future<String> _uploadImage(String docId, File image) async {
-    final fileName = path.basename(image.path);
-    final storageRef =
-        FirebaseStorage.instance.ref().child('images/$docId/$fileName');
-    final uploadTask = storageRef.putFile(image);
+  // Future<String> uploadImage(String collection, String docId, File image) async {
+  //   final fileName = path.basename(image.path);
+  //   final storageRef =
+  //       FirebaseStorage.instance.ref().child('$collection/$docId/$fileName');
+  //   final uploadTask = storageRef.putFile(image);
 
-    final snapshot = await uploadTask.whenComplete(() => {});
-    final downloadUrl = await snapshot.ref.getDownloadURL();
-    return downloadUrl;
-  }
+  //   final snapshot = await uploadTask.whenComplete(() => {});
+  //   final downloadUrl = await snapshot.ref.getDownloadURL();
+  //   return downloadUrl;
+  // }
 
   Future<void> uploadDataRegister({
     required String docId,
@@ -41,7 +45,7 @@ class UploadProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final imageUrl = await _uploadImage(docId, image);
+      final imageUrl = await storageService.uploadImage("images",docId, image);
 
       final CollectionReference usersCollection =
           FirebaseFirestore.instance.collection('users');

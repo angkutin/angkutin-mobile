@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
@@ -68,10 +69,12 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    StorageService storageService = StorageService();
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
-        ChangeNotifierProvider(create: (_) => UploadProvider()),
+        ChangeNotifierProvider(create: (_) => UploadProvider(storageService)),
       ],
       child: MaterialApp(
           home: initialScreen,
