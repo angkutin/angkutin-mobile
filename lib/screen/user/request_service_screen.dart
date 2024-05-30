@@ -44,6 +44,8 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
   String? district;
   LatLng? coordinate;
 
+bool isLoading = false;
+
   @override
   void dispose() {
     _descController.dispose();
@@ -145,16 +147,22 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
               ),
               CustomBasicTextField(descController: _descController),
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
-              requestServiceProvider.isLoading == true
+              // requestServiceProvider.isLoading == true
+              isLoading == true
                   ? const Center(child: CircularProgressIndicator())
                   : CustomButton(
                       title: "Ajukan",
                       onPressed: () async {
+                        // set loading
+                        setState(() {
+                          isLoading = true;
+                        });
+
                         if (coordinate != null && image != null) {
-                          final requestId = "1"; // bakalan diganti
-                          final userId = "1";
+                          final requestId = FirebaseFirestore.instance.collection('requests').doc().id;
+                          final userId = "userId1";
                           final now = Timestamp.now();
 
                           final storageService = StorageService();
@@ -191,6 +199,9 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                                 "Error gagal unggah permintaan : ${requestServiceProvider.errorMessage}");
                           }
                         } else {
+                          setState(() {
+                            isLoading = false;
+                          });
                           showInfoSnackbar(context,
                               "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
                         }
