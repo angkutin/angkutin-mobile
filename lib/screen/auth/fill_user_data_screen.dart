@@ -16,6 +16,7 @@ import '../../common/constant.dart';
 import '../../widget/CustomButton.dart';
 import '../../widget/TitleSectionBlue.dart';
 import 'map_screen.dart';
+import '../../data/model/UserModel.dart' as userModel;
 
 class FillUserDataScreen extends StatefulWidget {
   static const ROUTE_NAME = '/fill-data';
@@ -159,7 +160,21 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
             longitude: coordinate!.longitude);
 
         if (uploadProvider.state == ResultState.success) {
+          final user = userModel.User(
+              email: "famuh97@gmail.com",
+              name: "name",
+              activePhoneNumber: int.parse(_activeNumberController.text),
+              fullName: _fullNameController.text,
+              imageUrl: "",
+              address: address,
+              latitude: coordinate!.latitude,
+              longitude: coordinate!.longitude,
+              optionalPhoneNumber: _optNumberController.text.isNotEmpty
+                  ? int.parse(_optNumberController.text)
+                  : null,
+              role: "Masyarakat");
           authProvider.saveLoginState(true);
+          authProvider.saveUserDataLocally(user);
           showInfoSnackbar(context, "Berhasil mengunggah data");
           Future.delayed(Duration(seconds: 1), () {
             Navigator.pushReplacementNamed(context, UserHomeScreen.ROUTE_NAME);

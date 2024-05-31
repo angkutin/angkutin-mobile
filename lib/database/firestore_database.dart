@@ -1,4 +1,5 @@
 import 'package:angkutin/common/state_enum.dart';
+import 'package:angkutin/common/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../data/model/RequestModel.dart';
@@ -53,9 +54,32 @@ Future<void> updateUserData(String email, Map<String, dynamic> data) async {
   }
 }
 
-Future<void> createRequest(RequestService request) async {
-  await FirebaseFirestore.instance
-      .collection('requests')
-      .doc(request.requestId)
-      .set(request.toFirestore());
-}
+// Future<void> createRequest(RequestService request) async {
+//   await FirebaseFirestore.instance
+//       .collection('requests')
+//       .doc(request.requestId)
+//       .set(request.toFirestore());
+// }
+
+// Stream<List<RequestService>> getUserRequests(String userId) {
+//   // Use collection group to access subcollections across documents
+//   try {
+//     final requestsStream = FirebaseFirestore.instance
+//         .collection(
+//             'requests') // Use collectionGroup for filtering across subcollections
+//         .doc('carbage')
+//         .collection('items')
+//         .where('userId',
+//             isEqualTo: userId) // Filter by userId ganti nanti jadi user.uid
+//         .where('isDone', isEqualTo: false) // Filter by isDone
+//         .snapshots()
+//         .map((snapshot) => snapshot.docs
+//             .map((doc) => RequestService.fromFirestore(doc, null))
+//             .toList());
+
+//     return requestsStream;
+//   } catch (e) {
+//     print('Error fetching user requests: $e');
+//     return Stream<List<RequestService>>.empty();
+//   }
+// }

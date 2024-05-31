@@ -1,3 +1,5 @@
+import 'package:angkutin/data/model/RequestModel.dart';
+import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/user/user_monitor_request_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,16 +19,40 @@ import '../../widget/ServiceCard.dart';
 import '../../data/model/UserModel.dart' as UserModel;
 import 'request_service_screen.dart';
 
-class UserHomeScreen extends StatelessWidget {
+class UserHomeScreen extends StatefulWidget {
   static const ROUTE_NAME = '/user-homescreen';
 
   const UserHomeScreen({super.key});
 
   @override
+  State<UserHomeScreen> createState() => _UserHomeScreenState();
+}
+
+
+
+class _UserHomeScreenState extends State<UserHomeScreen> {
+  // late dynamic  _requestsFuture;
+  final String userId = 'userId1';
+
+@override
+  void initState() {
+    super.initState();
+
+    // get data request
+    // Provider.of<UserRequestProvider>(context).getOngoingRequest(userId);
+
+    Future.microtask(() =>
+        Provider.of<UserRequestProvider>(context, listen: false)
+          ..getOngoingRequest(userId));
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
+    final reqProvider = Provider.of<UserRequestProvider>(context);
     // Handle potential null user
     final UserModel.User? user = authProvider.currentUser;
+    final List<RequestService> userStream = reqProvider.requests;
 
     return Scaffold(
       drawer: Drawer(
@@ -133,10 +159,12 @@ class UserHomeScreen extends StatelessWidget {
                 status: "Petugas akan datang",
                 description: "Siapkan sampah yang akan diangkut",
               ),
-              CarbageHaulCard(
+              
+              reqProvider.requests.isNotEmpty ? CarbageHaulCard(
                 onPressed: () => Navigator.pushNamed(context, UserMonitorRequestScreen.ROUTE_NAME),
-                status: "Diterima",
-              ),
+                status: userStream[0].name,
+              )
+              : Text("Kosong brayy"),
               const SizedBox(
                 height: 20,
               ),

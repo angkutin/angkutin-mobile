@@ -162,7 +162,7 @@ bool isLoading = false;
 
                         if (coordinate != null && image != null) {
                           final requestId = FirebaseFirestore.instance.collection('requests').doc().id;
-                          final userId = "userId1";
+                          final userId = "userId2";
                           final now = Timestamp.now();
 
                           final storageService = StorageService();
@@ -173,7 +173,7 @@ bool isLoading = false;
                           final request = RequestService(
                               requestId: requestId,
                               userId: userId,
-                              name: "Jamal",
+                              name: "Jamaluddin 2",
                               date: now,
                               imageUrl: imgUrl,
                               description: _descController.text,

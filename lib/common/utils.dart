@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,13 @@ double mediaQueryWidth(BuildContext context) =>
     MediaQuery.of(context).size.width;
 double mediaQueryHeight(BuildContext context) =>
     MediaQuery.of(context).size.height;
+
+    String getFormattedDate(Timestamp dateTime) {
+  final formattedDate = dateTime.toString().split(' ')[0];
+  return formattedDate;
+}
+
+String nowDate = getFormattedDate(Timestamp.now());
 
 // show snackbar
 void showInfoSnackbar(BuildContext context, String message) {
@@ -100,7 +108,9 @@ class ImageService {
 
     if (imagePicked != null) {
       File originalImage = File(imagePicked.path);
-      File? compressedImage = await compressImage(originalImage, 800);
+
+      // compress to max 600kb
+      File? compressedImage = await compressImage(originalImage, 600);
 
       if (compressedImage != null) {
         image = File(compressedImage.path);
