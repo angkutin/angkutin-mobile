@@ -41,27 +41,23 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     // get data request
     // Provider.of<UserRequestProvider>(context).getOngoingRequest(userId);
 
-    Future.microtask(() =>
-        Provider.of<UserRequestProvider>(context, listen: false)
-            .getOngoingRequest(userId));
+    Future.microtask(() {
+      Provider.of<UserRequestProvider>(context, listen: false)
+          .getOngoingRequest(userId);
+      // Provider.of<AuthenticationProvider>(context, listen: false).readUserDataLocally();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
-    // final reqProvider = Provider.of<UserRequestProvider>(context);
-    // Handle potential null user
     final UserModel.User? user = authProvider.currentUser;
-    // final List<RequestService> userStream = reqProvider.requests;
 
     return Scaffold(
       drawer: Drawer(
         child: Column(
           children: [
             DrawerHeader(
-              // decoration: const BoxDecoration(
-              //   color: mainColor,
-              // ),
               child: Center(
                 child: ListTile(
                   title: ShaderMask(
@@ -225,10 +221,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   imageUrl: dotenv.env['ANGKUT_SAMPAH_ILUSTRASI_IMAGE']!,
                   onPressed: () {
                     Navigator.pushNamed(
-                        context, RequestServiceScreen.ROUTE_NAME,
-                        // arguments: "Permintaan Angkut Sampah",
-                        arguments: 1,
-                        );
+                      context, RequestServiceScreen.ROUTE_NAME,
+                      // arguments: "Permintaan Angkut Sampah",
+                      arguments: 1,
+                    );
                   },
                 ),
                 ServiceCard(
@@ -237,10 +233,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   imageUrl: dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
                   onPressed: () {
                     Navigator.pushNamed(
-                        context, RequestServiceScreen.ROUTE_NAME,
-                        // arguments: "Lapor Sampah Liar",
-                        arguments: 2,
-                        );
+                      context, RequestServiceScreen.ROUTE_NAME,
+                      // arguments: "Lapor Sampah Liar",
+                      arguments: 2,
+                    );
                   },
                 ),
               ],

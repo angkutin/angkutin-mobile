@@ -32,6 +32,9 @@ class UploadProvider with ChangeNotifier {
   //   return downloadUrl;
   // }
 
+  String? _imageUrl;
+  String? get imageUrl => _imageUrl; 
+
   Future<void> uploadDataRegister({
     required String docId,
     required String fullName,
@@ -47,7 +50,7 @@ class UploadProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final imageUrl = await storageService.uploadImage("images", docId, image);
+      _imageUrl = await storageService.uploadImage("images", docId, image);
 
       final CollectionReference usersCollection =
           FirebaseFirestore.instance.collection('users');
@@ -56,7 +59,7 @@ class UploadProvider with ChangeNotifier {
             'fullName': fullName,
             'activePhoneNumber': activePhoneNumber,
             'optionalPhoneNumber': optionalPhoneNumber,
-            'imageUrl': imageUrl,
+            'imageUrl': _imageUrl,
             'latitude': latitude,
             'longitude': longitude,
           },
@@ -64,19 +67,19 @@ class UploadProvider with ChangeNotifier {
               merge:
                   true)); // agar menambah atribut tanpa menghapus yang sudah ada
 
-      final String userDataKey = 'user_data';
+      // final String userDataKey = 'user_data';
 
-      final prefs = await SharedPreferences.getInstance();
-      final userDataString = jsonEncode({
-        'fullName': fullName,
-        'activePhoneNumber': activePhoneNumber,
-        'optionalPhoneNumber': optionalPhoneNumber,
-        'imageUrl': imageUrl,
-        'latitude': latitude,
-        'longitude': longitude,
-      });
-      prefs.setString(userDataKey, userDataString);
-      print("berhasil simpan data lengkap ke local : ${jsonDecode(userDataString)}");
+      // final prefs = await SharedPreferences.getInstance();
+      // final userDataString = jsonEncode({
+      //   'fullName': fullName,
+      //   'activePhoneNumber': activePhoneNumber,
+      //   'optionalPhoneNumber': optionalPhoneNumber,
+      //   'imageUrl': _imageUrl,
+      //   'latitude': latitude,
+      //   'longitude': longitude,
+      // });
+      // prefs.setString(userDataKey, userDataString);
+      // print("berhasil simpan data lengkap ke local : ${jsonDecode(userDataString)}");
 
       _state = ResultState.success;
     } catch (error) {

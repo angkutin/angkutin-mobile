@@ -186,18 +186,20 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
         if (uploadProvider.state == ResultState.success) {
           if (_user != null) {
             userModel.User updatedUser = userModel.User(
-              email: _user!.email,
-              name: _user!.name,
-              role: _user!.role,
-              fullName: _fullNameController.text.isNotEmpty
-                  ? _fullNameController.text
-                  : _user!.fullName,
-              address: address,
-              activePhoneNumber: int.parse(_activeNumberController.text),
-              optionalPhoneNumber: _optNumberController.text.isNotEmpty
-                  ? int.parse(_optNumberController.text)
-                  : null,
-            );
+                email: _user!.email,
+                name: _user!.name,
+                role: _user!.role,
+                fullName: _fullNameController.text.isNotEmpty
+                    ? _fullNameController.text
+                    : _user!.fullName,
+                address: address,
+                activePhoneNumber: int.parse(_activeNumberController.text),
+                optionalPhoneNumber: _optNumberController.text.isNotEmpty
+                    ? int.parse(_optNumberController.text)
+                    : null,
+                latitude: coordinate!.latitude,
+                longitude: coordinate!.longitude,
+                imageUrl: uploadProvider.imageUrl);
 
             authProvider.saveUserDataLocally(updatedUser);
             authProvider.saveLoginState(true);

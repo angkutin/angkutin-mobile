@@ -135,15 +135,15 @@ class AuthenticationProvider with ChangeNotifier {
   }
 
 // save fill data state
-  final String fillDataKey = 'fill_data_key';
+  // final String fillDataKey = 'fill_data_key';
 
-  Future<void> saveFillDataState(bool state) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool(fillDataKey, state);
-  }
+  // Future<void> saveFillDataState(bool state) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   prefs.setBool(fillDataKey, state);
+  // }
 
-  Future<bool> getFillDataState() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(fillDataKey) ?? false;
-  }
+  // Future<bool> getFillDataState() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   return prefs.getBool(fillDataKey) ?? false;
+  // }
 }

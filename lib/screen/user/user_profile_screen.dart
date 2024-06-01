@@ -1,15 +1,45 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/constant.dart';
+import '../../data/model/UserModel.dart' as UserModel;
+import '../../provider/auth/auth_provider.dart';
 import '../../widget/CustomListTile.dart';
 
-class UserProfileScreen extends StatelessWidget {
+class UserProfileScreen extends StatefulWidget {
   static const ROUTE_NAME = '/user-profile-screen';
 
   const UserProfileScreen({super.key});
+
+  @override
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
+}
+
+class _UserProfileScreenState extends State<UserProfileScreen> {
+  UserModel.User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadData();
+  }
+
+  _loadData() async {
+    final prefs =
+        await Provider.of<AuthenticationProvider>(context, listen: false)
+            .readUserDataLocally();
+    if (prefs != null) {
+      setState(() {
+        _user = UserModel.User.fromJson(jsonDecode(prefs));
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +60,7 @@ class UserProfileScreen extends StatelessWidget {
             decoration: containerBorderWithRadius.copyWith(
                 border: Border.all(color: softBlueColor)),
             child: CachedNetworkImage(
-              imageUrl: dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
+              imageUrl: _user?.imageUrl ?? dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
               progressIndicatorBuilder: (context, url, downloadProgress) =>
                   CircularProgressIndicator(value: downloadProgress.progress),
               errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -38,23 +68,26 @@ class UserProfileScreen extends StatelessWidget {
           ),
           CustomListTile(
             title: "Nama",
-            value: "Kunto Aji",
+            value: _user?.name ?? "None",
           ),
           CustomListTile(
             title: "Wilayah",
-            value: "Johor",
+            value: _user?.address ?? "None",
           ),
           CustomListTile(
             title: "Nomor Hp Aktif",
-            value: "0812",
+            value: _user?.activePhoneNumber.toString() ?? "none",
           ),
           CustomListTile(
             title: "Nomor Hp Cadangan",
-            value: "0812",
+            value: _user?.optionalPhoneNumber != null
+                ? _user!.optionalPhoneNumber.toString()
+                : "tidak diatur",
           ),
           CustomListTile(
             title: "Koordinat",
-            value: "12.121212, -12.12121",
+            value:
+                "Latitude : ${_user?.latitude}\nLongitude : ${_user?.longitude}",
             trailing: IconButton(
                 onPressed: () {
                   print("Ganti koordinat");
@@ -69,4 +102,3 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 }
-
