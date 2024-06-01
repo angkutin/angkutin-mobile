@@ -1,6 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/data/model/RequestModel.dart';
@@ -10,13 +18,6 @@ import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/user/request_accepted_screen.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/SmallTextGrey.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 
 import '../../common/utils.dart';
 import '../../widget/CustomBasicTextField.dart';
@@ -24,11 +25,13 @@ import '../auth/map_screen.dart';
 
 class RequestServiceScreen extends StatefulWidget {
   static const ROUTE_NAME = '/user-requestservice-screen';
-
-  final String titleScreen;
+  
+  final int tipeAngkutan;
+  // final String titleScreen;
   const RequestServiceScreen({
     Key? key,
-    required this.titleScreen,
+    required this.tipeAngkutan,
+    // required this.titleScreen,
   }) : super(key: key);
 
   @override
@@ -66,7 +69,7 @@ bool isLoading = false;
           height: mediaQueryHeight(context),
           child: ListView(
             children: [
-              Text(widget.titleScreen,
+              Text(widget.tipeAngkutan == 1 ? "Permintaan Angkut Sampah" : "Lapor Sampah Liar",
                   style: basicTextStyleBlack.copyWith(fontSize: 18)),
               const SmallTextGrey(
                 description: "Isi informasi yang diperlukan",
@@ -101,7 +104,7 @@ bool isLoading = false;
                   coordinate != null
                       ? coordinate.toString()
                       : "Lokasinya dimana?",
-                  style: TextStyle(color: mainColor),
+                  style: const TextStyle(color: mainColor),
                 ),
                 onTap: () async {
                   final Map<String, dynamic>? result = await Navigator.push(
@@ -137,7 +140,7 @@ bool isLoading = false;
                 ),
                 title: Text(
                   image != null ? "Oke!" : "Fotoin dong!",
-                  style: TextStyle(color: mainColor),
+                  style: const TextStyle(color: mainColor),
                 ),
                 onTap: () => _showImagePickerDialog(context),
               ),
@@ -179,8 +182,8 @@ bool isLoading = false;
                               description: _descController.text,
                               userLoc: GeoPoint(
                                   coordinate!.latitude, coordinate!.longitude),
-                              type: 1,
-                              isDelivered: true,
+                              type: widget.tipeAngkutan,
+                              isDelivered: false,
                               isDone: false);
                           // upload
                           await requestServiceProvider.createRequest(

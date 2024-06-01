@@ -123,7 +123,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       appBar: AppBar(
         shadowColor: Colors.black,
         title: Text(
-          "Hai, Nama",
+          "Hai, $user",
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         leading: Builder(builder: (context) {
@@ -225,7 +225,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   onPressed: () {
                     Navigator.pushNamed(
                         context, RequestServiceScreen.ROUTE_NAME,
-                        arguments: "Permintaan Angkut Sampah");
+                        // arguments: "Permintaan Angkut Sampah",
+                        arguments: 1,
+                        );
                   },
                 ),
                 ServiceCard(
@@ -235,7 +237,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   onPressed: () {
                     Navigator.pushNamed(
                         context, RequestServiceScreen.ROUTE_NAME,
-                        arguments: "Lapor Sampah Liar");
+                        // arguments: "Lapor Sampah Liar",
+                        arguments: 2,
+                        );
                   },
                 ),
               ],
