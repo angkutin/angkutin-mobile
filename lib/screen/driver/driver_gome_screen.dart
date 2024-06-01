@@ -162,10 +162,7 @@ class DriverHomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              CarbageHaulCard(
-                onPressed: () => print("pantau clicked"),
-                status: "Diterima",
-              ),
+             
               Card(
                 child: Container(
                     width: mediaQueryWidth(context),

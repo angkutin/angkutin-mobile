@@ -1,6 +1,7 @@
 import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/user/user_monitor_request_screen.dart';
+import 'package:angkutin/widget/SmallTextGrey.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,6 +14,7 @@ import 'package:angkutin/screen/user/user_history_screen.dart';
 import 'package:angkutin/screen/user/user_profile_screen.dart';
 import 'package:angkutin/widget/DailyCarbageCard.dart';
 
+import '../../common/utils.dart';
 import '../../widget/CarbageHaulCard.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../../widget/ServiceCard.dart';
@@ -28,13 +30,11 @@ class UserHomeScreen extends StatefulWidget {
   State<UserHomeScreen> createState() => _UserHomeScreenState();
 }
 
-
-
 class _UserHomeScreenState extends State<UserHomeScreen> {
   // late dynamic  _requestsFuture;
   final String userId = 'userId1';
 
-@override
+  @override
   void initState() {
     super.initState();
 
@@ -43,16 +43,16 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
 
     Future.microtask(() =>
         Provider.of<UserRequestProvider>(context, listen: false)
-          ..getOngoingRequest(userId));
+            .getOngoingRequest(userId));
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
-    final reqProvider = Provider.of<UserRequestProvider>(context);
+    // final reqProvider = Provider.of<UserRequestProvider>(context);
     // Handle potential null user
     final UserModel.User? user = authProvider.currentUser;
-    final List<RequestService> userStream = reqProvider.requests;
+    // final List<RequestService> userStream = reqProvider.requests;
 
     return Scaffold(
       drawer: Drawer(
@@ -121,6 +121,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         ),
       ),
       appBar: AppBar(
+        shadowColor: Colors.black,
         title: Text(
           "Hai, Nama",
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
@@ -152,48 +153,93 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DailyCarbageCard(
-                status: "Petugas akan datang",
-                description: "Siapkan sampah yang akan diangkut",
-              ),
-              
-              reqProvider.requests.isNotEmpty ? CarbageHaulCard(
-                onPressed: () => Navigator.pushNamed(context, UserMonitorRequestScreen.ROUTE_NAME),
-                status: userStream[0].name,
-              )
-              : Text("Kosong brayy"),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Layanan",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: blackColor),
-              ),
-              ServiceCard(
-                title: "Minta Angkut",
-                subtitle: "Butuh petugas angkut sampahmu? Klik disini!",
-                imageUrl: dotenv.env['ANGKUT_SAMPAH_ILUSTRASI_IMAGE']!,
-                onPressed: () {
-                  Navigator.pushNamed(context, RequestServiceScreen.ROUTE_NAME,
-                      arguments: "Permintaan Angkut Sampah");
-                },
-              ),
-              ServiceCard(
-                title: "Lapor Sampah Liar",
-                subtitle: "Lapor dengan cepat dan mudah!",
-                imageUrl: dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
-                onPressed: () {
-                  Navigator.pushNamed(context, RequestServiceScreen.ROUTE_NAME,
-                      arguments: "Lapor Sampah Liar");
-                },
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DailyCarbageCard(
+                  status: "Petugas akan datang",
+                  description: "Siapkan sampah yang akan diangkut",
+                ),
+
+                // stream
+                StreamBuilder<List<RequestService>>(
+                  stream:
+                      Provider.of<UserRequestProvider>(context, listen: false)
+                          .requestsStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        padding: const EdgeInsets.all(8),
+                        width: mediaQueryWidth(context),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: cGreenSofter,
+                        ),
+                        child: Text(
+                          "Kamu belum mengajukan permintaan pengangkutan sampah",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                              color: Colors.green[700]),
+                        ),
+                      );
+                    } else {
+                      final requests = snapshot.data!;
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: requests.length,
+                        itemBuilder: (context, index) {
+                          final request = requests[index];
+                          return CarbageHaulCard(
+                            onPressed: () => Navigator.pushNamed(
+                                context, UserMonitorRequestScreen.ROUTE_NAME),
+                            status: request.isDelivered,
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+
+                const SizedBox(
+                  height: 30,
+                ),
+
+                const Text(
+                  "Layanan",
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: blackColor),
+                ),
+                ServiceCard(
+                  title: "Minta Angkut",
+                  subtitle: "Butuh petugas angkut sampahmu? Klik disini!",
+                  imageUrl: dotenv.env['ANGKUT_SAMPAH_ILUSTRASI_IMAGE']!,
+                  onPressed: () {
+                    Navigator.pushNamed(
+                        context, RequestServiceScreen.ROUTE_NAME,
+                        arguments: "Permintaan Angkut Sampah");
+                  },
+                ),
+                ServiceCard(
+                  title: "Lapor Sampah Liar",
+                  subtitle: "Lapor dengan cepat dan mudah!",
+                  imageUrl: dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
+                  onPressed: () {
+                    Navigator.pushNamed(
+                        context, RequestServiceScreen.ROUTE_NAME,
+                        arguments: "Lapor Sampah Liar");
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

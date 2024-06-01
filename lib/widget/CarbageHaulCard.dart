@@ -6,7 +6,7 @@ import '../common/constant.dart';
 import '../common/utils.dart';
 
 class CarbageHaulCard extends StatelessWidget {
-  final String status;
+  final bool status;
   final VoidCallback onPressed;
 
   const CarbageHaulCard({
@@ -46,7 +46,7 @@ class CarbageHaulCard extends StatelessWidget {
                   color: Colors.black54),
             ),
             Text(
-              status,
+              status ? "Diterima" : "Menunggu",
               style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 18,
@@ -55,10 +55,12 @@ class CarbageHaulCard extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            CustomButton(
-                title: "Pantau Permintaan",
-                paddingHorizontal: 16,
-                onPressed: onPressed)
+            status
+                ? CustomButton(
+                    title: "Pantau Permintaan",
+                    paddingHorizontal: 16,
+                    onPressed: onPressed)
+                : Container()
           ],
         ),
       ),

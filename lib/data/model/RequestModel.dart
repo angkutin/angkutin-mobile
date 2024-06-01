@@ -12,19 +12,22 @@ class RequestService {
   final int type;
   final bool isDelivered;
   final bool isDone;
+  String? namaPetugas;
+  GeoPoint? lokasiPetugas;
 
-  RequestService({
-    required this.requestId, // Optional requestId constructor parameter
-    required this.userId,
-    required this.name,
-    required this.date,
-    this.description,
-    required this.imageUrl,
-    required this.userLoc,
-    required this.type,
-    required this.isDelivered,
-    required this.isDone,
-  });
+  RequestService(
+      {required this.requestId, // Optional requestId constructor parameter
+      required this.userId,
+      required this.name,
+      required this.date,
+      this.description,
+      required this.imageUrl,
+      required this.userLoc,
+      required this.type,
+      required this.isDelivered,
+      required this.isDone,
+      this.namaPetugas,
+      this.lokasiPetugas});
 
   factory RequestService.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -42,6 +45,8 @@ class RequestService {
       type: data?['type'] as int,
       isDelivered: data?['isDelivered'] as bool,
       isDone: data?['isDone'] as bool,
+      namaPetugas: data?['namaPetugas'],
+      lokasiPetugas: data?['lokasiPetugas'],
     );
   }
 
@@ -57,6 +62,8 @@ class RequestService {
       'type': type,
       'isDelivered': isDelivered,
       'isDone': isDone,
+      'namaPetugas': namaPetugas,
+      'lokasiPetugas': lokasiPetugas
     };
   }
 }
