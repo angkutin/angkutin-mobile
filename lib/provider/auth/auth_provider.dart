@@ -32,7 +32,7 @@ class AuthenticationProvider with ChangeNotifier {
     try {
       final user = await signInWithGoogle();
       _userData = user;
-      // await saveUserDataLocally(user);
+      await saveUserDataLocally(user);
 
       _state = ResultState.success;
       notifyListeners();
@@ -74,7 +74,9 @@ class AuthenticationProvider with ChangeNotifier {
   }
 
 // save user data to local
+
   final String userDataKey = 'user_data';
+
 
   Future<void> saveUserDataLocally(user_model.User userData) async {
     final prefs = await SharedPreferences.getInstance();
@@ -83,17 +85,19 @@ class AuthenticationProvider with ChangeNotifier {
     print("berhasil simpan data ke local : ${jsonDecode(userDataString)}");
   }
 
-  Future<void> readUserDataLocally() async {
+  Future<String?> readUserDataLocally() async {
     final prefs = await SharedPreferences.getInstance();
     final userDataString = prefs.getString(userDataKey);
 
     if (userDataString != null) {
       final userDataMap = json.decode(userDataString);
       _userData = user_model.User.fromJson(userDataMap);
-      print("membaca data local : $_userData");
+      print("membaca data local provider : ${userDataString}");
 
       notifyListeners();
     }
+
+    return userDataString;
   }
 
   Future<void> deleteUserDataLocally() async {

@@ -1,15 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart' as path;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/state_enum.dart';
 import '../database/storage_service.dart';
 
 class UploadProvider with ChangeNotifier {
-    final StorageService storageService;
-    UploadProvider(this.storageService);
+  final StorageService storageService;
+  UploadProvider(this.storageService);
 
   ResultState? _state;
   String? _errorMessage;
@@ -45,7 +47,7 @@ class UploadProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final imageUrl = await storageService.uploadImage("images",docId, image);
+      final imageUrl = await storageService.uploadImage("images", docId, image);
 
       final CollectionReference usersCollection =
           FirebaseFirestore.instance.collection('users');
@@ -61,6 +63,20 @@ class UploadProvider with ChangeNotifier {
           SetOptions(
               merge:
                   true)); // agar menambah atribut tanpa menghapus yang sudah ada
+
+      final String userDataKey = 'user_data';
+
+      final prefs = await SharedPreferences.getInstance();
+      final userDataString = jsonEncode({
+        'fullName': fullName,
+        'activePhoneNumber': activePhoneNumber,
+        'optionalPhoneNumber': optionalPhoneNumber,
+        'imageUrl': imageUrl,
+        'latitude': latitude,
+        'longitude': longitude,
+      });
+      prefs.setString(userDataKey, userDataString);
+      print("berhasil simpan data lengkap ke local : ${jsonDecode(userDataString)}");
 
       _state = ResultState.success;
     } catch (error) {

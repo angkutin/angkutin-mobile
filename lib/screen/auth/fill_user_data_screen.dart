@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/database/realtime_database.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
@@ -48,12 +50,34 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
   String? district;
   LatLng? coordinate;
 
+// user data local
+
+  userModel.User? _user;
+
   @override
   void dispose() {
     _fullNameController.dispose();
     _activeNumberController.dispose();
     _optNumberController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadData();
+  }
+
+  _loadData() async {
+    final prefs =
+        await Provider.of<AuthenticationProvider>(context, listen: false)
+            .readUserDataLocally();
+    if (prefs != null) {
+      setState(() {
+        _user = userModel.User.fromJson(jsonDecode(prefs));
+      });
+    }
   }
 
   @override
@@ -149,7 +173,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
             Provider.of<AuthenticationProvider>(context, listen: false);
 
         await uploadProvider.uploadDataRegister(
-            docId: 'famuh97@gmail.com',
+            docId: _user!.email!,
             fullName: _fullNameController.text,
             activePhoneNumber: int.parse(_activeNumberController.text),
             optionalPhoneNumber: _optNumberController.text.isNotEmpty
@@ -160,23 +184,26 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
             longitude: coordinate!.longitude);
 
         if (uploadProvider.state == ResultState.success) {
-          final user = userModel.User(
-              email: "famuh97@gmail.com",
-              name: "name",
-              activePhoneNumber: int.parse(_activeNumberController.text),
-              fullName: _fullNameController.text,
-              imageUrl: "",
+          if (_user != null) {
+            userModel.User updatedUser = userModel.User(
+              email: _user!.email,
+              name: _user!.name,
+              role: _user!.role,
+              fullName: _fullNameController.text.isNotEmpty
+                  ? _fullNameController.text
+                  : _user!.fullName,
               address: address,
-              latitude: coordinate!.latitude,
-              longitude: coordinate!.longitude,
+              activePhoneNumber: int.parse(_activeNumberController.text),
               optionalPhoneNumber: _optNumberController.text.isNotEmpty
                   ? int.parse(_optNumberController.text)
                   : null,
-              role: "Masyarakat");
-          authProvider.saveLoginState(true);
-          authProvider.saveUserDataLocally(user);
+            );
+
+            authProvider.saveUserDataLocally(updatedUser);
+            authProvider.saveLoginState(true);
+          }
           showInfoSnackbar(context, "Berhasil mengunggah data");
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 1), () {
             Navigator.pushReplacementNamed(context, UserHomeScreen.ROUTE_NAME);
           });
         } else {

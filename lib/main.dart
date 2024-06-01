@@ -35,6 +35,7 @@ Future<void> main() async {
 
 // initial screen
   await authProvider.readUserDataLocally();
+  print("Data user local : ${authProvider.readUserDataLocally()}");
 
   // onboarding state
   bool isOnboarding = await authProvider.getOnBoardingState();
@@ -54,7 +55,7 @@ Future<void> main() async {
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: UserHomeScreen(),
+          initialScreen: initialScreen,
         ),
       ),
     ),

@@ -67,6 +67,9 @@ class LoginScreen extends StatelessWidget {
                         onPressed: () async {
                           try {
                             await signInProvider.signInWithGoogleProv();
+                            // await signInProvider.saveUserDataLocally(
+
+                            // );
 
                             if (signInProvider.state == ResultState.success) {
                               // Navigation after successful sign-in
