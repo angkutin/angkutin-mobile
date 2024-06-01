@@ -25,7 +25,7 @@ import '../auth/map_screen.dart';
 
 class RequestServiceScreen extends StatefulWidget {
   static const ROUTE_NAME = '/user-requestservice-screen';
-  
+
   final int tipeAngkutan;
   // final String titleScreen;
   const RequestServiceScreen({
@@ -47,7 +47,20 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
   String? district;
   LatLng? coordinate;
 
-bool isLoading = false;
+  String? _urlPathImage;
+
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.tipeAngkutan == 1) {
+      _urlPathImage = "carbage";
+    } else {
+      _urlPathImage = "report";
+    }
+  }
 
   @override
   void dispose() {
@@ -69,7 +82,10 @@ bool isLoading = false;
           height: mediaQueryHeight(context),
           child: ListView(
             children: [
-              Text(widget.tipeAngkutan == 1 ? "Permintaan Angkut Sampah" : "Lapor Sampah Liar",
+              Text(
+                  widget.tipeAngkutan == 1
+                      ? "Permintaan Angkut Sampah"
+                      : "Lapor Sampah Liar",
                   style: basicTextStyleBlack.copyWith(fontSize: 18)),
               const SmallTextGrey(
                 description: "Isi informasi yang diperlukan",
@@ -164,14 +180,17 @@ bool isLoading = false;
                         });
 
                         if (coordinate != null && image != null) {
-                          final requestId = FirebaseFirestore.instance.collection('requests').doc().id;
+                          final requestId = FirebaseFirestore.instance
+                              .collection('requests')
+                              .doc()
+                              .id;
                           final userId = "userId2";
                           final now = Timestamp.now();
 
                           final storageService = StorageService();
 
                           final imgUrl = await storageService.uploadImage(
-                              "requests", "carbage/$requestId", image!);
+                              "requests", "$_urlPathImage/$requestId", image!);
 
                           final request = RequestService(
                               requestId: requestId,
@@ -187,7 +206,7 @@ bool isLoading = false;
                               isDone: false);
                           // upload
                           await requestServiceProvider.createRequest(
-                              requestService: request);
+                              path: _urlPathImage, requestService: request);
 
                           if (requestServiceProvider.state ==
                               ResultState.success) {
@@ -197,8 +216,8 @@ bool isLoading = false;
                             });
                           } else {
                             setState(() {
-                            isLoading = false;
-                          });
+                              isLoading = false;
+                            });
                             showInfoSnackbar(context,
                                 "Gagal mengunggah data, coba lagi nanti");
                             print(

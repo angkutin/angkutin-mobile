@@ -25,7 +25,7 @@ class UserRequestProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool? get isLoading => _isLoading;
 
-  Future<void> createRequest({RequestService? requestService}) async {
+  Future<void> createRequest({String? path, RequestService? requestService}) async {
     _state = ResultState.loading;
     _errorMessage = null;
     _isLoading = true;
@@ -38,7 +38,7 @@ class UserRequestProvider with ChangeNotifier {
 
       final CollectionReference requestsCollection = FirebaseFirestore.instance
           .collection('requests')
-          .doc('carbage')
+          .doc(path)
           .collection('items');
 
       await requestsCollection
