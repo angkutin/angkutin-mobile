@@ -74,7 +74,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       ).createShader(bounds);
                     },
                     child: Text(
-                      user?.name ?? "none",
+                      user?.fullName ?? "none",
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold, height: 1),
                     ),
@@ -123,8 +123,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       appBar: AppBar(
         shadowColor: Colors.black,
         title: Text(
-          "Hai, $user",
+          "Hai, ${user?.fullName}!",
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          overflow: TextOverflow.ellipsis,
         ),
         leading: Builder(builder: (context) {
           return IconButton(
