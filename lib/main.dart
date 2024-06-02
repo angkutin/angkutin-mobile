@@ -41,11 +41,9 @@ Future<void> main() async {
   AuthenticationProvider authProvider = AuthenticationProvider();
 
 // initial screen
-  final String? _user = await authProvider.readUserDataLocally();
+  await authProvider.readUserDataLocally();
   print("Data user local : ${authProvider.readUserDataLocally()}");
 
-  bool isFillData =
-      userModel.User.fromJson(jsonDecode(_user!)).latitude != null;
 
   // onboarding state
   bool isOnboarding = await authProvider.getOnBoardingState();
@@ -54,12 +52,11 @@ Future<void> main() async {
 
   print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
   Widget initialScreen = isOnboarding
-      ? isFillData
+      
           ? isLoggedIn
               ? ChangeNotifierProvider.value(
                   value: authProvider, child: const UserHomeScreen())
               : const LoginScreen()
-          : const FillUserDataScreen()
       : const OnBoardingScreen();
 
   runApp(

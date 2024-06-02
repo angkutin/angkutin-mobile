@@ -96,16 +96,23 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             const Spacer(),
 
             TextButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  await authProvider.deleteUserDataLocally();
-                  await authProvider.saveLoginState(false);
-
-                  Future.delayed(Duration(milliseconds: 500), () {
+                onPressed: () {
+                  Future.delayed(Duration(milliseconds: 500), () async {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
                     );
+
+                    
+                  });
+
+                  Future.delayed(Duration(seconds: 1), () async {
+                  
+
+                    await FirebaseAuth.instance.signOut();
+                    await authProvider.deleteUserDataLocally();
+                    await authProvider.saveLoginState(false);
                   });
                   // authProvider
                 },
