@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 
 import 'package:angkutin/firebase_options.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
+import 'package:intl/find_locale.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -25,6 +26,10 @@ import 'screen/user/request_service_screen.dart';
 Future<void> main() async {
   // env
   await dotenv.load(fileName: ".env");
+
+  // local
+    // await findSystemLocale();
+
 
   // init firebase
   WidgetsFlutterBinding.ensureInitialized();

@@ -196,7 +196,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           return CarbageHaulCard(
                             onPressed: () => Navigator.pushNamed(
                                 context, UserMonitorRequestScreen.ROUTE_NAME),
-                            status: request.isDelivered,
+                            req: request,
                           );
                         },
                       );

@@ -203,7 +203,9 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                                   coordinate!.latitude, coordinate!.longitude),
                               type: widget.tipeAngkutan,
                               isDelivered: false,
-                              isDone: false);
+                              isDone: false,
+                              wilayah: extractLastPart(address!));
+                              
                           // upload
                           await requestServiceProvider.createRequest(
                               path: _urlPathImage, requestService: request);

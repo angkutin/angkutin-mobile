@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 
 import '../common/constant.dart';
 import '../common/utils.dart';
+import '../data/model/RequestModel.dart';
 
 class CarbageHaulCard extends StatelessWidget {
-  final bool status;
+  final RequestService req;
   final VoidCallback onPressed;
 
   const CarbageHaulCard({
     Key? key,
-    required this.status,
+    required this.req,
     required this.onPressed,
   }) : super(key: key);
 
@@ -28,6 +29,7 @@ class CarbageHaulCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            
             const Text(
               'Permintaan Angkut',
               style: TextStyle(
@@ -35,18 +37,25 @@ class CarbageHaulCard extends StatelessWidget {
                   fontSize: 16,
                   color: cGreenStrong),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text("Waktu Pengajuan :", style: text14Black54),
+                const Spacer(),
+                Text(formatDate(req.date.toDate().toString()), style: text14Black54,),
+                const SizedBox(width: 10,),
+                Text(formatTime(req.date.toDate().toString()), style: text14Black54),
+              ],
+            ),
             const SizedBox(
-              height: 10,
+              height: 15,
             ),
             const Text(
               "Status",
-              style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: Colors.black54),
+              style: text14Black54,
             ),
             Text(
-              status ? "Diterima" : "Menunggu",
+              req.isDelivered ? "Diterima" : "Menunggu",
               style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 18,
@@ -55,7 +64,7 @@ class CarbageHaulCard extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            status
+            req.isDelivered
                 ? CustomButton(
                     title: "Pantau Permintaan",
                     paddingHorizontal: 16,

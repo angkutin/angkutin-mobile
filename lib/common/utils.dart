@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -17,12 +18,18 @@ double mediaQueryWidth(BuildContext context) =>
 double mediaQueryHeight(BuildContext context) =>
     MediaQuery.of(context).size.height;
 
-    String getFormattedDate(Timestamp dateTime) {
+String getFormattedDate(Timestamp dateTime) {
   final formattedDate = dateTime.toString().split(' ')[0];
   return formattedDate;
 }
 
 String nowDate = getFormattedDate(Timestamp.now());
+
+// map
+String extractLastPart(String fullAddress) {
+  List<String> parts = fullAddress.split(', ');
+  return parts.isNotEmpty ? parts.last : '';
+}
 
 // show snackbar
 void showInfoSnackbar(BuildContext context, String message) {
@@ -148,4 +155,33 @@ class ImageService {
     }
     return null;
   }
+}
+
+// date
+
+String formatDate(String input) {
+  // Parse the input string to a DateTime object
+  DateTime dateTime = DateTime.parse(input);
+
+  // Define the date format
+  DateFormat dateFormat = DateFormat.yMMMd();
+  String formattedDate = dateFormat.format(dateTime);
+
+  // Define the time format and convert to WIB (UTC+7)
+  
+
+  return '$formattedDate';
+}
+String formatTime(String input) {
+  // Parse the input string to a DateTime object
+  DateTime dateTime = DateTime.parse(input);
+
+  
+
+  // Define the time format and convert to WIB (UTC+7)
+  DateTime dateTimeWIB = dateTime.toUtc().add(const Duration(hours: 7));
+  DateFormat timeFormat = DateFormat('HH:mm');
+  String formattedTime = timeFormat.format(dateTimeWIB);
+
+  return '$formattedTime WIB';
 }

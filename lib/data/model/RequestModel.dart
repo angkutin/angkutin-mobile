@@ -12,6 +12,7 @@ class RequestService {
   final int type;
   final bool isDelivered;
   final bool isDone;
+  final String wilayah;
   String? namaPetugas;
   GeoPoint? lokasiPetugas;
 
@@ -26,6 +27,7 @@ class RequestService {
       required this.type,
       required this.isDelivered,
       required this.isDone,
+      required this.wilayah,
       this.namaPetugas,
       this.lokasiPetugas});
 
@@ -45,6 +47,7 @@ class RequestService {
       type: data?['type'] as int,
       isDelivered: data?['isDelivered'] as bool,
       isDone: data?['isDone'] as bool,
+      wilayah: data?['wilayah'] as String,
       namaPetugas: data?['namaPetugas'],
       lokasiPetugas: data?['lokasiPetugas'],
     );
@@ -62,6 +65,7 @@ class RequestService {
       'type': type,
       'isDelivered': isDelivered,
       'isDone': isDone,
+      'wilayah': wilayah,
       'namaPetugas': namaPetugas,
       'lokasiPetugas': lokasiPetugas
     };
