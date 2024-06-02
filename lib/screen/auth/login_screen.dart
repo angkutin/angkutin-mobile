@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
+import 'package:angkutin/screen/user/user_home_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,7 @@ import '../../common/utils.dart';
 import '../../provider/auth/auth_provider.dart';
 import '../../widget/CustomButton.dart';
 import '../../widget/TitleSectionBlue.dart';
+import '../../data/model/UserModel.dart' as userModel;
 
 class LoginScreen extends StatelessWidget {
   static const ROUTE_NAME = '/login';
@@ -72,17 +76,60 @@ class LoginScreen extends StatelessWidget {
                             // );
 
                             if (signInProvider.state == ResultState.success) {
-                              // Navigation after successful sign-in
-                              Future.delayed(const Duration(milliseconds: 500),
-                                  () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const FillUserDataScreen(),
-                                  ),
-                                );
-                              });
+                              // ngecek apakah user sudah ngisi data melalui local storage
+                              // final prefs = await Provider.of<AuthenticationProvider>(context,listen: false).readUserDataLocally();
+                              // if (prefs != null) {
+                              //   final userData =
+                              //       userModel.User.fromJson(jsonDecode(prefs));
+
+                              //   if (userData.latitude !=
+                              //       null) {
+                              //     Future.delayed(
+                              //         const Duration(milliseconds: 500), () {
+                              //       Navigator.pushReplacement(
+                              //         context,
+                              //         MaterialPageRoute(
+                              //           builder: (context) =>
+                              //               const UserHomeScreen(),
+                              //         ),
+                              //       );
+                              //     });
+                              //   }
+                              // }
+                              final String? _user =
+                                  await signInProvider.readUserDataLocally();
+
+                              userModel.User _userData =
+                                  userModel.User.fromJson(jsonDecode(_user!));
+                              print(
+                                  "INI DATA LOCAL USER DI LOGIN SCREEN ${_userData}");
+
+                              bool isFillData = _userData.latitude != null;
+
+                              if (isFillData) {
+                                signInProvider.saveLoginState(true);
+                                Future.delayed(
+                                    const Duration(milliseconds: 500), () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const UserHomeScreen(),
+                                    ),
+                                  );
+                                });
+                              } else {
+                                Future.delayed(
+                                    const Duration(milliseconds: 500), () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const FillUserDataScreen(),
+                                    ),
+                                  );
+                                });
+                              }
                             } else {
                               // Handle non-success states (loading, error)
                               if (signInProvider.state == ResultState.loading) {

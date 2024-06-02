@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
@@ -22,14 +24,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'screen/user/request_accepted_screen.dart';
 import 'screen/user/request_service_screen.dart';
+import '../../data/model/UserModel.dart' as userModel;
 
 Future<void> main() async {
   // env
   await dotenv.load(fileName: ".env");
 
   // local
-    // await findSystemLocale();
-
+  // await findSystemLocale();
 
   // init firebase
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,8 +41,11 @@ Future<void> main() async {
   AuthenticationProvider authProvider = AuthenticationProvider();
 
 // initial screen
-  await authProvider.readUserDataLocally();
+  final String? _user = await authProvider.readUserDataLocally();
   print("Data user local : ${authProvider.readUserDataLocally()}");
+
+  bool isFillData =
+      userModel.User.fromJson(jsonDecode(_user!)).latitude != null;
 
   // onboarding state
   bool isOnboarding = await authProvider.getOnBoardingState();
@@ -49,10 +54,12 @@ Future<void> main() async {
 
   print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
   Widget initialScreen = isOnboarding
-      ? isLoggedIn
-          ? ChangeNotifierProvider.value(
-              value: authProvider, child: const UserHomeScreen())
-          : const LoginScreen()
+      ? isFillData
+          ? isLoggedIn
+              ? ChangeNotifierProvider.value(
+                  value: authProvider, child: const UserHomeScreen())
+              : const LoginScreen()
+          : const FillUserDataScreen()
       : const OnBoardingScreen();
 
   runApp(
@@ -82,7 +89,8 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
         ChangeNotifierProvider(create: (_) => UploadProvider(storageService)),
-        ChangeNotifierProvider(create: (_) => UserRequestProvider(storageService)),
+        ChangeNotifierProvider(
+            create: (_) => UserRequestProvider(storageService)),
       ],
       child: MaterialApp(
           home: initialScreen,

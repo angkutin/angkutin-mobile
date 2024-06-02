@@ -101,10 +101,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   await authProvider.deleteUserDataLocally();
                   await authProvider.saveLoginState(false);
 
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  ); // authProvider
+                  Future.delayed(Duration(milliseconds: 500), () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+                  });
+                  // authProvider
                 },
                 child: Text(
                   "Logout",
