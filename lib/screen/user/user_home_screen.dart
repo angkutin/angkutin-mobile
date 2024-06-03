@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/user/user_monitor_request_screen.dart';
@@ -40,12 +42,18 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
 
     // get data request
     // Provider.of<UserRequestProvider>(context).getOngoingRequest(userId);
+    _loadData();
+  }
 
-    Future.microtask(() {
+  _loadData() async {
+    final _isLogin =
+        await Provider.of<AuthenticationProvider>(context, listen: false)
+            .getLoginState();
+
+    if (_isLogin) {
       Provider.of<UserRequestProvider>(context, listen: false)
           .getOngoingRequest(userId);
-      // Provider.of<AuthenticationProvider>(context, listen: false).readUserDataLocally();
-    });
+    }
   }
 
   @override
@@ -104,17 +112,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           builder: (context) => const LoginScreen()),
                     );
 
-                    
-                  });
-
-                  Future.delayed(Duration(seconds: 1), () async {
-                  
-
                     await FirebaseAuth.instance.signOut();
                     await authProvider.deleteUserDataLocally();
                     await authProvider.saveLoginState(false);
                   });
-                  // authProvider
                 },
                 child: Text(
                   "Logout",
