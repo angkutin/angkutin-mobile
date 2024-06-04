@@ -22,6 +22,7 @@ import 'package:intl/find_locale.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'screen/driver/driver_gome_screen.dart';
 import 'screen/user/request_accepted_screen.dart';
 import 'screen/user/request_service_screen.dart';
 import '../../data/model/UserModel.dart' as userModel;
@@ -64,7 +65,7 @@ Future<void> main() async {
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: initialScreen,
+          initialScreen: DriverHomeScreen(),
         ),
       ),
     ),
@@ -135,6 +136,12 @@ class MainApp extends StatelessWidget {
                           // titleScreen: titleScreen,
                           tipeAngkutan: tipeAngkutan,
                         ));
+
+
+              // Driver
+              case DriverHomeScreen.ROUTE_NAME:
+                return MaterialPageRoute(
+                    builder: (_) => const DriverHomeScreen());
               //  case AbsensiScreen.ROUTE_NAME:
               // final List<String> arguments = settings.arguments as List<String>;
               // final screenTitle = arguments[0];

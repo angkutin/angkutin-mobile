@@ -16,7 +16,7 @@ class TitleSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return  Text(
       title,
-      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: color ?? mainColor),
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: color ?? mainColor),
     );
   }
 }
