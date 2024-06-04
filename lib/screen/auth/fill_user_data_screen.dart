@@ -49,6 +49,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
   String? address;
   String? district;
   LatLng? coordinate;
+  String _locationMessage = "Tap untuk menentukan lokasi rumah ada";
 
 // user data local
 
@@ -175,6 +176,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
         await uploadProvider.uploadDataRegister(
             docId: _user!.email!,
             fullName: _fullNameController.text,
+            isDaily: false,
             address: extractLastPart(address!),
             activePhoneNumber: int.parse(_activeNumberController.text),
             optionalPhoneNumber: _optNumberController.text.isNotEmpty
@@ -193,6 +195,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                 fullName: _fullNameController.text.isNotEmpty
                     ? _fullNameController.text
                     : _user!.fullName,
+                isDaily: null,
                 address: address,
                 activePhoneNumber: int.parse(_activeNumberController.text),
                 optionalPhoneNumber: _optNumberController.text.isNotEmpty
@@ -319,6 +322,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
           coordinate = result['coordinates'];
           address = result['address'];
           district = result['district'];
+          _locationMessage = "${coordinate?.latitude}, ${coordinate?.longitude}\n${extractLastPart(address!)}";
         });
         print("Koordinat : ${coordinate?.toString() ?? 'Not selected'}");
         print('Address: ${address ?? 'Not selected'}');
@@ -356,7 +360,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                   ),
-                  const Text("Tap untuk menentukan lokasi rumah ada"),
+                   Text(_locationMessage),
                 ],
               ),
             ),

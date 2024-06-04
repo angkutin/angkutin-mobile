@@ -6,6 +6,7 @@ class User {
   final String? email;
   final String? name;
   final String? fullName;
+  final bool? isDaily;
   final String? address;
   final String? role;
   final String? imageUrl;
@@ -20,6 +21,7 @@ class User {
      this.email,
      this.name,
     this.fullName,
+    this.isDaily,
     this.address,
     this.role,
     this.imageUrl,
@@ -35,6 +37,7 @@ class User {
       email: json['email'] as String?,
       name: json['name'] as String?,
       fullName: json['fullName'] as String?,
+      isDaily: json['isDaily'] as bool?,
       address: json['address'] as String?,
       role: json['role'] as String?,
       imageUrl: json['imageUrl'] as String?,
@@ -52,6 +55,7 @@ class User {
       'email': email,
       'name': name,
       'fullName': fullName,
+      'isDaily': isDaily,
       'address': address,
       'role': role,
       'imageUrl': imageUrl,

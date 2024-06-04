@@ -38,6 +38,7 @@ class UploadProvider with ChangeNotifier {
   Future<void> uploadDataRegister({
     required String docId,
     required String fullName,
+    required bool isDaily,
     required int activePhoneNumber,
     required String address,
     int? optionalPhoneNumber,
@@ -58,6 +59,7 @@ class UploadProvider with ChangeNotifier {
       await usersCollection.doc(docId).set(
           {
             'fullName': fullName,
+            'isDaily': isDaily,
             'address':address, 
             'activePhoneNumber': activePhoneNumber,
             'optionalPhoneNumber': optionalPhoneNumber,
