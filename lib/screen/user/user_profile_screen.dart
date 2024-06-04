@@ -47,57 +47,59 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       appBar: AppBar(
         title: Text("Profil"),
       ),
-      body: Column(
-        children: [
-          const Text(
-            "Foto Rumah",
-            style: basicTextStyleBlack,
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 10),
-            width: 200,
-            padding: const EdgeInsets.all(16),
-            decoration: containerBorderWithRadius.copyWith(
-                border: Border.all(color: softBlueColor)),
-            child: CachedNetworkImage(
-              imageUrl: _user?.imageUrl ?? dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const Text(
+              "Foto Rumah",
+              style: basicTextStyleBlack,
             ),
-          ),
-          CustomListTile(
-            title: "Nama",
-            value: _user?.name ?? "None",
-          ),
-          CustomListTile(
-            title: "Wilayah",
-            value: _user?.address ?? "None",
-          ),
-          CustomListTile(
-            title: "Nomor Hp Aktif",
-            value: _user?.activePhoneNumber.toString() ?? "none",
-          ),
-          CustomListTile(
-            title: "Nomor Hp Cadangan",
-            value: _user?.optionalPhoneNumber != null
-                ? _user!.optionalPhoneNumber.toString()
-                : "tidak diatur",
-          ),
-          CustomListTile(
-            title: "Koordinat",
-            value:
-                "Latitude : ${_user?.latitude}\nLongitude : ${_user?.longitude}",
-            trailing: IconButton(
-                onPressed: () {
-                  print("Ganti koordinat");
-                },
-                icon: const Icon(
-                  Icons.edit_location_outlined,
-                  color: softBlueColor,
-                )),
-          ),
-        ],
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              width: 200,
+              padding: const EdgeInsets.all(16),
+              decoration: containerBorderWithRadius.copyWith(
+                  border: Border.all(color: softBlueColor)),
+              child: CachedNetworkImage(
+                imageUrl: _user?.imageUrl ?? dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+            ),
+            CustomListTile(
+              title: "Nama",
+              value: _user?.name ?? "None",
+            ),
+            CustomListTile(
+              title: "Wilayah",
+              value: _user?.address ?? "None",
+            ),
+            CustomListTile(
+              title: "Nomor Hp Aktif",
+              value: _user?.activePhoneNumber.toString() ?? "none",
+            ),
+            CustomListTile(
+              title: "Nomor Hp Cadangan",
+              value: _user?.optionalPhoneNumber != null
+                  ? _user!.optionalPhoneNumber.toString()
+                  : "tidak diatur",
+            ),
+            CustomListTile(
+              title: "Koordinat",
+              value:
+                  "Latitude : ${_user?.latitude}\nLongitude : ${_user?.longitude}",
+              trailing: IconButton(
+                  onPressed: () {
+                    print("Ganti koordinat");
+                  },
+                  icon: const Icon(
+                    Icons.edit_location_outlined,
+                    color: softBlueColor,
+                  )),
+            ),
+          ],
+        ),
       ),
     );
   }

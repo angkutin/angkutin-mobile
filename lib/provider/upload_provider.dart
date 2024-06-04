@@ -39,6 +39,7 @@ class UploadProvider with ChangeNotifier {
     required String docId,
     required String fullName,
     required int activePhoneNumber,
+    required String address,
     int? optionalPhoneNumber,
     required File image,
     required double latitude,
@@ -57,6 +58,7 @@ class UploadProvider with ChangeNotifier {
       await usersCollection.doc(docId).set(
           {
             'fullName': fullName,
+            'address':address, 
             'activePhoneNumber': activePhoneNumber,
             'optionalPhoneNumber': optionalPhoneNumber,
             'imageUrl': _imageUrl,

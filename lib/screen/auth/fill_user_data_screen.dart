@@ -175,6 +175,7 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
         await uploadProvider.uploadDataRegister(
             docId: _user!.email!,
             fullName: _fullNameController.text,
+            address: extractLastPart(address!),
             activePhoneNumber: int.parse(_activeNumberController.text),
             optionalPhoneNumber: _optNumberController.text.isNotEmpty
                 ? int.parse(_optNumberController.text)

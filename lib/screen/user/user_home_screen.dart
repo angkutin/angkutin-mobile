@@ -35,6 +35,8 @@ class UserHomeScreen extends StatefulWidget {
 class _UserHomeScreenState extends State<UserHomeScreen> {
   // late dynamic  _requestsFuture;
   final String userId = 'userId2';
+    UserModel.User? _user;
+
 
   @override
   void initState() {
@@ -50,6 +52,15 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         await Provider.of<AuthenticationProvider>(context, listen: false)
             .getLoginState();
 
+             final prefs =
+        await Provider.of<AuthenticationProvider>(context, listen: false)
+            .readUserDataLocally();
+    if (prefs != null) {
+      setState(() {
+        _user = UserModel.User.fromJson(jsonDecode(prefs));
+      });
+    }
+
     if (_isLogin) {
       Provider.of<UserRequestProvider>(context, listen: false)
           .getOngoingRequest(userId);
@@ -59,7 +70,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
-    final UserModel.User? user = authProvider.currentUser;
+    // final UserModel.User? user = authProvider.currentUser;
 
     return Scaffold(
       drawer: Drawer(
@@ -78,12 +89,12 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       ).createShader(bounds);
                     },
                     child: Text(
-                      user?.fullName ?? "none",
+                      _user?.fullName ?? "none",
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold, height: 1),
                     ),
                   ),
-                  subtitle: Text(user?.email ?? "none@mail.com"),
+                  subtitle: Text(_user?.email ?? "none@mail.com"),
                   trailing: const Icon(Icons.arrow_forward_ios_rounded),
                   onTap: () => Navigator.pushNamed(
                       context, UserProfileScreen.ROUTE_NAME),
@@ -127,10 +138,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
           ],
         ),
       ),
+      
       appBar: AppBar(
         shadowColor: Colors.black,
         title: Text(
-          "Hai, ${user?.fullName}!",
+          "Hai, ${_user?.fullName}!",
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           overflow: TextOverflow.ellipsis,
         ),
