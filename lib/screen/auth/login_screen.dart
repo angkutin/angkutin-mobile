@@ -71,31 +71,11 @@ class LoginScreen extends StatelessWidget {
                         onPressed: () async {
                           try {
                             await signInProvider.signInWithGoogleProv();
-                            // await signInProvider.saveUserDataLocally(
 
                             // );
 
                             if (signInProvider.state == ResultState.success) {
                               // ngecek apakah user sudah ngisi data melalui local storage
-                              // final prefs = await Provider.of<AuthenticationProvider>(context,listen: false).readUserDataLocally();
-                              // if (prefs != null) {
-                              //   final userData =
-                              //       userModel.User.fromJson(jsonDecode(prefs));
-
-                              //   if (userData.latitude !=
-                              //       null) {
-                              //     Future.delayed(
-                              //         const Duration(milliseconds: 500), () {
-                              //       Navigator.pushReplacement(
-                              //         context,
-                              //         MaterialPageRoute(
-                              //           builder: (context) =>
-                              //               const UserHomeScreen(),
-                              //         ),
-                              //       );
-                              //     });
-                              //   }
-                              // }
                               final String? _user =
                                   await signInProvider.readUserDataLocally();
 

@@ -1,15 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:angkutin/database/firestore_database.dart';
 import 'package:angkutin/screen/auth/service/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/model/UserModel.dart' as user_model;
 import '../../common/state_enum.dart';
-import 'package:path/path.dart' as path;
 
 class AuthenticationProvider with ChangeNotifier {
   ResultState? _state;
@@ -60,6 +56,8 @@ class AuthenticationProvider with ChangeNotifier {
       String email, Map<String, dynamic> data) async {
     _isUpdateLoading = true;
     _updateState = ResultState.loading;
+    notifyListeners();
+
     try {
       await updateUserData(email, data);
       _updateState = ResultState.success;

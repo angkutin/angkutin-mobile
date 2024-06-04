@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
+import 'package:angkutin/provider/driver/driver_daily_provider.dart';
 import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
@@ -49,15 +50,18 @@ Future<void> main() async {
   // onboarding state
   bool isOnboarding = await authProvider.getOnBoardingState();
   bool isLoggedIn = await authProvider.getLoginState();
+  String userRole = await authProvider.getRoleState();
+  bool isMasyarakat = userRole == "Masyarakat";
   // Future<bool> isFillData = authProvider.getFillDataState();
 
   print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
   Widget initialScreen = isOnboarding
-      
-          ? isLoggedIn
+          ? isMasyarakat ?
+          isLoggedIn
               ? ChangeNotifierProvider.value(
                   value: authProvider, child: const UserHomeScreen())
               : const LoginScreen()
+          : const DriverHomeScreen()
       : const OnBoardingScreen();
 
   runApp(
@@ -65,7 +69,7 @@ Future<void> main() async {
       create: (_) => authProvider,
       child: MaterialApp(
         home: MainApp(
-          initialScreen: DriverHomeScreen(),
+          initialScreen: initialScreen,
         ),
       ),
     ),
@@ -89,6 +93,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UploadProvider(storageService)),
         ChangeNotifierProvider(
             create: (_) => UserRequestProvider(storageService)),
+        ChangeNotifierProvider(create: (_) => DriverDailyProvider()),
       ],
       child: MaterialApp(
           home: initialScreen,

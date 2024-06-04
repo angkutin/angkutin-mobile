@@ -1,13 +1,7 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/data/model/RequestModel.dart';
-import 'package:angkutin/database/firestore_database.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart' as path;
-import 'package:provider/provider.dart';
 
 import '../../common/state_enum.dart';
 import '../../database/storage_service.dart';
@@ -32,9 +26,6 @@ class UserRequestProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // untuk gamabr dilakukan di ui, provider menerima url aja utk diinput ke firestore
-      // final imageUrl = await storageService.uploadImage("docId", image);
-      // Get the date part only
 
       final CollectionReference requestsCollection = FirebaseFirestore.instance
           .collection('requests')

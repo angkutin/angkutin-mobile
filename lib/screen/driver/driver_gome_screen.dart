@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
+import 'package:angkutin/provider/driver/driver_daily_provider.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/TitleSectionBlue.dart';
@@ -12,10 +15,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
-import '../../widget/CarbageHaulCard.dart';
 import '../../data/model/UserModel.dart' as UserModel;
 import '../../widget/CustomDrawerItem.dart';
-import '../user/user_history_screen.dart';
 import '../user/user_profile_screen.dart';
 
 class DriverHomeScreen extends StatefulWidget {
@@ -31,8 +32,27 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   UserModel.User? _user;
 
   @override
+  void initState() {
+    super.initState();
+
+    _loadData();
+  }
+
+  _loadData() async {
+    final prefs =
+        await Provider.of<AuthenticationProvider>(context, listen: false)
+            .readUserDataLocally();
+    if (prefs != null) {
+      setState(() {
+        _user = UserModel.User.fromJson(jsonDecode(prefs));
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
+    final dailyProvider = Provider.of<DriverDailyProvider>(context);
 
     // Handle potential null user
     // final User? user = authProvider.currentUser;
@@ -103,7 +123,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       ),
       appBar: AppBar(
         title: Text(
-          "INI DRIVER",
+          "Hai, ${_user?.fullName}!",
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         leading: Builder(builder: (context) {
@@ -152,9 +172,21 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               const SizedBox(
                 height: 50,
               ),
-              SizedBox(
-                  width: mediaQueryWidth(context),
-                  child: CustomButton(title: "Mulai", onPressed: () {})),
+              dailyProvider.isUpdateLoading == true
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SizedBox(
+                      width: mediaQueryWidth(context),
+                      child: CustomButton(
+                        title: "Mulai",
+                        onPressed: () async {
+                          // Directly use dailyProvider.isDailyActive for update data
+                          dailyProvider.updateDriverDaily("asdapilda@gmail.com",
+                              {"isDaily": !dailyProvider.isDailyActive!});
+                        },
+                      ),
+                    ),
             ],
           ),
         ),

@@ -35,8 +35,7 @@ class UserHomeScreen extends StatefulWidget {
 class _UserHomeScreenState extends State<UserHomeScreen> {
   // late dynamic  _requestsFuture;
   final String userId = 'userId2';
-    UserModel.User? _user;
-
+  UserModel.User? _user;
 
   @override
   void initState() {
@@ -52,7 +51,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         await Provider.of<AuthenticationProvider>(context, listen: false)
             .getLoginState();
 
-             final prefs =
+    final prefs =
         await Provider.of<AuthenticationProvider>(context, listen: false)
             .readUserDataLocally();
     if (prefs != null) {
@@ -138,7 +137,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
           ],
         ),
       ),
-      
       appBar: AppBar(
         shadowColor: Colors.black,
         title: Text(
