@@ -77,7 +77,6 @@ class AuthenticationProvider with ChangeNotifier {
 
   final String userDataKey = 'user_data';
 
-
   Future<void> saveUserDataLocally(user_model.User userData) async {
     final prefs = await SharedPreferences.getInstance();
     final userDataString = jsonEncode(userData.toJson());
@@ -134,6 +133,20 @@ class AuthenticationProvider with ChangeNotifier {
     return prefs.getBool(loginKey) ?? false;
   }
 
+// save login state
+  final String roleKey = 'role_key';
+
+  // Save role state to shared preferences
+  Future<void> saveRoleState(String role) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(roleKey, role);
+  }
+
+  // Get role state from shared preferences
+  Future<String> getRoleState() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(roleKey) ?? "None";
+  }
 // save fill data state
   // final String fillDataKey = 'fill_data_key';
 

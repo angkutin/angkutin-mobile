@@ -104,6 +104,12 @@ class LoginScreen extends StatelessWidget {
                               print(
                                   "INI DATA LOCAL USER DI LOGIN SCREEN ${_userData}");
 
+                              if (_userData.role == "Masyarakat") {
+                                signInProvider.saveRoleState("Masyarakat");
+                              } else {
+                                signInProvider.saveRoleState("Petugas");
+                              }
+
                               bool isFillData = _userData.latitude != null;
 
                               if (isFillData) {
