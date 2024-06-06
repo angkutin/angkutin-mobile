@@ -13,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/model/UserModel.dart' as UserModel;
@@ -30,12 +31,14 @@ class DriverHomeScreen extends StatefulWidget {
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
   UserModel.User? _user;
+  bool? _isDailyActive;
 
   @override
   void initState() {
     super.initState();
 
     _loadData();
+    _loadStatus();
   }
 
   _loadData() async {
@@ -47,11 +50,25 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         _user = UserModel.User.fromJson(jsonDecode(prefs));
       });
     }
+
+    print("Nilai dariisDaily di init : $_isDailyActive");
+  }
+
+  _loadStatus() async {
+    if (_user != null) {
+      _isDailyActive =
+          await Provider.of<DriverDailyProvider>(context, listen: false)
+              .fetchDriverDailyStatus(_user!.email!);
+
+      print("IsDailyActive : $_isDailyActive");
+    }
+    print("User null");
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
+
     final dailyProvider = Provider.of<DriverDailyProvider>(context);
 
     // Handle potential null user
@@ -109,6 +126,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     await FirebaseAuth.instance.signOut();
                     await authProvider.deleteUserDataLocally();
                     await authProvider.saveLoginState(false);
+                    await GoogleSignIn().signOut(); // untuk meghapus sesi login
                   });
                 },
                 child: Text(
@@ -179,11 +197,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   : SizedBox(
                       width: mediaQueryWidth(context),
                       child: CustomButton(
-                        title: "Mulai",
+                        title: dailyProvider.isDailyActive == true
+                            ? "Stop"
+                            : "Mulai",
                         onPressed: () async {
                           // Directly use dailyProvider.isDailyActive for update data
-                          dailyProvider.updateDriverDaily("asdapilda@gmail.com",
-                              {"isDaily": !dailyProvider.isDailyActive!});
+                          if (_user != null) {
+                            dailyProvider.updateDriverDaily(_user!.email!,
+                                {"isDaily": !dailyProvider.isDailyActive!});
+                          } else {
+                            print("Error no user found!");
+                          }
                         },
                       ),
                     ),

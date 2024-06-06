@@ -7,6 +7,7 @@ import 'package:angkutin/widget/SmallTextGrey.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import 'package:angkutin/common/constant.dart';
@@ -34,7 +35,7 @@ class UserHomeScreen extends StatefulWidget {
 
 class _UserHomeScreenState extends State<UserHomeScreen> {
   // late dynamic  _requestsFuture;
-  final String userId = 'userId2';
+  String? _userEmail;
   UserModel.User? _user;
 
   @override
@@ -57,12 +58,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     if (prefs != null) {
       setState(() {
         _user = UserModel.User.fromJson(jsonDecode(prefs));
+        _userEmail = _user?.email;
       });
     }
 
     if (_isLogin) {
       Provider.of<UserRequestProvider>(context, listen: false)
-          .getOngoingRequest(userId);
+          .getOngoingRequest(_userEmail!);
     }
   }
 
@@ -123,6 +125,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     );
 
                     await FirebaseAuth.instance.signOut();
+                    await GoogleSignIn().signOut(); // untuk meghapus sesi login
+
                     await authProvider.deleteUserDataLocally();
                     await authProvider.saveLoginState(false);
                   });
@@ -244,7 +248,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     Navigator.pushNamed(
                       context, RequestServiceScreen.ROUTE_NAME,
                       // arguments: "Permintaan Angkut Sampah",
-                      arguments: 1,
+                      arguments: [1, _user],
                     );
                   },
                 ),
@@ -256,7 +260,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     Navigator.pushNamed(
                       context, RequestServiceScreen.ROUTE_NAME,
                       // arguments: "Lapor Sampah Liar",
-                      arguments: 2,
+                      arguments: [2, _user],
                     );
                   },
                 ),

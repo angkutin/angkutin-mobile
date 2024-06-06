@@ -135,11 +135,14 @@ class MainApp extends StatelessWidget {
                     builder: (_) => const UserMonitorRequestScreen());
 
               case RequestServiceScreen.ROUTE_NAME:
-                final tipeAngkutan = settings.arguments as int;
+                // final tipeAngkutan = settings.arguments as int;
+                final List<dynamic> arguments =
+                  settings.arguments as List<dynamic>;
                 return MaterialPageRoute(
                     builder: (_) => RequestServiceScreen(
                           // titleScreen: titleScreen,
-                          tipeAngkutan: tipeAngkutan,
+                          tipeAngkutan: arguments[0],
+                          user: arguments[1],
                         ));
 
 

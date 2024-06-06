@@ -66,7 +66,7 @@ class UserRequestProvider with ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> getOngoingRequest(String userId) async {
+  Future<void> getOngoingRequest(String senderEmail) async {
     _reqState = ResultState.loading;
     _reqErrorMessage = null;
     _reqIsLoading = true;
@@ -77,7 +77,7 @@ class UserRequestProvider with ChangeNotifier {
           .collection('requests')
           .doc('carbage')
           .collection('items')
-          .where('userId', isEqualTo: userId)
+          .where('senderEmail', isEqualTo: senderEmail)
           .where('isDone', isEqualTo: false)
           .snapshots()
           .map((snapshot) => snapshot.docs

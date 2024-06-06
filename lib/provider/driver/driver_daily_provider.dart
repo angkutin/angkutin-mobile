@@ -16,6 +16,34 @@ class DriverDailyProvider with ChangeNotifier {
   bool? get isUpdateLoading => _isUpdateLoading;
   bool? get isDailyActive => _isDailyActive;
 
+  Future<bool?> fetchDriverDailyStatus(String email) async {
+    _isUpdateLoading = true;
+    notifyListeners();
+
+    try {
+      // Fetch the user document
+      final userRef = FirebaseFirestore.instance.collection('users').doc(email);
+      final userDoc = await userRef.get();
+
+      if (userDoc.exists) {
+        // Get the current value of "isDaily"
+        _isDailyActive = userDoc.get('isDaily') ?? false;
+        _updateState = ResultState.success;
+        return _isDailyActive;
+      } else {
+        // Handle the case where the user document doesn't exist
+        _updateErrorMessage = 'Error: User document not found for email: $email';
+        _updateState = ResultState.error;
+      }
+    } catch (e) {
+      _updateState = ResultState.error;
+      _updateErrorMessage = e.toString();
+    } finally {
+      _isUpdateLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> updateDriverDaily(
       String email, Map<String, dynamic> data) async {
     _isUpdateLoading = true;
@@ -41,6 +69,7 @@ class DriverDailyProvider with ChangeNotifier {
         // Handle the case where the user document doesn't exist
         _updateErrorMessage =
             'Error: User document not found for email: $email';
+        _updateState = ResultState.error;
       }
     } catch (e) {
       _updateState = ResultState.error;

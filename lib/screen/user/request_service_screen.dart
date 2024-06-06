@@ -20,17 +20,21 @@ import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/SmallTextGrey.dart';
 
 import '../../common/utils.dart';
+import '../../data/model/UserModel.dart';
 import '../../widget/CustomBasicTextField.dart';
 import '../auth/map_screen.dart';
 
 class RequestServiceScreen extends StatefulWidget {
   static const ROUTE_NAME = '/user-requestservice-screen';
 
+  final User user;
+
   final int tipeAngkutan;
   // final String titleScreen;
   const RequestServiceScreen({
     Key? key,
     required this.tipeAngkutan,
+    required this.user
     // required this.titleScreen,
   }) : super(key: key);
 
@@ -184,7 +188,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                               .collection('requests')
                               .doc()
                               .id;
-                          final userId = "userId2";
+                          // final userEmail = "userId2";
                           final now = Timestamp.now();
 
                           final storageService = StorageService();
@@ -194,8 +198,8 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
 
                           final request = RequestService(
                               requestId: requestId,
-                              userId: userId,
-                              name: "Jamaluddin 2",
+                              senderEmail: widget.user.email!,
+                              name: widget.user.name!,
                               date: now,
                               imageUrl: imgUrl,
                               description: _descController.text,

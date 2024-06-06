@@ -61,6 +61,7 @@ class CarbageHaulCard extends StatelessWidget {
                   fontSize: 18,
                   color: cGreenStrong),
             ),
+           
             const SizedBox(
               height: 10,
             ),
