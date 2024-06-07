@@ -17,6 +17,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/model/UserModel.dart' as UserModel;
+import '../../provider/user/user_daily_provider.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../user/user_profile_screen.dart';
 
@@ -38,7 +39,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     super.initState();
 
     _loadData();
-    _loadStatus();
   }
 
   _loadData() async {
@@ -49,20 +49,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       setState(() {
         _user = UserModel.User.fromJson(jsonDecode(prefs));
       });
+
+      Provider.of<UserDailyProvider>(context, listen: false)
+          .getUserStream(_user!.email!);
     }
 
     print("Nilai dariisDaily di init : $_isDailyActive");
-  }
-
-  _loadStatus() async {
-    if (_user != null) {
-      _isDailyActive =
-          await Provider.of<DriverDailyProvider>(context, listen: false)
-              .fetchDriverDailyStatus(_user!.email!);
-
-      print("IsDailyActive : $_isDailyActive");
-    }
-    print("User null");
   }
 
   @override
@@ -190,27 +182,76 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               const SizedBox(
                 height: 50,
               ),
-              dailyProvider.isUpdateLoading == true
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : SizedBox(
-                      width: mediaQueryWidth(context),
-                      child: CustomButton(
-                        title: dailyProvider.isDailyActive == true
-                            ? "Stop"
-                            : "Mulai",
-                        onPressed: () async {
-                          // Directly use dailyProvider.isDailyActive for update data
-                          if (_user != null) {
-                            dailyProvider.updateDriverDaily(_user!.email!,
-                                {"isDaily": !dailyProvider.isDailyActive!});
-                          } else {
-                            print("Error no user found!");
-                          }
-                        },
-                      ),
-                    ),
+
+              StreamBuilder(
+                stream: Provider.of<UserDailyProvider>(context, listen: false)
+                    .dataStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (snapshot.hasData) {
+                    final data = snapshot.data!;
+                    if (data.isDaily == true) {
+                      return SizedBox(
+                        width: mediaQueryWidth(context),
+                        child: CustomButton(
+                          title: "Stop Layanan",
+                          color: redSoftColor,
+                          onPressed: () async {
+                            if (_user != null) {
+                              print('Updating isDaily to false');
+                              await dailyProvider.updateDriverDaily(
+                                  _user!.email!, false);
+                            } else {
+                              print("Error: No user found!");
+                            }
+                          },
+                        ),
+                      );
+                    } else {
+                      return SizedBox(
+                        width: mediaQueryWidth(context),
+                        child: CustomButton(
+                          title: "Mulai",
+                          onPressed: () async {
+                            if (_user != null) {
+                              print('Updating isDaily to true');
+                              await dailyProvider.updateDriverDaily(
+                                  _user!.email!, true);
+                            } else {
+                              print("Error: No user found!");
+                            }
+                          },
+                        ),
+                      );
+                    }
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+
+              // dailyProvider.isUpdateLoading == true
+              //     ? const Center(
+              //         child: CircularProgressIndicator(),
+              //       )
+              //     : SizedBox(
+              //         width: mediaQueryWidth(context),
+              //         child: CustomButton(
+              //           title: dailyProvider.isDailyActive == true
+              //               ? "Stop"
+              //               : "Mulai",
+              //           onPressed: () async {
+              //             // Directly use dailyProvider.isDailyActive for update data
+              //             if (_user != null) {
+              //               dailyProvider.updateDriverDaily(_user!.email!,
+              //                   {"isDaily": !dailyProvider.isDailyActive!});
+              //             } else {
+              //               print("Error no user found!");
+              //             }
+              //           },
+              //         ),
+              //       ),
             ],
           ),
         ),

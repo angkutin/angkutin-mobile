@@ -33,6 +33,7 @@ class UserDailyProvider with ChangeNotifier {
           (event) {
         _userDataController.add(User.fromSnapshot(event));
         _state = ResultState.success;
+        print("current data: ${event.data()}");
       }, onError: (error) {
         print("Listen failed: $error");
         _state = ResultState.error;

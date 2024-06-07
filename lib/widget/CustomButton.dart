@@ -8,12 +8,14 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final double? paddingVertical;
   final double? paddingHorizontal;
+  final Color? color;
   const CustomButton({
     Key? key,
     required this.title,
     required this.onPressed,
     this.paddingVertical,
-    this.paddingHorizontal
+    this.paddingHorizontal,
+    this.color
   }) : super(key: key);
 
   @override
@@ -23,7 +25,7 @@ class CustomButton extends StatelessWidget {
             padding:  EdgeInsetsDirectional.symmetric(
                 vertical: paddingVertical ?? 0,
                 horizontal: paddingHorizontal ?? 0),
-            backgroundColor: secondaryColor,
+            backgroundColor: color ?? secondaryColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12))),
         onPressed: onPressed,

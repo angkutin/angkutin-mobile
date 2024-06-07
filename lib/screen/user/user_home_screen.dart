@@ -4,7 +4,6 @@ import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/provider/user/user_daily_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/user/user_monitor_request_screen.dart';
-import 'package:angkutin/widget/SmallTextGrey.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -160,20 +159,20 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         }),
         // Expanded(child: Image.asset("assets/angkutin_logo_fill_mini.png"),),
 
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8)),
-                child: const Icon(
-                  Icons.notifications,
-                  color: secondaryColor,
-                ),
-              ))
-        ],
+        // actions: [
+        //   IconButton(
+        //       onPressed: () {},
+        //       icon: Container(
+        //         padding: const EdgeInsets.all(6),
+        //         decoration: BoxDecoration(
+        //             border: Border.all(color: Colors.grey),
+        //             borderRadius: BorderRadius.circular(8)),
+        //         child: const Icon(
+        //           Icons.notifications,
+        //           color: secondaryColor,
+        //         ),
+        //       ))
+        // ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -202,7 +201,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           width: mediaQueryWidth(context),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: cGreenSofter,
+                            color: softBlueColor,
                           ),
                           child: const Text(
                             "Hari ini belum ada angkutan.",
@@ -210,7 +209,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                             style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 16,
-                                color: redSoftColor),
+                                color: blackColor),
                           ),
                         );
                       }

@@ -13,7 +13,7 @@ const Color secondaryColor = Color(0xFF15434E);
 const Color blueApkColor = Color(0xFF3997DA);
 
 const Color whiteColor = Color(0xFFFFFFFF);
-const Color redSoftColor = Color(0xFFCCE3E7);
+const Color redSoftColor = Color(0xFFE25C5C);
 const Color blackColor = Color(0xFF2C3131);
 const Color softBlackColor = Color(0xFF626262);
 const List<Color> mainApkGradientList = [Color(0xFF3997DA), Color(0xFF31B4AA)];
