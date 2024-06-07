@@ -50,13 +50,12 @@ class UserRequestProvider with ChangeNotifier {
   ResultState? _reqState;
   String? _reqErrorMessage;
   bool? _reqIsLoading = false;
-  List<RequestService> _requests = [];
   StreamController<List<RequestService>> _requestsController = StreamController.broadcast();
 
   ResultState? get reqState => _reqState;
   String? get reqErrorMessage => _reqErrorMessage;
   bool? get reqIsLoading => _reqIsLoading;
-  List<RequestService> get requests => _requests;
+  // List<RequestService> get requests => _requests;
 
   Stream<List<RequestService>> get requestsStream => _requestsController.stream;
 
@@ -85,7 +84,7 @@ class UserRequestProvider with ChangeNotifier {
               .toList());
 
       dataStream.listen((data) {
-        _requests = data;
+        // _requests = data;
         _requestsController.add(data); // Add data to the stream
       });
       _reqState = ResultState.success;
@@ -95,7 +94,6 @@ class UserRequestProvider with ChangeNotifier {
       print("Errornya $_reqErrorMessage");
     } finally {
       _reqIsLoading = false;
-      print("data permintaan : $_requests");
       notifyListeners();
     }
   }

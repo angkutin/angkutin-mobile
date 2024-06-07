@@ -6,6 +6,7 @@ import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/driver/driver_daily_provider.dart';
 import 'package:angkutin/provider/upload_provider.dart';
+import 'package:angkutin/provider/user/user_daily_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
 import 'package:angkutin/screen/auth/map_screen.dart';
@@ -94,6 +95,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(
             create: (_) => UserRequestProvider(storageService)),
         ChangeNotifierProvider(create: (_) => DriverDailyProvider()),
+        ChangeNotifierProvider(create: (_) => UserDailyProvider()),
       ],
       child: MaterialApp(
           home: initialScreen,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:angkutin/data/model/RequestModel.dart';
+import 'package:angkutin/provider/user/user_daily_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/user/user_monitor_request_screen.dart';
 import 'package:angkutin/widget/SmallTextGrey.dart';
@@ -65,6 +66,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     if (_isLogin) {
       Provider.of<UserRequestProvider>(context, listen: false)
           .getOngoingRequest(_userEmail!);
+      Provider.of<UserDailyProvider>(context, listen: false)
+          .getUserStream(_userEmail!);
     }
   }
 
@@ -179,9 +182,42 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DailyCarbageCard(
-                  status: "Petugas akan datang",
-                  description: "Siapkan sampah yang akan diangkut",
+                StreamBuilder(
+                  stream: Provider.of<UserDailyProvider>(context, listen: false)
+                      .dataStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (snapshot.hasData) {
+                      final data = snapshot.data!;
+                      if (data.isDaily == true) {
+                        return const DailyCarbageCard(
+                          status: "Petugas akan datang",
+                          description: "Siapkan sampah yang akan diangkut",
+                        );
+                      } else {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          padding: const EdgeInsets.all(8),
+                          width: mediaQueryWidth(context),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: cGreenSofter,
+                          ),
+                          child: const Text(
+                            "Hari ini belum ada angkutan.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                color: redSoftColor),
+                          ),
+                        );
+                      }
+                    } else {
+                      return Container();
+                    }
+                  },
                 ),
 
                 // stream

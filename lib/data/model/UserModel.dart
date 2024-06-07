@@ -67,4 +67,22 @@ class User {
       // 'createdAt': createdAt,
     };
   }
+
+  factory User.fromSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return User(
+      email: snapshot.id,
+      name: data['name'], // Assuming name exists in Firestore
+      fullName: data['fullName'], // Assuming fullName exists in Firestore
+      isDaily: data['isDaily'],
+      address: data['address'] as String?,
+      role: data['role'] as String?,
+      imageUrl: data['imageUrl'] as String?,
+      activePhoneNumber: data['activePhoneNumber'] as int?,
+      optionalPhoneNumber: data['optionalPhoneNumber'] as int?,
+      latitude: data['latitude'] as double?,
+      longitude: data['longitude'] as double?,
+      lokasiPetugas: data['lokasiPetugas'] as GeoPoint?,
+    );
+  }
 }
