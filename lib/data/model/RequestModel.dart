@@ -11,6 +11,7 @@ class RequestService {
   final GeoPoint userLoc;
   final int type;
   final bool isDelivered;
+  final bool isAcceptByDriver;
   final bool isDone;
   final String wilayah;
   String? namaPetugas;
@@ -26,6 +27,7 @@ class RequestService {
       required this.userLoc,
       required this.type,
       required this.isDelivered,
+      required this.isAcceptByDriver,
       required this.isDone,
       required this.wilayah,
       this.namaPetugas,
@@ -46,6 +48,7 @@ class RequestService {
       userLoc: data?['userLoc'] as GeoPoint,
       type: data?['type'] as int,
       isDelivered: data?['isDelivered'] as bool,
+      isAcceptByDriver: data?['isAcceptByDriver'] as bool,
       isDone: data?['isDone'] as bool,
       wilayah: data?['wilayah'] as String,
       namaPetugas: data?['namaPetugas'],
@@ -64,6 +67,7 @@ class RequestService {
       'userLoc': userLoc,
       'type': type,
       'isDelivered': isDelivered,
+      'isAcceptByDriver': isAcceptByDriver,
       'isDone': isDone,
       'wilayah': wilayah,
       'namaPetugas': namaPetugas,

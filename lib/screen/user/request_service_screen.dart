@@ -207,6 +207,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                                   coordinate!.latitude, coordinate!.longitude),
                               type: widget.tipeAngkutan,
                               isDelivered: false,
+                              isAcceptByDriver: false,
                               isDone: false,
                               wilayah: extractLastPart(address!));
                               

@@ -55,7 +55,7 @@ class CarbageHaulCard extends StatelessWidget {
               style: text14Black54,
             ),
             Text(
-              req.isDelivered ? "Diterima" : "Menunggu",
+              req.isAcceptByDriver ? "Diterima" : "Menunggu",
               style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 18,
@@ -65,7 +65,7 @@ class CarbageHaulCard extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            req.isDelivered
+            req.isAcceptByDriver
                 ? CustomButton(
                     title: "Pantau Permintaan",
                     paddingHorizontal: 16,
