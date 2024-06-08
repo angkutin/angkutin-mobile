@@ -202,6 +202,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               print('Updating isDaily to false');
                               await dailyProvider.updateDriverDaily(
                                   _user!.email!, false);
+                              await dailyProvider.updateMassDailyUsers(
+                                  "Kecamatan Medan Denai", false);
                             } else {
                               print("Error: No user found!");
                             }
@@ -218,6 +220,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               print('Updating isDaily to true');
                               await dailyProvider.updateDriverDaily(
                                   _user!.email!, true);
+                              await dailyProvider.updateMassDailyUsers(
+                                  "Kecamatan Medan Denai", true);
                             } else {
                               print("Error: No user found!");
                             }
