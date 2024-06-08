@@ -5,11 +5,13 @@ import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/driver/driver_daily_provider.dart';
+import 'package:angkutin/provider/driver/driver_service_provider.dart';
 import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/provider/user/user_daily_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
 import 'package:angkutin/screen/auth/map_screen.dart';
+import 'package:angkutin/screen/driver/driver_request_waste.dart';
 import 'package:angkutin/screen/onboarding_screen.dart';
 import 'package:angkutin/screen/user/user_history_screen.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
@@ -47,7 +49,6 @@ Future<void> main() async {
   await authProvider.readUserDataLocally();
   print("Data user local : ${authProvider.readUserDataLocally()}");
 
-
   // onboarding state
   bool isOnboarding = await authProvider.getOnBoardingState();
   bool isLoggedIn = await authProvider.getLoginState();
@@ -57,8 +58,8 @@ Future<void> main() async {
 
   print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
   Widget initialScreen = isOnboarding
-          ? isMasyarakat ?
-          isLoggedIn
+      ? isMasyarakat
+          ? isLoggedIn
               ? ChangeNotifierProvider.value(
                   value: authProvider, child: const UserHomeScreen())
               : const LoginScreen()
@@ -95,6 +96,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(
             create: (_) => UserRequestProvider(storageService)),
         ChangeNotifierProvider(create: (_) => DriverDailyProvider()),
+        ChangeNotifierProvider(create: (_) => DriverServiceProvider()),
         ChangeNotifierProvider(create: (_) => UserDailyProvider()),
       ],
       child: MaterialApp(
@@ -139,7 +141,7 @@ class MainApp extends StatelessWidget {
               case RequestServiceScreen.ROUTE_NAME:
                 // final tipeAngkutan = settings.arguments as int;
                 final List<dynamic> arguments =
-                  settings.arguments as List<dynamic>;
+                    settings.arguments as List<dynamic>;
                 return MaterialPageRoute(
                     builder: (_) => RequestServiceScreen(
                           // titleScreen: titleScreen,
@@ -147,12 +149,18 @@ class MainApp extends StatelessWidget {
                           user: arguments[1],
                         ));
 
-
               // Driver
               case DriverHomeScreen.ROUTE_NAME:
                 return MaterialPageRoute(
                     builder: (_) => const DriverHomeScreen());
               //  case AbsensiScreen.ROUTE_NAME:
+              case DriverRequestWasteScreen.ROUTE_NAME:
+                final wilayah = settings.arguments as String;
+
+                return MaterialPageRoute(
+                    builder: (_) => DriverRequestWasteScreen(
+                          wilayah: wilayah,
+                        ));
               // final List<String> arguments = settings.arguments as List<String>;
               // final screenTitle = arguments[0];
               // final token = arguments[1];

@@ -103,7 +103,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             CustomDrawerItem(
                 title: "Permintaan Angkut",
                 onTap: () => Navigator.pushNamed(
-                    context, DriverRequestWasteScreen.ROUTE_NAME)),
+                    context, DriverRequestWasteScreen.ROUTE_NAME, arguments: _user?.address)),
             CustomDrawerItem(title: "Laporan Timbunan Sampah", onTap: () {}),
 
             // spacer
@@ -111,7 +111,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
             TextButton(
                 onPressed: () {
-                  Future.delayed(Duration(milliseconds: 500), () async {
+                  Future.delayed(const Duration(milliseconds: 500), () async {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
