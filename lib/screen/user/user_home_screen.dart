@@ -130,6 +130,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     await GoogleSignIn().signOut(); // untuk meghapus sesi login
 
                     await authProvider.deleteUserDataLocally();
+                    await authProvider.deleteRoleLocally();
                     await authProvider.saveLoginState(false);
                   });
                 },

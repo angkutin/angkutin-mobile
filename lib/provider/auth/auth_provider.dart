@@ -145,6 +145,12 @@ class AuthenticationProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(roleKey) ?? "None";
   }
+
+  Future<void> deleteRoleLocally() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove(roleKey);
+    notifyListeners();
+  }
 // save fill data state
   // final String fillDataKey = 'fill_data_key';
 

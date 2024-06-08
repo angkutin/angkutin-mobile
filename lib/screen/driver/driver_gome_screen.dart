@@ -5,6 +5,7 @@ import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/driver/driver_daily_provider.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
+import 'package:angkutin/screen/driver/driver_request_waste.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/TitleSectionBlue.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -99,8 +100,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               title: "Beranda",
               onTap: () => Navigator.pop(context),
             ),
-            CustomDrawerItem(title: "Angkut Sampah", onTap: () {}),
-            CustomDrawerItem(title: "Permintaan Angkut", onTap: () {}),
+            CustomDrawerItem(
+                title: "Permintaan Angkut",
+                onTap: () => Navigator.pushNamed(
+                    context, DriverRequestWasteScreen.ROUTE_NAME)),
             CustomDrawerItem(title: "Laporan Timbunan Sampah", onTap: () {}),
 
             // spacer
@@ -118,6 +121,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     await FirebaseAuth.instance.signOut();
                     await authProvider.deleteUserDataLocally();
                     await authProvider.saveLoginState(false);
+                    await authProvider.deleteRoleLocally();
                     await GoogleSignIn().signOut(); // untuk meghapus sesi login
                   });
                 },
