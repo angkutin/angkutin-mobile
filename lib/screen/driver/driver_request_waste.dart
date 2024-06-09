@@ -1,23 +1,23 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:angkutin/data/model/UserModel.dart';
+import 'package:angkutin/screen/driver/driver_detail_service_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:angkutin/provider/driver/driver_service_provider.dart';
-import 'package:angkutin/widget/CustomListTile.dart';
 
 import '../../common/constant.dart';
 import '../../common/utils.dart';
 import '../../data/model/RequestModel.dart';
-import '../../widget/CarbageHaulCard.dart';
-import '../user/user_monitor_request_screen.dart';
 
 class DriverRequestWasteScreen extends StatefulWidget {
-  final String wilayah;
+  final User dataDriver;
   static const ROUTE_NAME = '/driver-requestscreen';
 
   const DriverRequestWasteScreen({
     Key? key,
-    required this.wilayah,
+    required this.dataDriver,
   }) : super(key: key);
 
   @override
@@ -32,7 +32,9 @@ class _DriverRequestWasteScreenState extends State<DriverRequestWasteScreen> {
 
     Future.microtask(() =>
         Provider.of<DriverServiceProvider>(context, listen: false)
-          ..getCarbageRequestFromUser(widget.wilayah));
+          ..getCarbageRequestFromUser(widget.dataDriver.address!));
+
+    print("data driver ${widget.dataDriver.name}");
   }
 
   @override
@@ -96,7 +98,19 @@ class _DriverRequestWasteScreenState extends State<DriverRequestWasteScreen> {
                           subtitle: Text(
                               "${formatDate(request.date.toDate().toString())} ${formatTime(request.date.toDate().toString())}\nAn. ${request.name}"),
                           trailing: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                final driverLoc = widget.dataDriver;
+                                print("Mengirim lokasi ${driverLoc.latitude} ke detail");
+                                
+                                Navigator.pushNamed(context,
+                                  DriverDetailServiceScreen.ROUTE_NAME,
+                                  arguments: [
+                                    request,
+                                    GeoPoint(driverLoc.latitude!,
+                                        driverLoc.longitude!)
+                                  ]);
+                                                              
+                              },
                               child: const Text("Lihat Detail")),
                         )
                       ],

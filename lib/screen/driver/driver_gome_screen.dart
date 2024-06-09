@@ -12,6 +12,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -34,6 +35,7 @@ class DriverHomeScreen extends StatefulWidget {
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
   UserModel.User? _user;
   bool? _isDailyActive;
+  UserModel.User? _updateUser;
 
   @override
   void initState() {
@@ -53,6 +55,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
       Provider.of<UserDailyProvider>(context, listen: false)
           .getUserStream(_user!.email!);
+
     }
 
     print("Nilai dariisDaily di init : $_isDailyActive");
@@ -103,7 +106,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             CustomDrawerItem(
                 title: "Permintaan Angkut",
                 onTap: () => Navigator.pushNamed(
-                    context, DriverRequestWasteScreen.ROUTE_NAME, arguments: _user?.address)),
+                  // MENGRIM DATA DRIVER DARI LOCAL SEHINGGA LOKASINYA TIDAK BERUBAH
+                    context, DriverRequestWasteScreen.ROUTE_NAME, arguments: _updateUser)),
             CustomDrawerItem(title: "Laporan Timbunan Sampah", onTap: () {}),
 
             // spacer
@@ -195,6 +199,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
                     final data = snapshot.data!;
+
+                    SchedulerBinding.instance.addPostFrameCallback((_) {
+                      setState(() {
+                        _updateUser = data;
+                      });
+                    });
+
+                    
                     if (data.isDaily == true) {
                       return SizedBox(
                         width: mediaQueryWidth(context),
@@ -207,7 +219,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               await dailyProvider.updateDriverDaily(
                                   _user!.email!, false);
                               await dailyProvider.updateMassDailyUsers(
-                                  "Kecamatan Medan Denai", false);
+                                  _user!.address!, false);
                             } else {
                               print("Error: No user found!");
                             }
@@ -239,27 +251,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 },
               ),
 
-              // dailyProvider.isUpdateLoading == true
-              //     ? const Center(
-              //         child: CircularProgressIndicator(),
-              //       )
-              //     : SizedBox(
-              //         width: mediaQueryWidth(context),
-              //         child: CustomButton(
-              //           title: dailyProvider.isDailyActive == true
-              //               ? "Stop"
-              //               : "Mulai",
-              //           onPressed: () async {
-              //             // Directly use dailyProvider.isDailyActive for update data
-              //             if (_user != null) {
-              //               dailyProvider.updateDriverDaily(_user!.email!,
-              //                   {"isDaily": !dailyProvider.isDailyActive!});
-              //             } else {
-              //               print("Error no user found!");
-              //             }
-              //           },
-              //         ),
-              //       ),
             ],
           ),
         ),

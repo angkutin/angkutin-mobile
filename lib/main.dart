@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/driver/driver_daily_provider.dart';
@@ -11,6 +12,7 @@ import 'package:angkutin/provider/user/user_daily_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
 import 'package:angkutin/screen/auth/map_screen.dart';
+import 'package:angkutin/screen/driver/driver_detail_service_screen.dart';
 import 'package:angkutin/screen/driver/driver_request_waste.dart';
 import 'package:angkutin/screen/onboarding_screen.dart';
 import 'package:angkutin/screen/user/user_history_screen.dart';
@@ -155,11 +157,21 @@ class MainApp extends StatelessWidget {
                     builder: (_) => const DriverHomeScreen());
               //  case AbsensiScreen.ROUTE_NAME:
               case DriverRequestWasteScreen.ROUTE_NAME:
-                final wilayah = settings.arguments as String;
-
+                final dataDriver = settings.arguments as userModel.User;
                 return MaterialPageRoute(
                     builder: (_) => DriverRequestWasteScreen(
-                          wilayah: wilayah,
+                          dataDriver: dataDriver,
+                        ));
+
+              case DriverDetailServiceScreen.ROUTE_NAME:
+              final List<dynamic> arguments =
+                    settings.arguments as List<dynamic>;
+
+                // final serviceData = settings.arguments as RequestService;
+                return MaterialPageRoute(
+                    builder: (_) => DriverDetailServiceScreen(
+                          serviceData: arguments[0],
+                          driverLocation: arguments[1],
                         ));
               // final List<String> arguments = settings.arguments as List<String>;
               // final screenTitle = arguments[0];
