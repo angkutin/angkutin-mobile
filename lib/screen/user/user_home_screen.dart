@@ -1,9 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:angkutin/data/model/RequestModel.dart';
-import 'package:angkutin/provider/user/user_daily_provider.dart';
-import 'package:angkutin/provider/user/user_request_provider.dart';
-import 'package:angkutin/screen/user/user_monitor_request_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,17 +8,21 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import 'package:angkutin/common/constant.dart';
+import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
+import 'package:angkutin/provider/user/user_daily_provider.dart';
+import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:angkutin/screen/user/user_history_screen.dart';
+import 'package:angkutin/screen/user/user_monitor_request_screen.dart';
 import 'package:angkutin/screen/user/user_profile_screen.dart';
 import 'package:angkutin/widget/DailyCarbageCard.dart';
 
 import '../../common/utils.dart';
+import '../../data/model/UserModel.dart' as UserModel;
 import '../../widget/CarbageHaulCard.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../../widget/ServiceCard.dart';
-import '../../data/model/UserModel.dart' as UserModel;
 import 'request_service_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
@@ -36,6 +37,7 @@ class UserHomeScreen extends StatefulWidget {
 class _UserHomeScreenState extends State<UserHomeScreen> {
   // late dynamic  _requestsFuture;
   String? _userEmail;
+  String? _userWilayah;
   UserModel.User? _user;
 
   @override
@@ -59,14 +61,17 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       setState(() {
         _user = UserModel.User.fromJson(jsonDecode(prefs));
         _userEmail = _user?.email;
+        _userWilayah = _user?.address;
       });
     }
 
     if (_isLogin) {
       Provider.of<UserRequestProvider>(context, listen: false)
           .getOngoingRequest(_userEmail!);
+      // Provider.of<UserDailyProvider>(context, listen: false)
+      //     .getUserStream(_userEmail!);
       Provider.of<UserDailyProvider>(context, listen: false)
-          .getUserStream(_userEmail!);
+          .getDailyDriverAvailable(_userWilayah!);
     }
   }
 
@@ -158,22 +163,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               },
               icon: const Icon(Icons.menu_rounded));
         }),
-        // Expanded(child: Image.asset("assets/angkutin_logo_fill_mini.png"),),
-
-        // actions: [
-        //   IconButton(
-        //       onPressed: () {},
-        //       icon: Container(
-        //         padding: const EdgeInsets.all(6),
-        //         decoration: BoxDecoration(
-        //             border: Border.all(color: Colors.grey),
-        //             borderRadius: BorderRadius.circular(8)),
-        //         child: const Icon(
-        //           Icons.notifications,
-        //           color: secondaryColor,
-        //         ),
-        //       ))
-        // ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -184,38 +173,69 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               children: [
                 StreamBuilder(
                   stream: Provider.of<UserDailyProvider>(context, listen: false)
-                      .dataStream,
+                      .driverDataStream,
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (snapshot.hasData) {
                       final data = snapshot.data!;
-                      if (data.isDaily == true) {
+                      if (data.isEmpty) {
+                        return const EmptyServiceCard(
+                          contentText: "Belum ada jadwal pengangkutan",
+                        );
+                      } else if (data.length < 3) {
+                        // waktu pengangkutan lama
+                        return  DailyCarbageCard(
+                          status: "Siapkan sampahmu.",
+                          indicatorColor: Colors.orange[800]!,
+                          description:
+                              "Petugas lebih sedikit, mungkin membutuhkan waktu.",
+                        );
+                      } else if (data.length >= 3 && data.length <= 5) {
+                        // waktu normal
                         return const DailyCarbageCard(
-                          status: "Petugas akan datang",
-                          description: "Siapkan sampah yang akan diangkut",
+                          status: "Siapkan sampahmu.",
+                          indicatorColor: Colors.blue,
+                          description: "Waktu pengangkutan normal.",
                         );
                       } else {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 5),
-                          padding: const EdgeInsets.all(8),
-                          width: mediaQueryWidth(context),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: softBlueColor,
-                          ),
-                          child: const Text(
-                            "Hari ini belum ada angkutan.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: blackColor),
-                          ),
+                        // waktu cepat
+                        return  DailyCarbageCard(
+                          status: "Siapkan sampahmu.",
+                          indicatorColor: Colors.green[800]!,
+                          description:
+                              "Pengangkutan lebih cepat dari biasanya.",
                         );
                       }
+
+                      // if (data.isDaily == true) {
+                      //   return const DailyCarbageCard(
+                      //     status: "Petugas akan datang",
+                      //     description: "Siapkan sampah yang akan diangkut",
+                      //   );
+                      // } else {
+                      //   return Container(
+                      //     margin: const EdgeInsets.symmetric(vertical: 5),
+                      //     padding: const EdgeInsets.all(8),
+                      //     width: mediaQueryWidth(context),
+                      //     decoration: BoxDecoration(
+                      //       borderRadius: BorderRadius.circular(12),
+                      //       color: softBlueColor,
+                      //     ),
+                      //     child: const Text(
+                      //       "Hari ini belum ada angkutan.",
+                      //       textAlign: TextAlign.center,
+                      //       style: TextStyle(
+                      //           fontWeight: FontWeight.w500,
+                      //           fontSize: 16,
+                      //           color: blackColor),
+                      //     ),
+                      //   );
+                      // }
                     } else {
-                      return Container();
+                      return Container(
+                        child: Text("Halo cuki"),
+                      );
                     }
                   },
                 ),
@@ -229,23 +249,29 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 5),
-                        padding: const EdgeInsets.all(8),
-                        width: mediaQueryWidth(context),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: cGreenSofter,
-                        ),
-                        child: Text(
-                          "Kamu belum mengajukan permintaan pengangkutan sampah",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.green[700]),
-                        ),
+                      return EmptyServiceCard(
+                        contentText:
+                            "Kamu belum mengajukan permintaan pengangkutan sampah",
+                        color: Colors.green[700],
                       );
+
+                      // Container(
+                      //   margin: const EdgeInsets.symmetric(vertical: 5),
+                      //   padding: const EdgeInsets.all(8),
+                      //   width: mediaQueryWidth(context),
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(12),
+                      //     color: cGreenSofter,
+                      //   ),
+                      //   child: Text(
+                      //     "Kamu belum mengajukan permintaan pengangkutan sampah",
+                      //     textAlign: TextAlign.center,
+                      //     style: TextStyle(
+                      //         fontWeight: FontWeight.w500,
+                      //         fontSize: 16,
+                      //         color: Colors.green[700]),
+                      //   ),
+                      // );
                     } else {
                       final requests = snapshot.data!;
                       return ListView.builder(
@@ -282,8 +308,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   imageUrl: dotenv.env['ANGKUT_SAMPAH_ILUSTRASI_IMAGE']!,
                   onPressed: () {
                     Navigator.pushNamed(
-                      context, RequestServiceScreen.ROUTE_NAME,
-                      // arguments: "Permintaan Angkut Sampah",
+                      context,
+                      RequestServiceScreen.ROUTE_NAME,
                       arguments: [1, _user],
                     );
                   },
@@ -294,8 +320,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   imageUrl: dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
                   onPressed: () {
                     Navigator.pushNamed(
-                      context, RequestServiceScreen.ROUTE_NAME,
-                      // arguments: "Lapor Sampah Liar",
+                      context,
+                      RequestServiceScreen.ROUTE_NAME,
                       arguments: [2, _user],
                     );
                   },
@@ -304,6 +330,35 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class EmptyServiceCard extends StatelessWidget {
+  final String contentText;
+  final Color? color;
+  const EmptyServiceCard({
+    Key? key,
+    required this.contentText,
+    this.color,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.all(8),
+      width: mediaQueryWidth(context),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: color ?? softBlueColor,
+      ),
+      child: Text(
+        contentText,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+            fontWeight: FontWeight.w500, fontSize: 16, color: blackColor),
       ),
     );
   }

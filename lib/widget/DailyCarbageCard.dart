@@ -1,6 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:angkutin/common/constant.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:angkutin/common/constant.dart';
+import 'package:flutter/widgets.dart';
 
 import '../common/utils.dart';
 import 'SmallTextGrey.dart';
@@ -8,10 +11,12 @@ import 'SmallTextGrey.dart';
 class DailyCarbageCard extends StatelessWidget {
   final String status;
   final String description;
+  final Color indicatorColor;
   const DailyCarbageCard({
     Key? key,
     required this.status,
     required this.description,
+    required this.indicatorColor,
   }) : super(key: key);
 
   @override
@@ -37,17 +42,24 @@ class DailyCarbageCard extends StatelessWidget {
                       fontSize: 16,
                       color: secondaryColor),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  status,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 18,
-                      color: secondaryColor),
-                ),
-                SmallTextGrey(description: description),
+                Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12)),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.circle,
+                        color: indicatorColor,
+                        size: 10,
+                      ),
+                      title: Text(
+                        status,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            color: secondaryColor),
+                      ),
+                      subtitle: SmallTextGrey(description: description),
+                    ))
               ],
             )
           ],

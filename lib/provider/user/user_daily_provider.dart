@@ -18,6 +18,7 @@ class UserDailyProvider with ChangeNotifier {
   @override
   void dispose() {
     _userDataController.close();
+    _driverDataController.close();
     super.dispose();
   }
 
@@ -42,6 +43,80 @@ class UserDailyProvider with ChangeNotifier {
       });
     } finally {
       print("user daily diget");
+      notifyListeners();
+    }
+  }
+
+  StreamController<List<User>> _driverDataController =
+      StreamController.broadcast();
+  Stream<List<User>> get driverDataStream => _driverDataController.stream;
+
+  Future<void> getDailyDriverAvailable(String kecamatan) async {
+    _state = ResultState.loading;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final docRef = db
+          .collection("users")
+          .where("role", isEqualTo: "Petugas")
+          .where("address", isEqualTo: kecamatan)
+          .where("isDaily", isEqualTo: true);
+
+      docRef.snapshots().listen((event) {
+        List<User> drivers =
+            event.docs.map((doc) => User.fromSnapshot((doc))).toList();
+
+        List<User> simulasiPetugasAktif = [
+          // User(
+          //     activePhoneNumber: 123,
+          //     address: "Kecamatan Medan Denai",
+          //     email: "anu@gmial.com",
+          //     isDaily: true,
+          //     role: "Petugas"),
+          // User(
+          //     activePhoneNumber: 123,
+          //     address: "Kecamatan Medan Denai",
+          //     email: "anu@gmial.com",
+          //     isDaily: true,
+          //     role: "Petugas"),
+          // User(
+          //     activePhoneNumber: 123,
+          //     address: "Kecamatan Medan Denai",
+          //     email: "anu@gmial.com",
+          //     isDaily: true,
+          //     role: "Petugas"),
+          //     User(
+          //     activePhoneNumber: 123,
+          //     address: "Kecamatan Medan Denai",
+          //     email: "anu@gmial.com",
+          //     isDaily: true,
+          //     role: "Petugas"),
+          //     User(
+          //     activePhoneNumber: 123,
+          //     address: "Kecamatan Medan Denai",
+          //     email: "anu@gmial.com",
+          //     isDaily: true,
+          //     role: "Petugas"),
+          //     User(
+          //     activePhoneNumber: 123,
+          //     address: "Kecamatan Medan Denai",
+          //     email: "anu@gmial.com",
+          //     isDaily: true,
+          //     role: "Petugas"),
+          
+        ];
+
+        _driverDataController.add(drivers);
+        _state = ResultState.success;
+      }, onError: (error) {
+        print("Listen failed: $error");
+        _state = ResultState.error;
+        _errorMessage = error.toString();
+        print("Errornya $_errorMessage");
+      });
+    } finally {
+      // print("user daily diget");
       notifyListeners();
     }
   }
