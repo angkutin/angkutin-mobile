@@ -61,7 +61,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       setState(() {
         _user = UserModel.User.fromJson(jsonDecode(prefs));
         _userEmail = _user?.email;
-        _userWilayah = _user?.address;
+        _userWilayah = extractLastPart(_user!.address!) ;
+        print("user wilayah $_userWilayah");
       });
     }
 

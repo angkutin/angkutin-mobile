@@ -67,8 +67,7 @@ class User {
       // 'createdAt': createdAt,
     };
   }
-
-  factory User.fromSnapshot(DocumentSnapshot snapshot) {
+factory User.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
     return User(
       email: snapshot.id,

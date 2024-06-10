@@ -65,47 +65,9 @@ class UserDailyProvider with ChangeNotifier {
 
       docRef.snapshots().listen((event) {
         List<User> drivers =
-            event.docs.map((doc) => User.fromSnapshot((doc))).toList();
+            event.docs.map((doc) => User.fromSnapshot(doc)).toList();
 
-        List<User> simulasiPetugasAktif = [
-          // User(
-          //     activePhoneNumber: 123,
-          //     address: "Kecamatan Medan Denai",
-          //     email: "anu@gmial.com",
-          //     isDaily: true,
-          //     role: "Petugas"),
-          // User(
-          //     activePhoneNumber: 123,
-          //     address: "Kecamatan Medan Denai",
-          //     email: "anu@gmial.com",
-          //     isDaily: true,
-          //     role: "Petugas"),
-          // User(
-          //     activePhoneNumber: 123,
-          //     address: "Kecamatan Medan Denai",
-          //     email: "anu@gmial.com",
-          //     isDaily: true,
-          //     role: "Petugas"),
-          //     User(
-          //     activePhoneNumber: 123,
-          //     address: "Kecamatan Medan Denai",
-          //     email: "anu@gmial.com",
-          //     isDaily: true,
-          //     role: "Petugas"),
-          //     User(
-          //     activePhoneNumber: 123,
-          //     address: "Kecamatan Medan Denai",
-          //     email: "anu@gmial.com",
-          //     isDaily: true,
-          //     role: "Petugas"),
-          //     User(
-          //     activePhoneNumber: 123,
-          //     address: "Kecamatan Medan Denai",
-          //     email: "anu@gmial.com",
-          //     isDaily: true,
-          //     role: "Petugas"),
-          
-        ];
+        print("Jumlah driver: ${drivers.length}");
 
         _driverDataController.add(drivers);
         _state = ResultState.success;
@@ -116,7 +78,6 @@ class UserDailyProvider with ChangeNotifier {
         print("Errornya $_errorMessage");
       });
     } finally {
-      // print("user daily diget");
       notifyListeners();
     }
   }
