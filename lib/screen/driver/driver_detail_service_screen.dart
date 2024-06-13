@@ -1,4 +1,5 @@
 import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/provider/driver/driver_service_provider.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/CustomListTile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/data/model/RequestModel.dart';
+import 'package:provider/provider.dart';
 
 class DriverDetailServiceScreen extends StatefulWidget {
   final RequestService serviceData;
@@ -94,6 +96,7 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
   @override
   Widget build(BuildContext context) {
     var requestData = widget.serviceData;
+    final driverServiceProv = Provider.of<DriverServiceProvider>(context);
 
     return Scaffold(
       // appBar: AppBar(),
@@ -163,11 +166,19 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                       Container(
                         margin: const EdgeInsets.all(8),
                         width: 120,
-                        child: CustomButton(title: "Ambil", onPressed: () {}),
+                        child: CustomButton(
+                            title: "Ambil",
+                            onPressed: () async {
+                              await driverServiceProv.acceptUserRequest(
+                                  requestData.requestId,
+                                  "asdapilda@gmail.com", // seharusnya nama
+                                  widget.driverLocation);
+                            }),
                       ),
                     ]),
               ),
-              CustomListTile(title: "Pengirim", value: "An. ${requestData.name}"),
+              CustomListTile(
+                  title: "Pengirim", value: "An. ${requestData.name}"),
               CustomListTile(
                   title: "Deskripsi",
                   value: requestData.description! != ''
@@ -198,7 +209,7 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                 ),
               ),
 
-               const SizedBox(
+              const SizedBox(
                 height: 50,
               ),
             ],

@@ -1,9 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
+import 'package:angkutin/screen/driver/driver_gome_screen.dart';
 import 'package:angkutin/screen/driver/service/DriverLocationService.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +16,7 @@ import 'package:angkutin/widget/CustomListTile.dart';
 
 import '../../data/model/RequestModel.dart';
 import '../../provider/driver/driver_service_provider.dart';
+import '../../widget/CustomButton.dart';
 
 class DriverMonitorScreen extends StatefulWidget {
   final String requestId;
@@ -70,15 +74,14 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
 
   void _startDataUpdates() {
     _dataTimer?.cancel();
-    _dataTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+    _dataTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       _loadData();
     });
   }
 
   _loadData() async {
 // jalankan dulu tracking
-_loadAndUpdateDriverLocation();
-
+    _loadAndUpdateDriverLocation();
 
 // get data spesifik
     Provider.of<MonitorProvider>(context, listen: false)
@@ -96,14 +99,14 @@ _loadAndUpdateDriverLocation();
       setState(() {
         _driverLocation = newLocation;
         markers.removeWhere(
-            (marker) => marker.markerId == MarkerId('driverMarker'));
+            (marker) => marker.markerId == const MarkerId('driverMarker'));
         markers.add(
           Marker(
-            markerId: MarkerId('driverMarker'),
+            markerId: const MarkerId('driverMarker'),
             position: _driverLocation!,
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueGreen),
-            infoWindow: InfoWindow(title: 'Lokasi Petugas'),
+            infoWindow: const InfoWindow(title: 'Lokasi Petugas'),
           ),
         );
 
@@ -144,47 +147,115 @@ _loadAndUpdateDriverLocation();
 
   @override
   Widget build(BuildContext context) {
+    final driverServiceProv = Provider.of<DriverServiceProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pantau Permintaan"),
+        title: const Text("Pantau Permintaan"),
       ),
-      body: Column(
-        children: [
-          Container(
-            width: mediaQueryWidth(context),
-            height: mediaQueryHeight(context) / 2,
-            child: StreamBuilder<RequestService>(
-              stream: Provider.of<MonitorProvider>(context).dataStream,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final request = snapshot.data!;
-                  final driverLocation = request.lokasiPetugas;
+      body: StreamBuilder<RequestService>(
+        stream: Provider.of<MonitorProvider>(context).dataStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final request = snapshot.data!;
+            final driverLocation = request.lokasiPetugas;
 
-                  if (driverLocation != null) {
-                    final newLocation = LatLng(
-                        driverLocation.latitude, driverLocation.longitude);
-                    _updateDriverLocation(newLocation);
-                  }
-                }
+            if (driverLocation != null) {
+              final newLocation =
+                  LatLng(driverLocation.latitude, driverLocation.longitude);
+              _updateDriverLocation(newLocation);
+            }
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                      width: mediaQueryWidth(context),
+                      height: mediaQueryHeight(context) / 2,
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: _driverLocation ??
+                              const LatLng(3.5649873243206964,
+                                  98.71563527362277), // initial data
+                          zoom: 15,
+                        ),
+                        onMapCreated: (GoogleMapController controller) {
+                          _mapController = controller;
+                        },
+                        markers: markers,
+                      )),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      driverServiceProv.finishIsLoading == true
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : Container(
+                              margin: const EdgeInsets.all(8),
+                              width: 120,
+                              child: CustomButton(
+                                  title: "Sudah Diangkut",
+                                  onPressed: () async {
+                                    await driverServiceProv
+                                        .finishUserRequest(request.requestId);
 
-                return GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: _driverLocation ??
-                        LatLng(3.5649873243206964, 98.71563527362277),
-                    zoom: 15,
+                                    // balik ke home
+                                    Future.delayed(
+                                        const Duration(milliseconds: 500), () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const DriverHomeScreen(),
+                                        ),
+                                      );
+                                    });
+                                  }),
+                            ),
+                      const SizedBox(
+                        width: 10,
+                      )
+                    ],
                   ),
-                  onMapCreated: (GoogleMapController controller) {
-                    _mapController = controller;
-                  },
-                  markers: markers,
-                );
-              },
-            ),
-          ),
-          CustomListTile(title: "Status", value: "Petugas dalam perjalanan"),
-          CustomListTile(
-              title: "Waktu Permintaan", value: "12 Mei 2024, 08:00 WIB"),
-        ],
+                  CustomListTile(
+                      title: "Diajukan oleh", value: "An. ${request.name}"),
+                  CustomListTile(
+                      title: "Waktu Permintaan",
+                      value:
+                          "${formatDate(request.date.toDate().toString())}, ${formatTime(request.date.toDate().toString())}"),
+                  CustomListTile(
+                      title: "Deskripsi",
+                      value: request.description! != ''
+                          ? request.description!
+                          : "-"),
+                  Container(
+                    width: mediaQueryWidth(context),
+                    height: 200,
+                    padding: const EdgeInsets.all(16),
+                    // decoration: containerBorderWithRadius.copyWith(
+                    //     border: Border.all(color: softBlueColor)),
+                    child: CachedNetworkImage(
+                      imageUrl: request.imageUrl,
+                      fit: BoxFit.cover,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container();
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Container();
+          }
+        },
       ),
     );
   }

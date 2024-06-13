@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../common/state_enum.dart';
-import '../../database/storage_service.dart';
 
 class DriverServiceProvider with ChangeNotifier {
 // get request
@@ -125,6 +124,45 @@ class DriverServiceProvider with ChangeNotifier {
       }
     } catch (error) {
       print("Error updating driver location: $error");
+    }
+  }
+
+  ResultState? _finishState;
+  bool? _finishIsLoading = false;
+
+  ResultState? get finishState => _finishState;
+  bool? get finishIsLoading => _finishIsLoading;
+
+  Future<void> finishUserRequest(String reqId) async {
+    _finishState = ResultState.loading;
+    // _servErrorMessage = null;
+    _finishIsLoading = true;
+    notifyListeners();
+    try {
+      final requestRef = FirebaseFirestore.instance
+          .collection('requests')
+          .doc('carbage')
+          .collection('items')
+          .doc(reqId);
+
+      final requestDoc = await requestRef.get();
+      if (requestDoc.exists) {
+        final isDone = requestDoc.data()?['isDone'] as bool?;
+        if (isDone == false) {
+          await requestRef.update({
+            'isDone': true,
+          });
+          print("Permintaan sudah selesai");
+        }
+      }
+      _finishState = ResultState.success;
+    } catch (error) {
+      _finishState = ResultState.error;
+
+      print("Error menyelesaikan permintaan: $error");
+    } finally {
+      _finishIsLoading = false;
+      notifyListeners();
     }
   }
 }

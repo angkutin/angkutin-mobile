@@ -208,31 +208,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               "Pengangkutan lebih cepat dari biasanya.",
                         );
                       }
-
-                      // if (data.isDaily == true) {
-                      //   return const DailyCarbageCard(
-                      //     status: "Petugas akan datang",
-                      //     description: "Siapkan sampah yang akan diangkut",
-                      //   );
-                      // } else {
-                      //   return Container(
-                      //     margin: const EdgeInsets.symmetric(vertical: 5),
-                      //     padding: const EdgeInsets.all(8),
-                      //     width: mediaQueryWidth(context),
-                      //     decoration: BoxDecoration(
-                      //       borderRadius: BorderRadius.circular(12),
-                      //       color: softBlueColor,
-                      //     ),
-                      //     child: const Text(
-                      //       "Hari ini belum ada angkutan.",
-                      //       textAlign: TextAlign.center,
-                      //       style: TextStyle(
-                      //           fontWeight: FontWeight.w500,
-                      //           fontSize: 16,
-                      //           color: blackColor),
-                      //     ),
-                      //   );
-                      // }
                     } else {
                       return Container(
                         child: Text("Halo cuki"),
@@ -255,24 +230,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                             "Kamu belum mengajukan permintaan pengangkutan sampah",
                         color: Colors.green[700],
                       );
-
-                      // Container(
-                      //   margin: const EdgeInsets.symmetric(vertical: 5),
-                      //   padding: const EdgeInsets.all(8),
-                      //   width: mediaQueryWidth(context),
-                      //   decoration: BoxDecoration(
-                      //     borderRadius: BorderRadius.circular(12),
-                      //     color: cGreenSofter,
-                      //   ),
-                      //   child: Text(
-                      //     "Kamu belum mengajukan permintaan pengangkutan sampah",
-                      //     textAlign: TextAlign.center,
-                      //     style: TextStyle(
-                      //         fontWeight: FontWeight.w500,
-                      //         fontSize: 16,
-                      //         color: Colors.green[700]),
-                      //   ),
-                      // );
                     } else {
                       final requests = snapshot.data!;
                       return ListView.builder(
