@@ -7,41 +7,6 @@ import '../../common/state_enum.dart';
 import '../../database/storage_service.dart';
 
 class DriverServiceProvider with ChangeNotifier {
-  // ResultState? _state;
-  // String? _errorMessage;
-  // bool? _isLoading = false;
-
-  // ResultState? get state => _state;
-  // String? get errorMessage => _errorMessage;
-  // bool? get isLoading => _isLoading;
-
-  // Future<void> createRequest({String? path, RequestService? requestService}) async {
-  //   _state = ResultState.loading;
-  //   _errorMessage = null;
-  //   _isLoading = true;
-  //   notifyListeners();
-
-  //   try {
-
-  //     final CollectionReference requestsCollection = FirebaseFirestore.instance
-  //         .collection('requests')
-  //         .doc(path)
-  //         .collection('items');
-
-  //     await requestsCollection
-  //         .doc(requestService?.requestId)
-  //         .set(requestService?.toFirestore());
-
-  //     _state = ResultState.success;
-  //   } catch (error) {
-  //     _state = ResultState.error;
-  //     _errorMessage = error.toString();
-  //   } finally {
-  //     _isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
-
 // get request
   ResultState? _reqState;
   String? _reqErrorMessage;
@@ -93,6 +58,73 @@ class DriverServiceProvider with ChangeNotifier {
     } finally {
       _reqIsLoading = false;
       notifyListeners();
+    }
+  }
+
+  ResultState? _servState;
+  String? _servErrorMessage;
+  bool? _servIsLoading = false;
+  // StreamController<List<RequestService>> _requestsController = StreamController.broadcast();
+
+  ResultState? get servState => _servState;
+  String? get servErrorMessage => _servErrorMessage;
+  bool? get servIsLoading => _servIsLoading;
+
+  Future<void> acceptUserRequest(
+      String reqId, String namaPetugas, GeoPoint driverLoc) async {
+    _servState = ResultState.loading;
+    _servErrorMessage = null;
+    _servIsLoading = true;
+    notifyListeners();
+
+    try {
+      final requestRef = FirebaseFirestore.instance
+          .collection('requests')
+          .doc('carbage')
+          .collection('items')
+          .doc(reqId);
+
+      final requestDoc = await requestRef.get();
+      if (requestDoc.exists) {
+        // acc dari sisi user
+        await requestRef.update({
+          'isAcceptByDriver': true,
+          'namaPetugas': namaPetugas, // NTAR TAMBAHIN EMAIL PETUGAS
+          'lokasiPetugas': driverLoc,
+        });
+      }
+
+      _servState = ResultState.success;
+    } catch (error) {
+      _servState = ResultState.error;
+      _servErrorMessage = error.toString();
+      print("Errornya $_servErrorMessage");
+    } finally {
+      _servIsLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateDriverLocation(String reqId, GeoPoint driverLoc) async {
+    try {
+      final requestRef = FirebaseFirestore.instance
+          .collection('requests')
+          .doc('carbage')
+          .collection('items')
+          .doc(reqId);
+
+      final requestDoc = await requestRef.get();
+      if (requestDoc.exists) {
+        final isDone = requestDoc.data()?['isDone'] as bool?;
+        if (isDone == false) {
+          await requestRef.update({
+            'lokasiPetugas': driverLoc,
+          });
+          print("Lokasi Driver diupdate !");
+        }
+      }
+    } catch (error) {
+      print("Error updating driver location: $error");
     }
   }
 }
