@@ -16,6 +16,7 @@ class RequestService {
   final String wilayah;
   String? namaPetugas;
   GeoPoint? lokasiPetugas;
+  String? idPetugas;
 
   RequestService(
       {required this.requestId, // Optional requestId constructor parameter
@@ -31,7 +32,9 @@ class RequestService {
       required this.isDone,
       required this.wilayah,
       this.namaPetugas,
-      this.lokasiPetugas});
+      this.lokasiPetugas,
+      this.idPetugas
+      });
 
   factory RequestService.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -53,6 +56,7 @@ class RequestService {
       wilayah: data?['wilayah'] as String,
       namaPetugas: data?['namaPetugas'],
       lokasiPetugas: data?['lokasiPetugas'],
+      idPetugas: data?['idPetugas']
     );
   }
 
@@ -71,7 +75,8 @@ class RequestService {
       'isDone': isDone,
       'wilayah': wilayah,
       'namaPetugas': namaPetugas,
-      'lokasiPetugas': lokasiPetugas
+      'lokasiPetugas': lokasiPetugas,
+      'idPetugas': idPetugas
     };
   }
 }
