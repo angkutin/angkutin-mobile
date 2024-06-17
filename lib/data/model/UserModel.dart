@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
@@ -15,6 +16,7 @@ class User {
   final double? latitude;
   final double? longitude;
   final GeoPoint? lokasiPetugas;
+  final List? services;
   // final DateTime createdAt;
 
   User({
@@ -29,7 +31,8 @@ class User {
     this.optionalPhoneNumber,
     this.latitude,
     this.longitude,
-    this.lokasiPetugas
+    this.lokasiPetugas,
+    this.services
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -46,6 +49,7 @@ class User {
       latitude: json['latitude'] as double?,
       longitude: json['longitude'] as double?,
       lokasiPetugas: json['lokasiPetugas'] as GeoPoint?,
+      services: json['services'] as List?
       // createdAt: json['created_at'] is DateTime ? json['created_at'] : DateTime.now(),
     );
   }
@@ -64,6 +68,7 @@ class User {
       'latitude': latitude,
       'longitude': longitude,
       'lokasiPetugas': lokasiPetugas,
+      'services': services
       // 'createdAt': createdAt,
     };
   }
@@ -82,6 +87,7 @@ factory User.fromSnapshot(DocumentSnapshot snapshot) {
       latitude: data['latitude'] as double?,
       longitude: data['longitude'] as double?,
       lokasiPetugas: data['lokasiPetugas'] as GeoPoint?,
+      services: data['services'] as List?
     );
   }
 }

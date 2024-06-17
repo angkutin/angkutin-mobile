@@ -25,7 +25,7 @@ class DriverOngoingService with ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> getOngoingRequest(String petugas) async {
+  Future<void> getOngoingRequest(String idPetugas) async {
     _reqState = ResultState.loading;
     _reqErrorMessage = null;
     _reqIsLoading = true;
@@ -36,7 +36,7 @@ class DriverOngoingService with ChangeNotifier {
           .collection('requests')
           .doc('carbage')
           .collection('items')
-          .where('namaPetugas', isEqualTo: petugas)
+          .where('idPetugas', isEqualTo: idPetugas)
           .where('isDone', isEqualTo: false)
           .snapshots();
 

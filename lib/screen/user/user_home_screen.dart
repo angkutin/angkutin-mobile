@@ -209,9 +209,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         );
                       }
                     } else {
-                      return Container(
-                        child: Text("Halo cuki"),
-                      );
+                      return Container();
                     }
                   },
                 ),

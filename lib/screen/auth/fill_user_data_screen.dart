@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
@@ -183,7 +184,8 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                 : null,
             image: image!,
             latitude: coordinate!.latitude,
-            longitude: coordinate!.longitude);
+            longitude: coordinate!.longitude,
+            services: [] );
 
         if (uploadProvider.state == ResultState.success) {
           if (_user != null) {
@@ -202,7 +204,8 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
                     : null,
                 latitude: coordinate!.latitude,
                 longitude: coordinate!.longitude,
-                imageUrl: uploadProvider.imageUrl);
+                imageUrl: uploadProvider.imageUrl,
+                services: []);
 
             authProvider.saveUserDataLocally(updatedUser);
             authProvider.saveLoginState(true);

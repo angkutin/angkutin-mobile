@@ -122,7 +122,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                 ),
                 title: Text(
                   coordinate != null
-                      ? coordinate.toString()
+                      ? "Oke !"
                       : "Lokasinya dimana?",
                   style: const TextStyle(color: mainColor),
                 ),
@@ -140,15 +140,15 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                       address = result['address'];
                       district = result['district'];
                     });
-                    print(
-                        "Koordinat : ${coordinate?.toString() ?? 'Not selected'}");
-                    print('Address: ${address ?? 'Not selected'}');
-                    print('Kecamatan: ${district ?? 'Not selected'}');
+                    // print(
+                    //     "Koordinat : ${coordinate?.toString() ?? 'Not selected'}");
+                    // print('Address: ${address ?? 'Not selected'}');
+                    // print('Kecamatan: ${district ?? 'Not selected'}');
                   } else {
                     print(
                         "Koordinat null: ${coordinate?.toString() ?? 'Not selected'}");
-                    print('Address: ${address ?? 'Not selected'}');
-                    print('Kecamatan: ${district ?? 'Not selected'}');
+                    // print('Address: ${address ?? 'Not selected'}');
+                    // print('Kecamatan: ${district ?? 'Not selected'}');
                   }
                 },
               ),
@@ -217,7 +217,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
 
                           if (requestServiceProvider.state ==
                               ResultState.success) {
-                            Future.delayed(Duration(seconds: 1), () {
+                            Future.delayed(const Duration(seconds: 1), () {
                               Navigator.pushNamed(
                                   context, RequestAcceptedScreen.ROUTE_NAME);
                             });
@@ -237,7 +237,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                           showInfoSnackbar(context,
                               "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
                         }
-                        print("Ajukan");
                       })
             ],
           ),

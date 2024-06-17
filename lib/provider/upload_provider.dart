@@ -7,6 +7,7 @@ import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/state_enum.dart';
+import '../data/model/RequestModel.dart';
 import '../database/storage_service.dart';
 
 class UploadProvider with ChangeNotifier {
@@ -45,6 +46,7 @@ class UploadProvider with ChangeNotifier {
     required File image,
     required double latitude,
     required double longitude,
+    required List<RequestService> services
   }) async {
     _state = ResultState.loading;
     _errorMessage = null;
@@ -66,6 +68,7 @@ class UploadProvider with ChangeNotifier {
             'imageUrl': _imageUrl,
             'latitude': latitude,
             'longitude': longitude,
+            'services': services
           },
           SetOptions(
               merge:

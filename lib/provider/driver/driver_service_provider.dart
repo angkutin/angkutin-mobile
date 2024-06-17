@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -69,8 +70,8 @@ class DriverServiceProvider with ChangeNotifier {
   String? get servErrorMessage => _servErrorMessage;
   bool? get servIsLoading => _servIsLoading;
 
-  Future<void> acceptUserRequest(
-      String reqId, String namaPetugas, GeoPoint driverLoc) async {
+  Future<void> acceptUserRequest(String reqId, String namaPetugas,
+      String idPetugas, GeoPoint driverLoc) async {
     _servState = ResultState.loading;
     _servErrorMessage = null;
     _servIsLoading = true;
@@ -88,8 +89,9 @@ class DriverServiceProvider with ChangeNotifier {
         // acc dari sisi user
         await requestRef.update({
           'isAcceptByDriver': true,
-          'namaPetugas': namaPetugas, // NTAR TAMBAHIN EMAIL PETUGAS
-          'lokasiPetugas': driverLoc,
+          'namaPetugas': namaPetugas,
+          'lokasiPetugas': null,
+          'idPetugas': idPetugas
         });
       }
 
@@ -133,7 +135,8 @@ class DriverServiceProvider with ChangeNotifier {
   ResultState? get finishState => _finishState;
   bool? get finishIsLoading => _finishIsLoading;
 
-  Future<void> finishUserRequest(String reqId) async {
+  Future<void> finishUserRequest(
+      String reqId, String userId, String petugasId) async {
     _finishState = ResultState.loading;
     // _servErrorMessage = null;
     _finishIsLoading = true;
@@ -146,6 +149,8 @@ class DriverServiceProvider with ChangeNotifier {
           .doc(reqId);
 
       final requestDoc = await requestRef.get();
+
+      // mengubah state isDone
       if (requestDoc.exists) {
         final isDone = requestDoc.data()?['isDone'] as bool?;
         if (isDone == false) {
@@ -155,6 +160,46 @@ class DriverServiceProvider with ChangeNotifier {
           print("Permintaan sudah selesai");
         }
       }
+
+      // tambahin ke riwayat user
+      final requestData = requestDoc.data();
+
+      if (requestData != null) {
+        final selectedData = {
+          'description': requestData['description'],
+          'name': requestData['name'],
+          'senderEmail': requestData['senderEmail'],
+          'idPetugas': requestData['idPetugas'],
+          'imageUrl': requestData['imageUrl'],
+          'namaPetugas': requestData['namaPetugas'],
+          'requestId': requestData['requestId'],
+          'type': requestData['type'],
+          'wilayah': requestData['wilayah'],
+        };
+
+        final userRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
+        final userDoc = await userRef.get();
+        if (userDoc.exists) {
+          await userRef.update({
+            'services': FieldValue.arrayUnion([selectedData])
+          });
+        }
+
+        // tambahin ke riwayat driver
+        final petugasRef =
+            FirebaseFirestore.instance.collection('users').doc(petugasId);
+        final petugasDoc = await petugasRef.get();
+        if (petugasDoc.exists) {
+          await petugasRef.update({
+            'services': FieldValue.arrayUnion([selectedData])
+          });
+        }
+      }
+
+      // hapus dari path asli
+      requestRef.delete();
+
       _finishState = ResultState.success;
     } catch (error) {
       _finishState = ResultState.error;

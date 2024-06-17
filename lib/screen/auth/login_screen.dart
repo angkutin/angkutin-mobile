@@ -81,8 +81,6 @@ class LoginScreen extends StatelessWidget {
 
                               userModel.User _userData =
                                   userModel.User.fromJson(jsonDecode(_user!));
-                              print(
-                                  "INI DATA LOCAL USER DI LOGIN SCREEN ${_userData}");
 
                               if (_userData.role == "Masyarakat") {
                                 signInProvider.saveRoleState("Masyarakat");

@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/driver/driver_service_provider.dart';
+import 'package:angkutin/screen/driver/driver_gome_screen.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/CustomListTile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,6 +16,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:provider/provider.dart';
+
+import '../../data/model/UserModel.dart';
+import '../../provider/auth/auth_provider.dart';
 
 class DriverDetailServiceScreen extends StatefulWidget {
   final RequestService serviceData;
@@ -32,6 +39,7 @@ class DriverDetailServiceScreen extends StatefulWidget {
 class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
   GoogleMapController? _mapController;
   Set<Marker> markers = {};
+  User? _user;
 
   @override
   void dispose() {
@@ -44,6 +52,18 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
     super.initState();
 
     _addDriverMarker();
+    _loadData();
+  }
+
+  _loadData() async {
+    final prefs =
+        await Provider.of<AuthenticationProvider>(context, listen: false)
+            .readUserDataLocally();
+    if (prefs != null) {
+      setState(() {
+        _user = User.fromJson(jsonDecode(prefs));
+      });
+    }
   }
 
   Future<void> _addDriverMarker() async {
@@ -163,18 +183,33 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                         "Informasi Detail Layanan",
                         style: basicTextStyleBlack.copyWith(fontSize: 16),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        width: 120,
-                        child: CustomButton(
-                            title: "Ambil",
-                            onPressed: () async {
-                              await driverServiceProv.acceptUserRequest(
-                                  requestData.requestId,
-                                  "asdapilda@gmail.com", // seharusnya nama
-                                  widget.driverLocation);
-                            }),
-                      ),
+                      driverServiceProv.servIsLoading == true
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : Container(
+                              margin: const EdgeInsets.all(8),
+                              width: 120,
+                              child: CustomButton(
+                                  title: "Ambil",
+                                  onPressed: () async {
+                                    if (_user != null) {
+                                      await driverServiceProv.acceptUserRequest(
+                                          requestData.requestId,
+                                          _user!.name!,
+                                          _user!.email!,
+                                          widget.driverLocation);
+                                    } else {
+                                      print("user null");
+                                    }
+
+                                    if (driverServiceProv.servState ==
+                                        ResultState.success) {
+                                      Navigator.pushReplacementNamed(
+                                          context, DriverHomeScreen.ROUTE_NAME);
+                                    }
+                                  }),
+                            ),
                     ]),
               ),
               CustomListTile(

@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
+import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/screen/driver/driver_gome_screen.dart';
 import 'package:angkutin/screen/driver/service/DriverLocationService.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -196,20 +197,25 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                               child: CustomButton(
                                   title: "Sudah Diangkut",
                                   onPressed: () async {
-                                    await driverServiceProv
-                                        .finishUserRequest(request.requestId);
+                                    await driverServiceProv.finishUserRequest(
+                                        request.requestId,
+                                        request.senderEmail,
+                                        request.idPetugas!);
 
                                     // balik ke home
-                                    Future.delayed(
-                                        const Duration(milliseconds: 500), () {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const DriverHomeScreen(),
-                                        ),
-                                      );
-                                    });
+                                    if (driverServiceProv.finishState ==
+                                        ResultState.success) {
+                                      Future.delayed(
+                                          const Duration(milliseconds: 500),
+                                          () {
+                                        Navigator.pushReplacementNamed(
+                                          context,
+                                          DriverHomeScreen.ROUTE_NAME
+                                        );
+                                      });
+                                    } else {
+                                      print("Gagal menyelesaikan orderan");
+                                    }
                                   }),
                             ),
                       const SizedBox(

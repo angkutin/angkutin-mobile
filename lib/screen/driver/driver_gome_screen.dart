@@ -78,7 +78,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           .getUserStream(_user!.email!);
 
       Provider.of<DriverOngoingService>(context, listen: false)
-          .getOngoingRequest("Asede"); // NANTI DIGANTI
+          .getOngoingRequest(_user!.email!); // NANTI DIGANTI
     }
 
     print("Nilai dariisDaily di init : $_isDailyActive");
@@ -90,14 +90,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
     locationSubscription =
         locationService.locationStream.listen((userLocation) {
-      setState(() {
-        latitude = userLocation.latitude;
-        longitude = userLocation.longitude;
+      if (mounted) {
+        setState(() {
+          latitude = userLocation.latitude;
+          longitude = userLocation.longitude;
 
-        userLocationLatLng = GeoPoint(latitude, longitude);
+          userLocationLatLng = GeoPoint(latitude, longitude);
 
-        _updateDriverLocation("Bw2aq2Q0OYglg35x0Kfi", userLocationLatLng!);
-      });
+          // id request masih dummy
+          _updateDriverLocation("faLiEGH031CsZLzivpyf", userLocationLatLng!);
+        });
+      }
     });
   }
 
@@ -209,8 +212,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
-                    } 
-                    else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Container();
                     } else {
                       final requests = snapshot.data!;
@@ -224,7 +226,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                             onTap: () {
                               Navigator.pushNamed(
                                   context, DriverMonitorScreen.ROUTE_NAME,
-                                  arguments: [req.requestId, req.userLoc] );
+                                  arguments: [req.requestId, req.userLoc]);
                             },
                             child: Card(
                               child: Container(
@@ -328,9 +330,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       final data = snapshot.data!;
 
                       SchedulerBinding.instance.addPostFrameCallback((_) {
-                        setState(() {
+                        if (mounted) {
+                          setState(() {
                           _updateUser = data;
                         });
+                        }
                       });
 
                       if (data.isDaily == true) {
