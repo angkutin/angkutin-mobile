@@ -15,6 +15,7 @@ import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
 import 'package:angkutin/screen/auth/map_screen.dart';
 import 'package:angkutin/screen/driver/driver_detail_service_screen.dart';
+import 'package:angkutin/screen/driver/driver_history_screen.dart';
 import 'package:angkutin/screen/driver/driver_monitor_screen.dart';
 import 'package:angkutin/screen/driver/driver_request_waste.dart';
 import 'package:angkutin/screen/onboarding_screen.dart';
@@ -160,6 +161,12 @@ class MainApp extends StatelessWidget {
               case DriverHomeScreen.ROUTE_NAME:
                 return MaterialPageRoute(
                     builder: (_) => const DriverHomeScreen());
+
+              case DriverHistoryScreen.ROUTE_NAME:
+              final String driverId =
+                    settings.arguments as String;
+                return MaterialPageRoute(
+                    builder: (_) =>  DriverHistoryScreen(driverId: driverId,));
 
               case DriverMonitorScreen.ROUTE_NAME:
                 final List<dynamic> arguments =

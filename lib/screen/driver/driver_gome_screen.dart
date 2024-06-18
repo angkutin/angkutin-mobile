@@ -26,6 +26,7 @@ import '../../provider/driver/driver_service_provider.dart';
 import '../../provider/user/user_daily_provider.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../user/user_profile_screen.dart';
+import 'driver_history_screen.dart';
 import 'service/DriverLocationService.dart';
 
 class DriverHomeScreen extends StatefulWidget {
@@ -156,6 +157,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     DriverRequestWasteScreen.ROUTE_NAME,
                     arguments: _updateUser)),
             CustomDrawerItem(title: "Laporan Timbunan Sampah", onTap: () {}),
+            CustomDrawerItem(title: "Riwayat", onTap: () {
+              Navigator.pushNamed(context, DriverHistoryScreen.ROUTE_NAME, arguments: _updateUser?.email);
+            }),
 
             // spacer
             const Spacer(),
