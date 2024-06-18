@@ -13,7 +13,6 @@ import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/database/storage_service.dart';
-import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/user/request_accepted_screen.dart';
 import 'package:angkutin/widget/CustomButton.dart';
@@ -45,7 +44,7 @@ class RequestServiceScreen extends StatefulWidget {
 class _RequestServiceScreenState extends State<RequestServiceScreen> {
   File? image;
   final ImageService imageService = ImageService();
-  TextEditingController _descController = TextEditingController();
+  final TextEditingController _descController = TextEditingController();
 
   String? address;
   String? district;
@@ -140,10 +139,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                       address = result['address'];
                       district = result['district'];
                     });
-                    // print(
-                    //     "Koordinat : ${coordinate?.toString() ?? 'Not selected'}");
-                    // print('Address: ${address ?? 'Not selected'}');
-                    // print('Kecamatan: ${district ?? 'Not selected'}');
                   } else {
                     print(
                         "Koordinat null: ${coordinate?.toString() ?? 'Not selected'}");
@@ -159,7 +154,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                   color: cGreenStrong,
                 ),
                 title: Text(
-                  image != null ? "Oke!" : "Fotoin dong!",
+                  image != null ? "Oke !" : "Fotoin dong!",
                   style: const TextStyle(color: mainColor),
                 ),
                 onTap: () => _showImagePickerDialog(context),
@@ -172,7 +167,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
               const SizedBox(
                 height: 20,
               ),
-              // requestServiceProvider.isLoading == true
               isLoading == true
                   ? const Center(child: CircularProgressIndicator())
                   : CustomButton(
@@ -188,7 +182,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                               .collection('requests')
                               .doc()
                               .id;
-                          // final userEmail = "userId2";
                           final now = Timestamp.now();
 
                           final storageService = StorageService();

@@ -24,7 +24,6 @@ import 'package:angkutin/widget/DailyCarbageCard.dart';
 import '../../common/utils.dart';
 import '../../data/model/UserModel.dart' as UserModel;
 import '../../widget/CarbageHaulCard.dart';
-import '../../widget/CustomButton.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../../widget/ServiceCard.dart';
 import 'request_service_screen.dart';

@@ -1,7 +1,5 @@
 import 'package:angkutin/common/constant.dart';
-import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
-import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
