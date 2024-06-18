@@ -166,6 +166,7 @@ class DriverServiceProvider with ChangeNotifier {
 
       if (requestData != null) {
         final selectedData = {
+          'date': requestData['date'].toString(),
           'description': requestData['description'],
           'name': requestData['name'],
           'senderEmail': requestData['senderEmail'],

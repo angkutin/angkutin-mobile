@@ -29,7 +29,6 @@ class CarbageHaulCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
             const Text(
               'Permintaan Angkut',
               style: TextStyle(

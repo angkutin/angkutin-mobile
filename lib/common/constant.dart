@@ -6,6 +6,8 @@ const Color cGreenStrong = Color(0xFF0E403C);
 const Color cGreenSoft = Color(0xFF98E49B);
 const Color cGreenSofter = Color(0xFFBAEDBC);
 
+const Color cYellowSoft = Color(0xFFF9D689);
+
 const Color mainColor = Color(0xFF35A7C2);
 const Color cBlueSoft = Color(0xFFA8CEEA);
 const Color softBlueColor = Color(0xFF31B4AA);
@@ -29,6 +31,9 @@ const TextStyle basicTextStyleBlack =
 
 const TextStyle text14Black54 =
     TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: Colors.black54);
+
+const TextStyle text18cgs18 =
+    TextStyle(fontWeight: FontWeight.w500, fontSize: 18, color: cGreenStrong);
 
 BoxDecoration containerBorderWithRadius = BoxDecoration(
   borderRadius: BorderRadius.circular(12),
