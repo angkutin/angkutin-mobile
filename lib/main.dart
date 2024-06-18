@@ -131,8 +131,10 @@ class MainApp extends StatelessWidget {
                     builder: (_) => const UserHomeScreen());
 
               case UserHistoryScreen.ROUTE_NAME:
+              final String userId =
+                    settings.arguments as String;
                 return MaterialPageRoute(
-                    builder: (_) => const UserHistoryScreen());
+                    builder: (_) =>  UserHistoryScreen(userId: userId,));
 
               case UserProfileScreen.ROUTE_NAME:
                 return MaterialPageRoute(

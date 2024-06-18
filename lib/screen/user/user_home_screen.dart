@@ -121,7 +121,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             CustomDrawerItem(
               title: "Riwayat",
               onTap: () =>
-                  Navigator.pushNamed(context, UserHistoryScreen.ROUTE_NAME),
+                  Navigator.pushNamed(context, UserHistoryScreen.ROUTE_NAME, arguments: _user?.email),
             ),
 
             // spacer
