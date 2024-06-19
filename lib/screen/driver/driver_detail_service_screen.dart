@@ -159,6 +159,10 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                     });
                   },
                   markers: markers,
+                  scrollGesturesEnabled: true,
+                  zoomGesturesEnabled: true,
+                  tiltGesturesEnabled: true,
+                  rotateGesturesEnabled: true,
                 ),
               ),
 

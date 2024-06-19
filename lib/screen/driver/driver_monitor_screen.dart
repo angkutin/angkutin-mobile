@@ -41,6 +41,8 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   LatLng? _previousDriverLocation;
   Set<Marker> markers = {};
   Timer? _dataTimer;
+      StreamSubscription<GeoPoint>? locationSubscription;
+
 
   double latitude = 0;
   double longitude = 0;
@@ -51,6 +53,7 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   void dispose() {
     _mapController?.dispose();
     _dataTimer?.cancel();
+    locationSubscription?.cancel();
     super.dispose();
   }
 
@@ -81,7 +84,6 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   }
 
   _loadData() async {
-// jalankan dulu tracking
     _loadAndUpdateDriverLocation();
 
 // get data spesifik
@@ -122,7 +124,6 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
 
   _loadAndUpdateDriverLocation() async {
     LocationService locationService = LocationService();
-    StreamSubscription<GeoPoint>? locationSubscription;
 
     locationSubscription =
         locationService.locationStream.listen((userLocation) {
@@ -132,8 +133,8 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
 
         userLocationLatLng = GeoPoint(latitude, longitude);
 
-        _updateDriverLocationOnServer(
-            "Bw2aq2Q0OYglg35x0Kfi", userLocationLatLng!);
+        // _updateDriverLocationOnServer(
+        //     "Bw2aq2Q0OYglg35x0Kfi", userLocationLatLng!);
       });
     });
   }

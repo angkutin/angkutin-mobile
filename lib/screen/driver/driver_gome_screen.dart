@@ -44,6 +44,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   UserModel.User? _updateUser;
   // Location location = new Location();
   Timer? _locationUpdateTimer;
+  StreamSubscription<List<RequestService>>? requestSubscription;
+      StreamSubscription<GeoPoint>? locationSubscription;
+
 
   double latitude = 0;
   double longitude = 0;
@@ -55,14 +58,15 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     super.initState();
 
     _loadData();
-    _loadAndUpdateDriverLocation();
-    // _loadLocation();
+    // _loadAndUpdateDriverLocation();
+    _listenToRequestsStream();
   }
 
   @override
   void dispose() {
     // Hentikan Timer ketika widget dibuang
     _locationUpdateTimer?.cancel();
+    locationSubscription?.cancel();
     super.dispose();
   }
 
@@ -85,9 +89,23 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     print("Nilai dariisDaily di init : $_isDailyActive");
   }
 
-  _loadAndUpdateDriverLocation() async {
+  void _listenToRequestsStream() {
+    final ongoingService =
+        Provider.of<DriverOngoingService>(context, listen: false);
+    requestSubscription = ongoingService.requestsStream.listen((requests) {
+      if (requests.isNotEmpty) {
+        for (var req in requests) {
+          _loadAndUpdateDriverLocation(req.requestId);
+        }
+      } else {
+        // locationSubscription?.cancel();
+        print("Tidak ada requests");
+      }
+    });
+  }
+
+  _loadAndUpdateDriverLocation(String requestId) async {
     LocationService locationService = LocationService();
-    StreamSubscription<GeoPoint>? locationSubscription;
 
     locationSubscription =
         locationService.locationStream.listen((userLocation) {
@@ -99,7 +117,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           userLocationLatLng = GeoPoint(latitude, longitude);
 
           // id request masih dummy
-          _updateDriverLocation("faLiEGH031CsZLzivpyf", userLocationLatLng!);
+          _updateDriverLocation(requestId, userLocationLatLng!);
         });
       }
     });
@@ -157,9 +175,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     DriverRequestWasteScreen.ROUTE_NAME,
                     arguments: _updateUser)),
             CustomDrawerItem(title: "Laporan Timbunan Sampah", onTap: () {}),
-            CustomDrawerItem(title: "Riwayat", onTap: () {
-              Navigator.pushNamed(context, DriverHistoryScreen.ROUTE_NAME, arguments: _updateUser?.email);
-            }),
+            CustomDrawerItem(
+                title: "Riwayat",
+                onTap: () {
+                  Navigator.pushNamed(context, DriverHistoryScreen.ROUTE_NAME,
+                      arguments: _updateUser?.email);
+                }),
 
             // spacer
             const Spacer(),
@@ -336,8 +357,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       SchedulerBinding.instance.addPostFrameCallback((_) {
                         if (mounted) {
                           setState(() {
-                          _updateUser = data;
-                        });
+                            _updateUser = data;
+                          });
                         }
                       });
 
