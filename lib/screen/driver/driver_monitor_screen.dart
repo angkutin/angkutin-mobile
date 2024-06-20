@@ -139,13 +139,13 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
     });
   }
 
-  _updateDriverLocationOnServer(String reqId, GeoPoint driverLoc) async {
-    final driverServiceProv =
-        Provider.of<DriverServiceProvider>(context, listen: false);
-    await driverServiceProv.updateDriverLocation(reqId, driverLoc);
+  // _updateDriverLocationOnServer(int type, String reqId, GeoPoint driverLoc) async {
+  //   final driverServiceProv =
+  //       Provider.of<DriverServiceProvider>(context, listen: false);
+  //   await driverServiceProv.updateDriverLocation(type ,reqId, driverLoc);
 
-    // print("Lokasi diupdate pada __updateDriverLocation");
-  }
+  //   // print("Lokasi diupdate pada __updateDriverLocation");
+  // }
 
   @override
   Widget build(BuildContext context) {

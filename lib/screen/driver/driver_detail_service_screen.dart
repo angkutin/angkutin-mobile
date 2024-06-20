@@ -199,6 +199,7 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                                   onPressed: () async {
                                     if (_user != null) {
                                       await driverServiceProv.acceptUserRequest(
+                                        requestData.type,
                                           requestData.requestId,
                                           _user!.name!,
                                           _user!.email!,

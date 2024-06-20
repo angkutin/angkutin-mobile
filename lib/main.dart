@@ -33,6 +33,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'screen/driver/driver_gome_screen.dart';
+import 'screen/driver/driver_report_waste_screen.dart';
 import 'screen/user/request_accepted_screen.dart';
 import 'screen/user/request_service_screen.dart';
 import '../../data/model/UserModel.dart' as userModel;
@@ -183,6 +184,13 @@ class MainApp extends StatelessWidget {
                 final dataDriver = settings.arguments as userModel.User;
                 return MaterialPageRoute(
                     builder: (_) => DriverRequestWasteScreen(
+                          dataDriver: dataDriver,
+                        ));
+              
+              case DriverReportWasteScreen.ROUTE_NAME:
+                final dataDriver = settings.arguments as userModel.User;
+                return MaterialPageRoute(
+                    builder: (_) => DriverReportWasteScreen(
                           dataDriver: dataDriver,
                         ));
 

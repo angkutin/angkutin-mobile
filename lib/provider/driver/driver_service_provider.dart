@@ -26,6 +26,54 @@ class DriverServiceProvider with ChangeNotifier {
     super.dispose();
   }
 
+  // get request
+  ResultState? _repState;
+  String? _repErrorMessage;
+  bool? _repIsLoading = false;
+  StreamController<List<RequestService>> _reportController =
+      StreamController.broadcast();
+
+  ResultState? get repState => _reqState;
+  String? get repErrorMessage => _reqErrorMessage;
+  bool? get repIsLoading => _reqIsLoading;
+  // List<RequestService> get requests => _requests;
+
+  Stream<List<RequestService>> get reportStream => _reportController.stream;
+
+  Future<void> getReportFromUser(String driverId) async {
+    _repState = ResultState.loading;
+    _repErrorMessage = null;
+    _repIsLoading = true;
+    notifyListeners();
+
+    try {
+      final dataStream = FirebaseFirestore.instance
+          .collection('requests')
+          .doc('report')
+          .collection('items')
+          .where('idPetugas', isEqualTo: driverId)
+          // .where('isAcceptByDriver', isEqualTo: false)
+          // .where('isDone', isEqualTo: false)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => RequestService.fromFirestore(doc, null))
+              .toList());
+
+      dataStream.listen((data) {
+        // _requests = data;
+        _reportController.add(data); // Add data to the stream
+      });
+      _repState = ResultState.success;
+    } catch (error) {
+      _repState = ResultState.error;
+      _repErrorMessage = error.toString();
+      print("Errornya $_repErrorMessage");
+    } finally {
+      _repIsLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> getCarbageRequestFromUser(String kecamatan) async {
     _reqState = ResultState.loading;
     _reqErrorMessage = null;
@@ -69,7 +117,7 @@ class DriverServiceProvider with ChangeNotifier {
   String? get servErrorMessage => _servErrorMessage;
   bool? get servIsLoading => _servIsLoading;
 
-  Future<void> acceptUserRequest(String reqId, String namaPetugas,
+  Future<void> acceptUserRequest(int type, String reqId, String namaPetugas,
       String idPetugas, GeoPoint driverLoc) async {
     _servState = ResultState.loading;
     _servErrorMessage = null;
@@ -77,21 +125,40 @@ class DriverServiceProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final requestRef = FirebaseFirestore.instance
-          .collection('requests')
-          .doc('carbage')
-          .collection('items')
-          .doc(reqId);
+      if (type == 1) {
+        final requestRef = FirebaseFirestore.instance
+            .collection('requests')
+            .doc('carbage')
+            .collection('items')
+            .doc(reqId);
 
-      final requestDoc = await requestRef.get();
-      if (requestDoc.exists) {
-        // acc dari sisi user
-        await requestRef.update({
-          'isAcceptByDriver': true,
-          'namaPetugas': namaPetugas,
-          'lokasiPetugas': null,
-          'idPetugas': idPetugas
-        });
+        final requestDoc = await requestRef.get();
+        if (requestDoc.exists) {
+          // acc dari sisi user
+          await requestRef.update({
+            'isAcceptByDriver': true,
+            'namaPetugas': namaPetugas,
+            'lokasiPetugas': null,
+            'idPetugas': idPetugas
+          });
+        }
+      } else if (type == 2) {
+        final requestRef = FirebaseFirestore.instance
+            .collection('requests')
+            .doc('report')
+            .collection('items')
+            .doc(reqId);
+
+        final requestDoc = await requestRef.get();
+        if (requestDoc.exists) {
+          // acc dari sisi user
+          await requestRef.update({
+            'isAcceptByDriver': true,
+            'namaPetugas': namaPetugas,
+            'lokasiPetugas': null,
+            'idPetugas': idPetugas
+          });
+        }
       }
 
       _servState = ResultState.success;
@@ -105,9 +172,10 @@ class DriverServiceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateDriverLocation(String reqId, GeoPoint driverLoc) async {
+  Future<void> updateDriverLocation(int type,  String reqId, GeoPoint driverLoc) async {
     try {
-      final requestRef = FirebaseFirestore.instance
+      if (type == 1) {
+        final requestRef = FirebaseFirestore.instance
           .collection('requests')
           .doc('carbage')
           .collection('items')
@@ -120,9 +188,28 @@ class DriverServiceProvider with ChangeNotifier {
           await requestRef.update({
             'lokasiPetugas': driverLoc,
           });
-          print("Lokasi Driver diupdate !");
+          print("Lokasi Driver Request diupdate !");
         }
       }
+      } else if (type == 2){
+        final requestRef = FirebaseFirestore.instance
+          .collection('requests')
+          .doc('report')
+          .collection('items')
+          .doc(reqId);
+
+      final requestDoc = await requestRef.get();
+      if (requestDoc.exists) {
+        final isDone = requestDoc.data()?['isDone'] as bool?;
+        if (isDone == false) {
+          await requestRef.update({
+            'lokasiPetugas': driverLoc,
+          });
+          print("Lokasi Driver Report diupdate !");
+        }
+      }
+      }
+      
     } catch (error) {
       print("Error updating driver location: $error");
     }

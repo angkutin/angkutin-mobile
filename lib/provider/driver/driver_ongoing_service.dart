@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../common/state_enum.dart';
 
@@ -32,21 +33,39 @@ class DriverOngoingService with ChangeNotifier {
     notifyListeners();
 
     try {
-      final dataStream = FirebaseFirestore.instance
+      final carbageStream = FirebaseFirestore.instance
           .collection('requests')
           .doc('carbage')
           .collection('items')
           .where('idPetugas', isEqualTo: idPetugas)
           .where('isDone', isEqualTo: false)
-          .snapshots();
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => RequestService.fromFirestore(doc, null))
+              .toList());
 
-      dataStream.listen((querySnapshot) {
-        List<RequestService> requests = querySnapshot.docs
-            .map((doc) => RequestService.fromFirestore(doc, null))
-            .toList();
-        _requestsController.add(requests);
+      final reportStream = FirebaseFirestore.instance
+          .collection('requests')
+          .doc('report')
+          .collection('items')
+          .where('idPetugas', isEqualTo: idPetugas)
+          .where('isAcceptByDriver', isEqualTo: true)
+          .where('isDone', isEqualTo: false)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => RequestService.fromFirestore(doc, null))
+              .toList());
+
+      final dataStream = Rx.combineLatest2<List<RequestService>,
+          List<RequestService>, List<RequestService>>(
+        carbageStream,
+        reportStream,
+        (carbageData, reportData) => [...carbageData, ...reportData],
+      );
+      
+      dataStream.listen((data) {
+        _requestsController.add(data); // Add data to the stream
       });
-
       _reqState = ResultState.success;
     } catch (error) {
       _reqState = ResultState.error;

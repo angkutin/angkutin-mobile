@@ -7,6 +7,7 @@ import 'package:angkutin/provider/driver/driver_daily_provider.dart';
 import 'package:angkutin/provider/driver/driver_ongoing_service.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
 import 'package:angkutin/screen/driver/driver_monitor_screen.dart';
+import 'package:angkutin/screen/driver/driver_report_waste_screen.dart';
 import 'package:angkutin/screen/driver/driver_request_waste.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/TitleSectionBlue.dart';
@@ -95,7 +96,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     requestSubscription = ongoingService.requestsStream.listen((requests) {
       if (requests.isNotEmpty) {
         for (var req in requests) {
-          _loadAndUpdateDriverLocation(req.requestId);
+          _loadAndUpdateDriverLocation(req.type, req.requestId); 
+         // DI NONAKTIFKAN DLU YA BESTI
         }
       } else {
         // locationSubscription?.cancel();
@@ -104,7 +106,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     });
   }
 
-  _loadAndUpdateDriverLocation(String requestId) async {
+  _loadAndUpdateDriverLocation(int type, String requestId) async {
     LocationService locationService = LocationService();
 
     locationSubscription =
@@ -117,16 +119,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           userLocationLatLng = GeoPoint(latitude, longitude);
 
           // id request masih dummy
-          _updateDriverLocation(requestId, userLocationLatLng!);
+          _updateDriverLocation(type ,requestId, userLocationLatLng!);
         });
       }
     });
   }
 
-  _updateDriverLocation(String reqId, GeoPoint driverLoc) async {
+  _updateDriverLocation(int type, String reqId, GeoPoint driverLoc) async {
     final driverServiceProv =
         Provider.of<DriverServiceProvider>(context, listen: false);
-    await driverServiceProv.updateDriverLocation(reqId, driverLoc);
+    await driverServiceProv.updateDriverLocation(type, reqId, driverLoc);
 
     // print("Lokasi diupdate pada __updateDriverLocation");
   }
@@ -174,7 +176,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     context,
                     DriverRequestWasteScreen.ROUTE_NAME,
                     arguments: _updateUser)),
-            CustomDrawerItem(title: "Laporan Timbunan Sampah", onTap: () {}),
+            CustomDrawerItem(title: "Laporan Timbunan Sampah", onTap: () {
+              Navigator.pushNamed(
+                    // MENGRIM DATA DRIVER DARI LOCAL SEHINGGA LOKASINYA TIDAK BERUBAH
+                    context,
+                    DriverReportWasteScreen.ROUTE_NAME,
+                    arguments: _updateUser);
+            }),
             CustomDrawerItem(
                 title: "Riwayat",
                 onTap: () {
@@ -247,81 +255,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         itemCount: requests.length,
                         itemBuilder: (context, index) {
                           final req = requests[index];
-                          return InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, DriverMonitorScreen.ROUTE_NAME,
-                                  arguments: [req.requestId, req.userLoc]);
-                            },
-                            child: Card(
-                              child: Container(
-                                width: mediaQueryWidth(context),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: cGreenSoft,
-                                ),
-                                child: Column(
-                                  children: [
-                                    const Text(
-                                      'Permintaan Sedang Berlangsung',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16,
-                                          color: cGreenStrong),
-                                    ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text("Waktu Pengajuan :",
-                                            style: text14Black54),
-                                        const Spacer(),
-                                        Text(
-                                          formatDate(
-                                              req.date.toDate().toString()),
-                                          style: text14Black54,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                            formatTime(
-                                                req.date.toDate().toString()),
-                                            style: text14Black54),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text("Diajukan Oleh :",
-                                            style: text14Black54),
-                                        const Spacer(),
-                                        Text(
-                                          "An. ${req.name}",
-                                          style: text14Black54,
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text("Wilayah :",
-                                            style: text14Black54),
-                                        const Spacer(),
-                                        Text(
-                                          req.wilayah,
-                                          style: text14Black54,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
+                          if (req.type ==1 ) {
+                            return driverServiceCard(req: req);
+                          } else {
+                            return driverServiceCard(req: req);
+                          }
                         },
                       );
                     }
@@ -411,5 +349,93 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         ),
       ),
     );
+  }
+}
+
+class driverServiceCard extends StatelessWidget {
+  const driverServiceCard({
+    super.key,
+    required this.req,
+  });
+
+  final RequestService req;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+    onTap: () {
+      Navigator.pushNamed(
+          context, DriverMonitorScreen.ROUTE_NAME,
+          arguments: [req.requestId, req.userLoc]);
+    },
+    child: Card(
+      child: Container(
+        width: mediaQueryWidth(context),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: req.type == 1 ? cGreenSoft : redSoftColor,
+        ),
+        child: Column(
+          children: [
+             Text(
+              req.type == 1 ? 'Permintaan Sedang Berlangsung' : 'Laporan Masyarakat',
+              style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  color: cGreenStrong),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text("Waktu Pengajuan :",
+                    style: text14Black54),
+                const Spacer(),
+                Text(
+                  formatDate(
+                      req.date.toDate().toString()),
+                  style: text14Black54,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                    formatTime(
+                        req.date.toDate().toString()),
+                    style: text14Black54),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text("Diajukan Oleh :",
+                    style: text14Black54),
+                const Spacer(),
+                Text(
+                  "An. ${req.name}",
+                  style: text14Black54,
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text("Wilayah :",
+                    style: text14Black54),
+                const Spacer(),
+                Text(
+                  req.wilayah,
+                  style: text14Black54,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+                              );
   }
 }
