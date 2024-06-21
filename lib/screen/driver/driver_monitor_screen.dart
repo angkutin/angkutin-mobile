@@ -20,12 +20,14 @@ import '../../provider/driver/driver_service_provider.dart';
 import '../../widget/CustomButton.dart';
 
 class DriverMonitorScreen extends StatefulWidget {
+  final int type;
   final String requestId;
   final GeoPoint userLocation;
   static const ROUTE_NAME = '/driver-monitor-screen';
 
   const DriverMonitorScreen({
     Key? key,
+    required this.type,
     required this.requestId,
     required this.userLocation,
   }) : super(key: key);
@@ -88,7 +90,7 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
 
 // get data spesifik
     Provider.of<MonitorProvider>(context, listen: false)
-        .getRequestDataStream(widget.requestId);
+        .getRequestDataStream(widget.type, widget.requestId);
   }
 
   void _updateDriverLocation(LatLng newLocation) {
@@ -139,10 +141,10 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
     });
   }
 
-  // _updateDriverLocationOnServer(int type, String reqId, GeoPoint driverLoc) async {
+  // _updateDriverLocationOnServer(String reqId, GeoPoint driverLoc) async {
   //   final driverServiceProv =
   //       Provider.of<DriverServiceProvider>(context, listen: false);
-  //   await driverServiceProv.updateDriverLocation(type ,reqId, driverLoc);
+  //   await driverServiceProv.updateDriverLocation(reqId, driverLoc);
 
   //   // print("Lokasi diupdate pada __updateDriverLocation");
   // }

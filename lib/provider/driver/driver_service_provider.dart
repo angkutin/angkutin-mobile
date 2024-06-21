@@ -172,48 +172,38 @@ class DriverServiceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateDriverLocation(int type,  String reqId, GeoPoint driverLoc) async {
-    try {
-      if (type == 1) {
-        final requestRef = FirebaseFirestore.instance
-          .collection('requests')
-          .doc('carbage')
-          .collection('items')
-          .doc(reqId);
-
-      final requestDoc = await requestRef.get();
-      if (requestDoc.exists) {
-        final isDone = requestDoc.data()?['isDone'] as bool?;
-        if (isDone == false) {
-          await requestRef.update({
-            'lokasiPetugas': driverLoc,
-          });
-          print("Lokasi Driver Request diupdate !");
-        }
-      }
-      } else if (type == 2){
-        final requestRef = FirebaseFirestore.instance
-          .collection('requests')
-          .doc('report')
-          .collection('items')
-          .doc(reqId);
-
-      final requestDoc = await requestRef.get();
-      if (requestDoc.exists) {
-        final isDone = requestDoc.data()?['isDone'] as bool?;
-        if (isDone == false) {
-          await requestRef.update({
-            'lokasiPetugas': driverLoc,
-          });
-          print("Lokasi Driver Report diupdate !");
-        }
-      }
-      }
-      
-    } catch (error) {
-      print("Error updating driver location: $error");
+ Future<void> updateDriverLocation(int type, String reqId, GeoPoint driverLoc) async {
+  try {
+    String collectionPath;
+    if (type == 1) {
+      collectionPath = "carbage";
+    } else if (type == 2) {
+      collectionPath = "report";
+    } else {
+      throw Exception("Invalid type");
     }
+
+    final requestRef = FirebaseFirestore.instance
+        .collection('requests')
+        .doc(collectionPath)
+        .collection('items')
+        .doc(reqId);
+
+    final requestDoc = await requestRef.get();
+    if (requestDoc.exists) {
+      final isDone = requestDoc.data()?['isDone'] as bool?;
+      if (isDone == false) {
+        await requestRef.update({
+          'lokasiPetugas': driverLoc,
+        });
+        print("Lokasi Driver ${type == 1 ? 'Request' : 'Report'} diupdate!");
+      }
+    }
+  } catch (error) {
+    print("Error updating driver location: $error");
   }
+}
+
 
   ResultState? _finishState;
   bool? _finishIsLoading = false;

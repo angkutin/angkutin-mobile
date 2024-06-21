@@ -22,29 +22,46 @@ class MonitorProvider with ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> getRequestDataStream(String requestId) async {
-    _state = ResultState.loading;
-    _errorMessage = null;
-    notifyListeners();
+ Future<void> getRequestDataStream(int type, String requestId) async {
+  _state = ResultState.loading;
+  _errorMessage = null;
+  notifyListeners();
 
-    try {
-      final docRef = db
-          .collection("requests")
-          .doc("carbage")
-          .collection("items")
-          .doc(requestId);
-      docRef.snapshots().listen((event) {
-        _serviceDataController.add(RequestService.fromFirestore(event, null));
-        _state = ResultState.success;
-        print("current data: ${event.data()}");
-      }, onError: (error) {
-        print("Listen failed: $error");
-        _state = ResultState.error;
-        _errorMessage = error.toString();
-        print("Errornya $_errorMessage");
-      });
-    } finally {
-      notifyListeners();
+  try {
+    String collectionPath;
+    if (type == 1) {
+      collectionPath = "carbage";
+    } else if (type == 2) {
+      collectionPath = "report";
+    } else {
+      throw Exception("Invalid type");
     }
+
+    final docRef = db
+        .collection("requests")
+        .doc(collectionPath)
+        .collection("items")
+        .doc(requestId);
+
+    docRef.snapshots().listen((event) {
+      _serviceDataController.add(RequestService.fromFirestore(event, null));
+      _state = ResultState.success;
+      print("current data: ${event.data()}");
+      notifyListeners();
+    }, onError: (error) {
+      print("Listen failed: $error");
+      _state = ResultState.error;
+      _errorMessage = error.toString();
+      print("Error: $_errorMessage");
+      notifyListeners();
+    });
+
+  } catch (e) {
+    _state = ResultState.error;
+    _errorMessage = e.toString();
+    print("Error: $_errorMessage");
+    notifyListeners();
   }
+}
+
 }

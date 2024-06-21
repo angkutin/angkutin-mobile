@@ -17,6 +17,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -46,8 +47,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   // Location location = new Location();
   Timer? _locationUpdateTimer;
   StreamSubscription<List<RequestService>>? requestSubscription;
-      StreamSubscription<GeoPoint>? locationSubscription;
-
+  StreamSubscription<GeoPoint>? locationSubscription;
 
   double latitude = 0;
   double longitude = 0;
@@ -96,8 +96,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     requestSubscription = ongoingService.requestsStream.listen((requests) {
       if (requests.isNotEmpty) {
         for (var req in requests) {
-          _loadAndUpdateDriverLocation(req.type, req.requestId); 
-         // DI NONAKTIFKAN DLU YA BESTI
+          _loadAndUpdateDriverLocation(req.type, req.requestId);
+          // DI NONAKTIFKAN DLU YA BESTI
         }
       } else {
         // locationSubscription?.cancel();
@@ -118,8 +118,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
           userLocationLatLng = GeoPoint(latitude, longitude);
 
-          // id request masih dummy
-          _updateDriverLocation(type ,requestId, userLocationLatLng!);
+          // update driver location based on type and reqId
+          _updateDriverLocation(type, requestId, userLocationLatLng!);
         });
       }
     });
@@ -176,13 +176,15 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     context,
                     DriverRequestWasteScreen.ROUTE_NAME,
                     arguments: _updateUser)),
-            CustomDrawerItem(title: "Laporan Timbunan Sampah", onTap: () {
-              Navigator.pushNamed(
-                    // MENGRIM DATA DRIVER DARI LOCAL SEHINGGA LOKASINYA TIDAK BERUBAH
-                    context,
-                    DriverReportWasteScreen.ROUTE_NAME,
-                    arguments: _updateUser);
-            }),
+            CustomDrawerItem(
+                title: "Laporan Timbunan Sampah",
+                onTap: () {
+                  Navigator.pushNamed(
+                      // MENGRIM DATA DRIVER DARI LOCAL SEHINGGA LOKASINYA TIDAK BERUBAH
+                      context,
+                      DriverReportWasteScreen.ROUTE_NAME,
+                      arguments: _updateUser);
+                }),
             CustomDrawerItem(
                 title: "Riwayat",
                 onTap: () {
@@ -246,7 +248,19 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Container();
+                      return Container(
+                        width: mediaQueryWidth(context),
+                        padding: const EdgeInsets.all(16),
+                        child: CachedNetworkImage(
+                          imageUrl: dotenv.env['SAMPAH_DAUR_ILUSTRASI_IMAGE']!,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                      );
                     } else {
                       final requests = snapshot.data!;
                       return ListView.builder(
@@ -255,31 +269,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         itemCount: requests.length,
                         itemBuilder: (context, index) {
                           final req = requests[index];
-                          if (req.type ==1 ) {
-                            return driverServiceCard(req: req);
-                          } else {
-                            return driverServiceCard(req: req);
-                          }
+                          return driverServiceCard(req: req);
+                          // if (req.type == 1) {
+                          //   return driverServiceCard(req: req);
+                          // } else {
+                            
+                          // }
                         },
                       );
                     }
                   },
                 ),
-                Container(
-                  width: mediaQueryWidth(context),
-                  padding: const EdgeInsets.all(16),
-                  child: CachedNetworkImage(
-                    imageUrl: dotenv.env['SAMPAH_DAUR_ILUSTRASI_IMAGE']!,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            CircularProgressIndicator(
-                                value: downloadProgress.progress),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
-                ),
-                const TitleSection(title: "Kamu siap bertugas ?"),
-                const Text("Anda memiliki jadwal pengangkutan hari ini"),
                 const SizedBox(
                   height: 50,
                 ),
@@ -301,41 +301,58 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       });
 
                       if (data.isDaily == true) {
-                        return SizedBox(
-                          width: mediaQueryWidth(context),
-                          child: CustomButton(
-                            title: "Stop Layanan",
-                            color: redSoftColor,
-                            onPressed: () async {
-                              if (_user != null) {
-                                print('Updating isDaily to false');
-                                await dailyProvider.updateDriverDaily(
-                                    _user!.email!, false);
-                                await dailyProvider.updateMassDailyUsers(
-                                    _user!.address!, false);
-                              } else {
-                                print("Error: No user found!");
-                              }
-                            },
-                          ),
+                        return Column(
+                          children: [
+                            const TitleSection(title: "Angkutan Harian Aktif"),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                              width: mediaQueryWidth(context),
+                              child: CustomButton(
+                                title: "Stop Layanan",
+                                color: redSoftColor,
+                                onPressed: () async {
+                                  if (_user != null) {
+                                    print('Updating isDaily to false');
+                                    await dailyProvider.updateDriverDaily(
+                                        _user!.email!, false);
+                                    await dailyProvider.updateMassDailyUsers(
+                                        _user!.address!, false);
+                                  } else {
+                                    print("Error: No user found!");
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         );
                       } else {
-                        return SizedBox(
-                          width: mediaQueryWidth(context),
-                          child: CustomButton(
-                            title: "Mulai",
-                            onPressed: () async {
-                              if (_user != null) {
-                                print('Updating isDaily to true');
-                                await dailyProvider.updateDriverDaily(
-                                    _user!.email!, true);
-                                await dailyProvider.updateMassDailyUsers(
-                                    "Kecamatan Medan Denai", true);
-                              } else {
-                                print("Error: No user found!");
-                              }
-                            },
-                          ),
+                        return Column(
+                          children: [
+                            const TitleSection(
+                                title: "Aktifkan status angkutan harian ?"),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                              width: mediaQueryWidth(context),
+                              child: CustomButton(
+                                title: "Mulai",
+                                onPressed: () async {
+                                  if (_user != null) {
+                                    print('Updating isDaily to true');
+                                    await dailyProvider.updateDriverDaily(
+                                        _user!.email!, true);
+                                    await dailyProvider.updateMassDailyUsers(
+                                        _user!.address!, true);
+                                  } else {
+                                    print("Error: No user found!");
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         );
                       }
                     } else {
@@ -363,79 +380,76 @@ class driverServiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-    onTap: () {
-      Navigator.pushNamed(
-          context, DriverMonitorScreen.ROUTE_NAME,
-          arguments: [req.requestId, req.userLoc]);
-    },
-    child: Card(
-      child: Container(
-        width: mediaQueryWidth(context),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: req.type == 1 ? cGreenSoft : redSoftColor,
-        ),
-        child: Column(
-          children: [
-             Text(
-              req.type == 1 ? 'Permintaan Sedang Berlangsung' : 'Laporan Masyarakat',
-              style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                  color: cGreenStrong),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text("Waktu Pengajuan :",
-                    style: text14Black54),
-                const Spacer(),
-                Text(
-                  formatDate(
-                      req.date.toDate().toString()),
-                  style: text14Black54,
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                    formatTime(
-                        req.date.toDate().toString()),
-                    style: text14Black54),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text("Diajukan Oleh :",
-                    style: text14Black54),
-                const Spacer(),
-                Text(
-                  "An. ${req.name}",
-                  style: text14Black54,
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text("Wilayah :",
-                    style: text14Black54),
-                const Spacer(),
-                Text(
-                  req.wilayah,
-                  style: text14Black54,
-                ),
-              ],
-            ),
-          ],
+      onTap: () {
+        Navigator.pushNamed(context, DriverMonitorScreen.ROUTE_NAME,
+            arguments: [req.type, req.requestId, req.userLoc]);
+
+            print("tipe ${req.type} reqId ${req.requestId} userLoc ${req.userLoc}");
+      },
+      child: Card(
+        child: Container(
+          width: mediaQueryWidth(context),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: req.type == 1 ? cGreenSoft : cYellowSoft,
+          ),
+          child: Column(
+            children: [
+              Text(
+                req.type == 1
+                    ? 'Permintaan Sedang Berlangsung'
+                    : 'Laporan Masyarakat',
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    color: cGreenStrong),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text("Waktu Pengajuan :", style: text14Black54),
+                  const Spacer(),
+                  Text(
+                    formatDate(req.date.toDate().toString()),
+                    style: text14Black54,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(formatTime(req.date.toDate().toString()),
+                      style: text14Black54),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text("Diajukan Oleh :", style: text14Black54),
+                  const Spacer(),
+                  Text(
+                    "An. ${req.name}",
+                    style: text14Black54,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text("Wilayah :", style: text14Black54),
+                  const Spacer(),
+                  Text(
+                    req.wilayah,
+                    style: text14Black54,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-                              );
+    );
   }
 }
