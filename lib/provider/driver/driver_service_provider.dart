@@ -33,9 +33,9 @@ class DriverServiceProvider with ChangeNotifier {
   StreamController<List<RequestService>> _reportController =
       StreamController.broadcast();
 
-  ResultState? get repState => _reqState;
-  String? get repErrorMessage => _reqErrorMessage;
-  bool? get repIsLoading => _reqIsLoading;
+  ResultState? get repState => _repState;
+  String? get repErrorMessage => _repErrorMessage;
+  bool? get repIsLoading => _repIsLoading;
   // List<RequestService> get requests => _requests;
 
   Stream<List<RequestService>> get reportStream => _reportController.stream;

@@ -1,8 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
 
 import 'package:angkutin/common/utils.dart';
-import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/driver/driver_daily_provider.dart';
@@ -13,7 +11,6 @@ import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/provider/user/user_daily_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
-import 'package:angkutin/screen/auth/map_screen.dart';
 import 'package:angkutin/screen/driver/driver_detail_service_screen.dart';
 import 'package:angkutin/screen/driver/driver_history_screen.dart';
 import 'package:angkutin/screen/driver/driver_monitor_screen.dart';
@@ -28,7 +25,6 @@ import 'package:flutter/material.dart';
 
 import 'package:angkutin/firebase_options.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
-import 'package:intl/find_locale.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/common/utils.dart';
-import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
