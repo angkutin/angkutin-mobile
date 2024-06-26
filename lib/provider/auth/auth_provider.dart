@@ -77,7 +77,7 @@ class AuthenticationProvider with ChangeNotifier {
 
   Future<void> saveUserDataLocally(user_model.User userData) async {
     final prefs = await SharedPreferences.getInstance();
-    final userDataString = jsonEncode(userData.toJson());
+    final userDataString = jsonEncode(userData.toMinimalJson());
     prefs.setString(userDataKey, userDataString);
     print("berhasil simpan data ke local : ${jsonDecode(userDataString)}");
   }

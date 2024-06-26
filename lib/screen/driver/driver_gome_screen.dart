@@ -97,7 +97,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       if (requests.isNotEmpty) {
         for (var req in requests) {
           _loadAndUpdateDriverLocation(req.type, req.requestId);
-          // DI NONAKTIFKAN DLU YA BESTI
         }
       } else {
         // locationSubscription?.cancel();

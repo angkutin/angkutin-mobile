@@ -259,7 +259,11 @@ class DriverServiceProvider with ChangeNotifier {
           'idPetugas': requestData['idPetugas'],
           'imageUrl': requestData['imageUrl'],
           'name': requestData['name'],
-          
+
+          'isAcceptByDriver': requestData['isAcceptByDriver'],
+          'isDelivered': requestData['isDelivered'],
+          'isDone':requestData['isDone'],
+
           'userLoc':requestData['userLoc'],
           'senderEmail': requestData['senderEmail'],
           'namaPetugas': requestData['namaPetugas'],

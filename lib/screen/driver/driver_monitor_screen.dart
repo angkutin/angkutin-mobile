@@ -18,6 +18,7 @@ import 'package:angkutin/provider/monitor_provider.dart';
 import 'package:angkutin/widget/CustomListTile.dart';
 import '../../data/model/RequestModel.dart';
 import '../../provider/driver/driver_service_provider.dart';
+import '../../utils/route_helper.dart';
 import '../../widget/CustomButton.dart';
 
 class DriverMonitorScreen extends StatefulWidget {
@@ -115,10 +116,21 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
           _mapController
               ?.animateCamera(CameraUpdate.newLatLng(_driverLocation!));
 
-          _fetchRoute(
-              LatLng(
-                  widget.userLocation.latitude, widget.userLocation.longitude),
-              _driverLocation!);
+// Generate route
+          RouteHelper.fetchRoute(
+            LatLng(widget.userLocation.latitude, widget.userLocation.longitude),
+            _driverLocation!,
+          ).then((polylineCoordinates) {
+            setState(() {
+              polylines.clear();
+              polylines.add(Polyline(
+                width: 5,
+                polylineId: const PolylineId("poly"),
+                color: Colors.blue,
+                points: polylineCoordinates,
+              ));
+            });
+          });
         });
       }
     });
@@ -140,39 +152,39 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
     });
   }
 
-  Future<void> _fetchRoute(LatLng origin, LatLng destination) async {
-    final String apiKey = dotenv.env['OPENROUTESERVICE_API_KEY']!;
-    final String url =
-        'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$apiKey&start=${origin.longitude},${origin.latitude}&end=${destination.longitude},${destination.latitude}';
+  // Future<void> _fetchRoute(LatLng origin, LatLng destination) async {
+  //   final String apiKey = dotenv.env['OPENROUTESERVICE_API_KEY']!;
+  //   final String url =
+  //       'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$apiKey&start=${origin.longitude},${origin.latitude}&end=${destination.longitude},${destination.latitude}';
 
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final coordinates = data['features'][0]['geometry']['coordinates'];
-      _createPolylines(coordinates);
-    } else {
-      print('Failed to fetch directions: ${response.body}');
-    }
-  }
+  //   final response = await http.get(Uri.parse(url));
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     final coordinates = data['features'][0]['geometry']['coordinates'];
+  //     _createPolylines(coordinates);
+  //   } else {
+  //     print('Failed to fetch directions: ${response.body}');
+  //   }
+  // }
 
-  void _createPolylines(List<dynamic> coordinates) {
-    List<LatLng> polylineCoordinates = [];
-    for (var coordinate in coordinates) {
-      polylineCoordinates.add(LatLng(coordinate[1], coordinate[0]));
-    }
+  // void _createPolylines(List<dynamic> coordinates) {
+  //   List<LatLng> polylineCoordinates = [];
+  //   for (var coordinate in coordinates) {
+  //     polylineCoordinates.add(LatLng(coordinate[1], coordinate[0]));
+  //   }
 
-    if (mounted) {
-      setState(() {
-        polylines.clear();
-        polylines.add(Polyline(
-          width: 5,
-          polylineId: const PolylineId("poly"),
-          color: Colors.blue,
-          points: polylineCoordinates,
-        ));
-      });
-    }
-  }
+  //   if (mounted) {
+  //     setState(() {
+  //       polylines.clear();
+  //       polylines.add(Polyline(
+  //         width: 5,
+  //         polylineId: const PolylineId("poly"),
+  //         color: Colors.blue,
+  //         points: polylineCoordinates,
+  //       ));
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -225,19 +237,17 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                             child: CustomButton(
                                 title: "Sudah Diangkut",
                                 onPressed: () async {
-                                  await driverServiceProv
-                                      .finishUserRequest(
-                                        request.type,
-                                          request.requestId,
-                                          request.senderEmail,
-                                          request.idPetugas!);
-                            
+                                  await driverServiceProv.finishUserRequest(
+                                      request.type,
+                                      request.requestId,
+                                      request.senderEmail,
+                                      request.idPetugas!);
+
                                   // balik ke home
                                   if (driverServiceProv.finishState ==
                                       ResultState.success) {
                                     Navigator.pushReplacementNamed(
-                                          context,
-                                          DriverHomeScreen.ROUTE_NAME);
+                                        context, DriverHomeScreen.ROUTE_NAME);
                                   } else {
                                     print("Gagal menyelesaikan orderan");
                                   }

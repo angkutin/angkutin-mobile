@@ -137,7 +137,7 @@ class _UserHaulHistoryState extends State<UserHaulHistory> {
             final filteredServices =
                 data.where((service) => service['type'] == 1).toList();
             if (filteredServices.isEmpty) {
-              return const Center(child: Text("Tidak ada data dengan tipe 1"));
+              return const Center(child: Text("Tidak ada data"));
             } else {
               return ListView.builder(
                 itemCount: filteredServices.length,
@@ -161,7 +161,9 @@ Widget _historyItemCard(service) {
     child: Column(
       children: [
         ListTile(
-          title: Text(service['name'] ?? 'No Name'),
+          title: Text("Diangkut oleh : ${service['namaPetugas'] ?? 'Tidak Diangkut'}", style: const TextStyle(
+            overflow: TextOverflow.ellipsis
+          ),),
           subtitle: Text('${service['wilayah']}'),
           trailing: Text(service['isDelivered'] == true
               ? service['isAcceptByDriver'] == false
