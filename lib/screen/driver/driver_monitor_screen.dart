@@ -3,10 +3,10 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -65,7 +65,8 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
     markers.add(
       Marker(
         markerId: const MarkerId('userMarker'),
-        position: LatLng(widget.userLocation.latitude, widget.userLocation.longitude),
+        position:
+            LatLng(widget.userLocation.latitude, widget.userLocation.longitude),
         infoWindow: const InfoWindow(title: 'Lokasi Permintaan'),
       ),
     );
@@ -96,35 +97,46 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
     _previousDriverLocation = newLocation;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _driverLocation = newLocation;
-        markers.removeWhere((marker) => marker.markerId == const MarkerId('driverMarker'));
-        markers.add(
-          Marker(
-            markerId: const MarkerId('driverMarker'),
-            position: _driverLocation!,
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-            infoWindow: const InfoWindow(title: 'Lokasi Petugas'),
-          ),
-        );
+      if (mounted) {
+        setState(() {
+          _driverLocation = newLocation;
+          markers.removeWhere(
+              (marker) => marker.markerId == const MarkerId('driverMarker'));
+          markers.add(
+            Marker(
+              markerId: const MarkerId('driverMarker'),
+              position: _driverLocation!,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueGreen),
+              infoWindow: const InfoWindow(title: 'Lokasi Petugas'),
+            ),
+          );
 
-        _mapController?.animateCamera(CameraUpdate.newLatLng(_driverLocation!));
+          _mapController
+              ?.animateCamera(CameraUpdate.newLatLng(_driverLocation!));
 
-        _fetchRoute(LatLng(widget.userLocation.latitude, widget.userLocation.longitude), _driverLocation!);
-      });
+          _fetchRoute(
+              LatLng(
+                  widget.userLocation.latitude, widget.userLocation.longitude),
+              _driverLocation!);
+        });
+      }
     });
   }
 
   _loadAndUpdateDriverLocation() async {
     LocationService locationService = LocationService();
 
-    locationSubscription = locationService.locationStream.listen((userLocation) {
-      setState(() {
-        latitude = userLocation.latitude;
-        longitude = userLocation.longitude;
+    locationSubscription =
+        locationService.locationStream.listen((userLocation) {
+      if (mounted) {
+        setState(() {
+          latitude = userLocation.latitude;
+          longitude = userLocation.longitude;
 
-        userLocationLatLng = GeoPoint(latitude, longitude);
-      });
+          userLocationLatLng = GeoPoint(latitude, longitude);
+        });
+      }
     });
   }
 
@@ -149,15 +161,17 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
       polylineCoordinates.add(LatLng(coordinate[1], coordinate[0]));
     }
 
-    setState(() {
-      polylines.clear();
-      polylines.add(Polyline(
-        width: 5,
-        polylineId: PolylineId("poly"),
-        color: Colors.blue,
-        points: polylineCoordinates,
-      ));
-    });
+    if (mounted) {
+      setState(() {
+        polylines.clear();
+        polylines.add(Polyline(
+          width: 5,
+          polylineId: const PolylineId("poly"),
+          color: Colors.blue,
+          points: polylineCoordinates,
+        ));
+      });
+    }
   }
 
   @override
@@ -180,85 +194,92 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                   LatLng(driverLocation.latitude, driverLocation.longitude);
               _updateDriverLocation(newLocation);
             }
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                      width: mediaQueryWidth(context),
-                      height: mediaQueryHeight(context) / 2,
-                      child: GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: _driverLocation ??
-                              const LatLng(3.5649873243206964, 98.71563527362277), // initial data
-                          zoom: 15,
-                        ),
-                        onMapCreated: (GoogleMapController controller) {
-                          _mapController = controller;
-                        },
-                        markers: markers,
-                        polylines: polylines,
-                      )),
-                  Row(
-                    children: [
-                      const Spacer(),
-                      driverServiceProv.finishIsLoading == true
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : Container(
-                              margin: const EdgeInsets.all(8),
-                              width: 120,
-                              child: CustomButton(
-                                  title: "Sudah Diangkut",
-                                  onPressed: () async {
-                                    await driverServiceProv.finishUserRequest(
-                                        request.requestId,
-                                        request.senderEmail,
-                                        request.idPetugas!);
-
-                                    // balik ke home
-                                    if (driverServiceProv.finishState == ResultState.success) {
-                                      Future.delayed(const Duration(milliseconds: 500), () {
-                                        Navigator.pushReplacementNamed(
-                                          context,
-                                          DriverHomeScreen.ROUTE_NAME
-                                        );
-                                      });
-                                    } else {
-                                      print("Gagal menyelesaikan orderan");
-                                    }
-                                  }),
-                            ),
-                      const SizedBox(
-                        width: 10,
-                      )
-                    ],
-                  ),
-                  CustomListTile(
-                      title: "Diajukan oleh", value: "An. ${request.name}"),
-                  CustomListTile(
-                      title: "Waktu Permintaan",
-                      value: "${formatDate(request.date.toDate().toString())}, ${formatTime(request.date.toDate().toString())}"),
-                  CustomListTile(
-                      title: "Deskripsi",
-                      value: request.description! != '' ? request.description! : "-"),
-                  Container(
+            return ListView(
+              children: [
+                SizedBox(
                     width: mediaQueryWidth(context),
-                    height: 200,
-                    padding: const EdgeInsets.all(16),
-                    child: CachedNetworkImage(
-                      imageUrl: request.imageUrl,
-                      fit: BoxFit.cover,
-                      progressIndicatorBuilder: (context, url, downloadProgress) =>
-                          CircularProgressIndicator(value: downloadProgress.progress),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
-                    ),
+                    height: mediaQueryHeight(context) / 2,
+                    child: GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: _driverLocation ??
+                            const LatLng(3.5649873243206964,
+                                98.71563527362277), // initial data
+                        zoom: 18,
+                      ),
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                      },
+                      markers: markers,
+                      polylines: polylines,
+                    )),
+                Row(
+                  children: [
+                    const Spacer(),
+                    driverServiceProv.finishIsLoading == true
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Container(
+                            margin: const EdgeInsets.all(8),
+                            width: 120,
+                            child: CustomButton(
+                                title: "Sudah Diangkut",
+                                onPressed: () async {
+                                  await driverServiceProv
+                                      .finishUserRequest(
+                                        request.type,
+                                          request.requestId,
+                                          request.senderEmail,
+                                          request.idPetugas!);
+                            
+                                  // balik ke home
+                                  if (driverServiceProv.finishState ==
+                                      ResultState.success) {
+                                    Navigator.pushReplacementNamed(
+                                          context,
+                                          DriverHomeScreen.ROUTE_NAME);
+                                  } else {
+                                    print("Gagal menyelesaikan orderan");
+                                  }
+                                }),
+                          ),
+                    const SizedBox(
+                      width: 10,
+                    )
+                  ],
+                ),
+                CustomListTile(
+                    title: "Diajukan oleh", value: "An. ${request.name}"),
+                CustomListTile(
+                    title: "Waktu Permintaan",
+                    value:
+                        "${formatDate(request.date.toDate().toString())}, ${formatTime(request.date.toDate().toString())}"),
+                CustomListTile(
+                    title: "Deskripsi",
+                    value: request.description! != ''
+                        ? request.description!
+                        : "-"),
+                Container(
+                  width: mediaQueryWidth(context),
+                  height: 200,
+                  padding: const EdgeInsets.all(16),
+                  child: CachedNetworkImage(
+                    imageUrl: request.imageUrl,
+                    fit: BoxFit.cover,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
-                ],
-              ),
+                )
+              ],
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {

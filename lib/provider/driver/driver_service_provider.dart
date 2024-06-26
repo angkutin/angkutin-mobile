@@ -212,15 +212,25 @@ class DriverServiceProvider with ChangeNotifier {
   bool? get finishIsLoading => _finishIsLoading;
 
   Future<void> finishUserRequest(
+    int type, 
       String reqId, String userId, String petugasId) async {
     _finishState = ResultState.loading;
     // _servErrorMessage = null;
     _finishIsLoading = true;
     notifyListeners();
     try {
+    String collectionPath;
+    if (type == 1) {
+      collectionPath = "carbage";
+    } else if (type == 2) {
+      collectionPath = "report";
+    } else {
+      throw Exception("Invalid type");
+    }
+
       final requestRef = FirebaseFirestore.instance
           .collection('requests')
-          .doc('carbage')
+          .doc(collectionPath)
           .collection('items')
           .doc(reqId);
 
@@ -241,13 +251,17 @@ class DriverServiceProvider with ChangeNotifier {
       final requestData = requestDoc.data();
 
       if (requestData != null) {
+        // final selectedData = RequestService.fromFirestore(requestDoc, null);
+        print("Ada data");  
         final selectedData = {
           'date': requestData['date'].toString(),
           'description': requestData['description'],
-          'name': requestData['name'],
-          'senderEmail': requestData['senderEmail'],
           'idPetugas': requestData['idPetugas'],
           'imageUrl': requestData['imageUrl'],
+          'name': requestData['name'],
+          
+          'userLoc':requestData['userLoc'],
+          'senderEmail': requestData['senderEmail'],
           'namaPetugas': requestData['namaPetugas'],
           'requestId': requestData['requestId'],
           'type': requestData['type'],
@@ -272,6 +286,8 @@ class DriverServiceProvider with ChangeNotifier {
             'services': FieldValue.arrayUnion([selectedData])
           });
         }
+      } else{
+        print("Request data null");
       }
 
       // hapus dari path asli

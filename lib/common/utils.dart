@@ -42,6 +42,9 @@ void showInfoSnackbar(BuildContext context, String message) {
   }
 }
 
+// bottom sheet
+
+
 // compress file
 Future<File?> compressImage(File imageFile, int maxSizeKB) async {
   final int maxSizeBytes = maxSizeKB * 1024;

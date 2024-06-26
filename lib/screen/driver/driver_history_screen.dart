@@ -33,8 +33,15 @@ class DriverHistoryScreen extends StatelessWidget {
             ],
           ),
         ),
-        body:  TabBarView(
-          children: [UserHaulHistory(driverId: driverId,), UserReportHistory(driverId: driverId,)],
+        body: TabBarView(
+          children: [
+            UserHaulHistory(
+              driverId: driverId,
+            ),
+            UserReportHistory(
+              driverId: driverId,
+            )
+          ],
         ),
       ),
     );
@@ -53,64 +60,12 @@ class UserReportHistory extends StatefulWidget {
 }
 
 class _UserReportHistoryState extends State<UserReportHistory> {
-
   @override
   void initState() {
     super.initState();
     Future.microtask(() =>
-        Provider.of<UserDailyProvider>(context, listen: false).getUserStream(widget.driverId));
-  }
-  @override
-  Widget build(BuildContext context) {
-    return 
-    
-    StreamBuilder(
-      stream: Provider.of<UserDailyProvider>(context).dataStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.hasData) {
-          final data = snapshot.data?.services ?? [];
-          if (data.isEmpty) {
-            return const Center(child: Text("Tidak ada data"));
-          } else {
-            final filteredServices = data.where((service) => service['type'] == 2).toList();
-            if (filteredServices.isEmpty) {
-              return const Center(child: Text("Tidak ada data"));
-            } else {
-              return ListView.builder(
-                itemCount: filteredServices.length,
-                itemBuilder: (context, index) {
-                  final service = filteredServices[index];
-                  return _historyItemCard(service);
-                },
-              );
-            }
-          }
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
-    );
-  }
-}
-class UserHaulHistory extends StatefulWidget {
-  final String driverId;
-  const UserHaulHistory({
-    Key? key,
-    required this.driverId,
-  }) : super(key: key);
-
-  @override
-  State<UserHaulHistory> createState() => _UserHaulHistoryState();
-}
-
-class _UserHaulHistoryState extends State<UserHaulHistory> {
-@override
-  void initState() {
-    super.initState();
-    Future.microtask(() =>
-        Provider.of<UserDailyProvider>(context, listen: false).getUserStream(widget.driverId));
+        Provider.of<UserDailyProvider>(context, listen: false)
+            .getUserStream(widget.driverId));
   }
 
   @override
@@ -125,15 +80,16 @@ class _UserHaulHistoryState extends State<UserHaulHistory> {
           if (data.isEmpty) {
             return const Center(child: Text("Tidak ada data"));
           } else {
-            final filteredServices = data.where((service) => service['type'] == 1).toList();
+            final filteredServices =
+                data.where((service) => service['type'] == 2).toList();
             if (filteredServices.isEmpty) {
-              return const Center(child: Text("Tidak ada data dengan tipe 1"));
+              return const Center(child: Text("Tidak ada data"));
             } else {
               return ListView.builder(
                 itemCount: filteredServices.length,
                 itemBuilder: (context, index) {
                   final service = filteredServices[index];
-                  return _historyItemCard(service);
+                  return _historyItemCard(service, context);
                 },
               );
             }
@@ -146,11 +102,65 @@ class _UserHaulHistoryState extends State<UserHaulHistory> {
   }
 }
 
-Widget _historyItemCard(service) {
+class UserHaulHistory extends StatefulWidget {
+  final String driverId;
+  const UserHaulHistory({
+    Key? key,
+    required this.driverId,
+  }) : super(key: key);
+
+  @override
+  State<UserHaulHistory> createState() => _UserHaulHistoryState();
+}
+
+class _UserHaulHistoryState extends State<UserHaulHistory> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() =>
+        Provider.of<UserDailyProvider>(context, listen: false)
+            .getUserStream(widget.driverId));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: Provider.of<UserDailyProvider>(context).dataStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final data = snapshot.data?.services ?? [];
+          if (data.isEmpty) {
+            return const Center(child: Text("Tidak ada data"));
+          } else {
+            final filteredServices =
+                data.where((service) => service['type'] == 1).toList();
+            if (filteredServices.isEmpty) {
+              return const Center(child: Text("Tidak ada data"));
+            } else {
+              return ListView.builder(
+                itemCount: filteredServices.length,
+                itemBuilder: (context, index) {
+                  final service = filteredServices[index];
+                  return _historyItemCard(service, context);
+                },
+              );
+            }
+          }
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+}
+
+Widget _historyItemCard(service, BuildContext context) {
   return Card(
     child: ListTile(
       title: Text(service['name'] ?? 'No Name'),
-      subtitle: Text('${service['wilayah']}'),
+      subtitle: Text('${service['senderEmail']}\n${service['wilayah']}'),
     ),
   );
 }
