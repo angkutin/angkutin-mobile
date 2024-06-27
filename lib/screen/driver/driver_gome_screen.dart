@@ -44,7 +44,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   UserModel.User? _user;
   bool? _isDailyActive;
   UserModel.User? _updateUser;
-  // Location location = new Location();
   Timer? _locationUpdateTimer;
   StreamSubscription<List<RequestService>>? requestSubscription;
   StreamSubscription<GeoPoint>? locationSubscription;
@@ -59,13 +58,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     super.initState();
 
     _loadData();
-    // _loadAndUpdateDriverLocation();
     _listenToRequestsStream();
   }
 
   @override
   void dispose() {
-    // Hentikan Timer ketika widget dibuang
     _locationUpdateTimer?.cancel();
     locationSubscription?.cancel();
     super.dispose();
@@ -87,7 +84,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           .getOngoingRequest(_user!.email!); // NANTI DIGANTI
     }
 
-    print("Nilai dariisDaily di init : $_isDailyActive");
+    // print("Nilai dariisDaily di init : $_isDailyActive");
   }
 
   void _listenToRequestsStream() {
@@ -195,19 +192,26 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             const Spacer(),
 
             TextButton(
-                onPressed: () {
-                  Future.delayed(const Duration(milliseconds: 500), () async {
+                onPressed: () async {
+                  // Batalkan semua stream sebelum logout
+                  _locationUpdateTimer?.cancel();
+                  requestSubscription?.cancel();
+                  locationSubscription?.cancel();
+
+                  // Logout dari Firebase
+                  await FirebaseAuth.instance.signOut();
+                  await authProvider.deleteUserDataLocally();
+                  await authProvider.saveLoginState(false);
+                  await authProvider.deleteRoleLocally();
+                  await GoogleSignIn().signOut(); // untuk menghapus sesi login
+
+                  // Navigasi ke layar login setelah beberapa saat
+                  Future.delayed(const Duration(milliseconds: 500), () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const LoginScreen()),
                     );
-
-                    await FirebaseAuth.instance.signOut();
-                    await authProvider.deleteUserDataLocally();
-                    await authProvider.saveLoginState(false);
-                    await authProvider.deleteRoleLocally();
-                    await GoogleSignIn().signOut(); // untuk meghapus sesi login
                   });
                 },
                 child: Text(
@@ -272,7 +276,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           // if (req.type == 1) {
                           //   return driverServiceCard(req: req);
                           // } else {
-                            
+
                           // }
                         },
                       );
@@ -383,7 +387,7 @@ class driverServiceCard extends StatelessWidget {
         Navigator.pushNamed(context, DriverMonitorScreen.ROUTE_NAME,
             arguments: [req.type, req.requestId, req.userLoc]);
 
-            print("tipe ${req.type} reqId ${req.requestId} userLoc ${req.userLoc}");
+        print("tipe ${req.type} reqId ${req.requestId} userLoc ${req.userLoc}");
       },
       child: Card(
         child: Container(

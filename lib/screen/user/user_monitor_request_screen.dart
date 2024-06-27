@@ -1,12 +1,29 @@
-import 'package:angkutin/common/utils.dart';
-import 'package:angkutin/widget/CustomListTile.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+
+import 'package:angkutin/common/utils.dart';
+import 'package:angkutin/widget/CustomListTile.dart';
+
+import '../../common/constant.dart';
+import '../../data/model/RequestModel.dart';
+import '../../provider/monitor_provider.dart';
+import '../../utils/route_helper.dart';
 
 class UserMonitorRequestScreen extends StatefulWidget {
+  final int type;
+  final String requestId;
   static const ROUTE_NAME = '/user-monitor-screen';
 
-  const UserMonitorRequestScreen({super.key});
+  const UserMonitorRequestScreen({
+    Key? key,
+    required this.type,
+    required this.requestId,
+  }) : super(key: key);
 
   @override
   State<UserMonitorRequestScreen> createState() =>
@@ -16,12 +33,17 @@ class UserMonitorRequestScreen extends StatefulWidget {
 class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
   GoogleMapController? _mapController;
   // Position? _currentPosition;
-  final LatLng _userLocation = const LatLng(3.575802989942146, 98.68665949148696);
+  final LatLng _userLocation =
+      const LatLng(3.575802989942146, 98.68665949148696);
   Set<Marker> markers = {};
+  Timer? _dataTimer;
+  Set<Polyline> polylines = {};
 
   @override
   void dispose() {
     _mapController?.dispose();
+    _dataTimer?.cancel();
+
     super.dispose();
   }
 
@@ -41,6 +63,24 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
     _mapController?.animateCamera(
       CameraUpdate.newLatLng(_userLocation),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startDataUpdates();
+    });
+  }
+
+  void _startDataUpdates() {
+    _dataTimer?.cancel();
+    _dataTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _loadData();
+    });
+  }
+
+  _loadData() async {
+    Provider.of<MonitorProvider>(context, listen: false)
+        .getRequestDataStream(widget.type, widget.requestId);
+
+    print("Load data dijalankan");
   }
 
   @override
@@ -49,27 +89,141 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
       appBar: AppBar(
         title: const Text("Pantau Permintaan"),
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            width: mediaQueryWidth(context),
-            height: mediaQueryHeight(context) / 2,
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _userLocation,
-                zoom: 20,
+      body: StreamBuilder<RequestService>(
+        stream: Provider.of<MonitorProvider>(context).dataStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final request = snapshot.data!;
+            final driverLocation = request.lokasiPetugas;
+            final userLocation = request.userLoc;
+
+            print("ADA DATA \n $driverLocation \n$userLocation");
+
+            // Update markers
+            markers.clear();
+            markers.add(
+              Marker(
+                markerId: const MarkerId('userMarker'),
+                position: LatLng(userLocation.latitude, userLocation.longitude),
+                draggable: true,
+                infoWindow: const InfoWindow(title: 'Lokasi Anda'),
               ),
-              onMapCreated: (GoogleMapController controller) {
-                _mapController = controller;
-              },
-              markers: markers,
-            ),),
+            );
 
-            
-            CustomListTile(title: "Status", value: "Petugas dalam perjalanan"),
-            CustomListTile(title: "Waktu Permintaan", value: "12 Mei 2024, 08:00 WIB"),
+            markers.add(
+              Marker(
+                  markerId: const MarkerId('driverMarker'),
+                  position: LatLng(
+                      driverLocation!.latitude, driverLocation.longitude),
+                  infoWindow: const InfoWindow(title: 'Lokasi Driver'),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueGreen)),
+            );
 
+            // if (driverLocation != null) {
+
+            // }
+
+            // Generate route
+            RouteHelper.fetchRoute(
+              LatLng(userLocation.latitude, userLocation.longitude),
+              LatLng(driverLocation!.latitude, driverLocation.longitude),
+            ).then((polylineCoordinates) {
+              if (mounted) {
+                setState(() {
+                  polylines.clear();
+                  polylines.add(Polyline(
+                    width: 5,
+                    polylineId: const PolylineId("poly"),
+                    color: Colors.blue,
+                    points: polylineCoordinates,
+                  ));
+                });
+              }
+            });
+
+            return ListView(
+              children: [
+                driverLocation != null
+                    ? SizedBox(
+                        width: mediaQueryWidth(context),
+                        height: mediaQueryHeight(context) / 2,
+                        child: GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                            target: LatLng(driverLocation.latitude,
+                                driverLocation.longitude),
+                            zoom: 18,
+                          ),
+                          onMapCreated: (GoogleMapController controller) {
+                            _mapController = controller;
+                          },
+                          markers: markers,
+                          polylines: polylines,
+                        ))
+                    : const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                const Divider(
+                  color: Colors.transparent,
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    // crossAxisAlignment: Cross,
+                    children: [
+                      const Text(
+                        "Informasi pengangkutan",
+                        style: text18cgs18,
+                      ),
+                      const Text(
+                        "Petugas akan datang",
+                        style: text14Black54,
+                      ),
                     ],
+                  ),
+                ),
+                CustomListTile(
+                    title: "Nama petugas pengangkut", value: "An. ${request.namaPetugas}"),
+                // const Divider(
+                //   color: Colors.green,
+                // ),
+          
+                CustomListTile(
+                    title: "Waktu Permintaan",
+                    value:
+                        "${formatDate(request.date.toDate().toString())}, ${formatTime(request.date.toDate().toString())}"),
+                CustomListTile(
+                    title: "Catatan untuk petugas",
+                    value: request.description! != ''
+                        ? request.description!
+                        : "-"),
+                Container(
+                  width: mediaQueryWidth(context),
+                  height: 200,
+                  padding: const EdgeInsets.all(16),
+                  child: CachedNetworkImage(
+                    imageUrl: request.imageUrl,
+                    fit: BoxFit.cover,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
+                )
+              ],
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Container();
+          }
+        },
       ),
     );
   }

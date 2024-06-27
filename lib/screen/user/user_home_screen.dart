@@ -26,6 +26,7 @@ import '../../data/model/UserModel.dart' as UserModel;
 import '../../widget/CarbageHaulCard.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../../widget/ServiceCard.dart';
+import '../driver/driver_monitor_screen.dart';
 import 'request_service_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
@@ -119,28 +120,30 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             ),
             CustomDrawerItem(
               title: "Riwayat",
-              onTap: () =>
-                  Navigator.pushNamed(context, UserHistoryScreen.ROUTE_NAME, arguments: _user?.email),
+              onTap: () => Navigator.pushNamed(
+                  context, UserHistoryScreen.ROUTE_NAME,
+                  arguments: _user?.email),
             ),
 
             // spacer
             const Spacer(),
 
             TextButton(
-                onPressed: () {
-                  Future.delayed(const Duration(milliseconds: 500), () async {
+                onPressed: () async {
+                  // Logout dari Firebase
+                  await FirebaseAuth.instance.signOut();
+                  await authProvider.deleteUserDataLocally();
+                  await authProvider.saveLoginState(false);
+                  await authProvider.deleteRoleLocally();
+                  await GoogleSignIn().signOut(); // untuk menghapus sesi login
+
+                  // Navigasi ke layar login setelah beberapa saat
+                  Future.delayed(const Duration(milliseconds: 500), () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const LoginScreen()),
                     );
-
-                    await FirebaseAuth.instance.signOut();
-                    await GoogleSignIn().signOut(); // untuk meghapus sesi login
-
-                    await authProvider.deleteUserDataLocally();
-                    await authProvider.deleteRoleLocally();
-                    await authProvider.saveLoginState(false);
                   });
                 },
                 child: Text(
@@ -241,15 +244,17 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           final request = requests[index];
                           if (request.type == 1) {
                             return CarbageHaulCard(
-                              onPressed: () => Navigator.pushNamed(
-                                  context, UserMonitorRequestScreen.ROUTE_NAME),
+                              onPressed: () => 
+                              Navigator.pushNamed(
+                                  context, UserMonitorRequestScreen.ROUTE_NAME, arguments: [request.type, request.requestId]),
                               req: request,
                             );
                           } else {
                             // ini report
                             return reportCard(context, request, () async {
                               final userServiceProv =
-                                  Provider.of<UserRequestProvider>(context, listen: false);
+                                  Provider.of<UserRequestProvider>(context,
+                                      listen: false);
                               await userServiceProv.deleteRequest(request);
                             });
                           }
@@ -302,7 +307,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     );
   }
 }
-
 
 class EmptyServiceCard extends StatelessWidget {
   final String contentText;
@@ -386,20 +390,19 @@ Widget _statusReport(RequestService req, VoidCallback onPressed) {
       return const Text("Laporan Valid\nPetugas akan datang.",
           style: text18cgs18);
     } else {
-      return Column(
-        children:[ Text("Laporan Tidak Valid",
+      return Column(children: [
+        Text("Laporan Tidak Valid",
             style: text18cgs18.copyWith(color: Colors.red[900])),
-            Row(children: [
-            const Spacer(),
-            GestureDetector(
-                onTap: onPressed,
-                child: const FaIcon(
-                  FontAwesomeIcons.trashCan,
-                  size: 12,
-                )),
-          ])
-        ]
-      );
+        Row(children: [
+          const Spacer(),
+          GestureDetector(
+              onTap: onPressed,
+              child: const FaIcon(
+                FontAwesomeIcons.trashCan,
+                size: 12,
+              )),
+        ])
+      ]);
     }
   } else {
     return const Text("Menunggu Tinjauan", style: text18cgs18);

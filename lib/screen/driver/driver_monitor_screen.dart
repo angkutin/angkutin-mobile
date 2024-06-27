@@ -1,17 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:angkutin/common/state_enum.dart';
-import 'package:angkutin/screen/driver/driver_gome_screen.dart';
 import 'package:angkutin/screen/driver/service/DriverLocationService.dart';
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/monitor_provider.dart';
@@ -122,17 +117,16 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
             _driverLocation!,
           ).then((polylineCoordinates) {
             if (mounted) {
-               setState(() {
-              polylines.clear();
-              polylines.add(Polyline(
-                width: 5,
-                polylineId: const PolylineId("poly"),
-                color: Colors.blue,
-                points: polylineCoordinates,
-              ));
-            });
+              setState(() {
+                polylines.clear();
+                polylines.add(Polyline(
+                  width: 5,
+                  polylineId: const PolylineId("poly"),
+                  color: Colors.blue,
+                  points: polylineCoordinates,
+                ));
+              });
             }
-           
           });
         });
       }
@@ -213,11 +207,13 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                                       request.idPetugas!);
 
                                   // balik ke home
-                                   if (driverServiceProv.finishState == ResultState.success) {
-    Navigator.pop(context); // Ganti dengan Navigator.pop(context);
-  } else {
-    print("Gagal menyelesaikan orderan");
-  }
+                                  if (driverServiceProv.finishState ==
+                                      ResultState.success) {
+                                    Navigator.pop(
+                                        context); // Ganti dengan Navigator.pop(context);
+                                  } else {
+                                    print("Gagal menyelesaikan orderan");
+                                  }
                                 }),
                           ),
                     const SizedBox(

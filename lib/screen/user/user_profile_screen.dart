@@ -45,7 +45,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profil"),
+        title: const Text("Profil Pengguna"),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -89,15 +89,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               title: "Koordinat",
               value:
                   "Latitude : ${_user?.latitude}\nLongitude : ${_user?.longitude}",
-              trailing: IconButton(
-                  onPressed: () {
-                    print("Ganti koordinat");
-                  },
-                  icon: const Icon(
-                    Icons.edit_location_outlined,
-                    color: softBlueColor,
-                  )),
             ),
+            const SizedBox(height: 20,)
           ],
         ),
       ),

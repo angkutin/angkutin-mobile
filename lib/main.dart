@@ -128,10 +128,11 @@ class MainApp extends StatelessWidget {
                     builder: (_) => const UserHomeScreen());
 
               case UserHistoryScreen.ROUTE_NAME:
-              final String userId =
-                    settings.arguments as String;
+                final String userId = settings.arguments as String;
                 return MaterialPageRoute(
-                    builder: (_) =>  UserHistoryScreen(userId: userId,));
+                    builder: (_) => UserHistoryScreen(
+                          userId: userId,
+                        ));
 
               case UserProfileScreen.ROUTE_NAME:
                 return MaterialPageRoute(
@@ -142,8 +143,13 @@ class MainApp extends StatelessWidget {
                     builder: (_) => const RequestAcceptedScreen());
 
               case UserMonitorRequestScreen.ROUTE_NAME:
+                final List<dynamic> arguments =
+                    settings.arguments as List<dynamic>;
                 return MaterialPageRoute(
-                    builder: (_) => const UserMonitorRequestScreen());
+                    builder: (_) => UserMonitorRequestScreen(
+                          type: arguments[0],
+                          requestId: arguments[1],
+                        ));
 
               case RequestServiceScreen.ROUTE_NAME:
                 // final tipeAngkutan = settings.arguments as int;
@@ -162,17 +168,18 @@ class MainApp extends StatelessWidget {
                     builder: (_) => const DriverHomeScreen());
 
               case DriverHistoryScreen.ROUTE_NAME:
-              final String driverId =
-                    settings.arguments as String;
+                final String driverId = settings.arguments as String;
                 return MaterialPageRoute(
-                    builder: (_) =>  DriverHistoryScreen(driverId: driverId,));
+                    builder: (_) => DriverHistoryScreen(
+                          driverId: driverId,
+                        ));
 
               case DriverMonitorScreen.ROUTE_NAME:
                 final List<dynamic> arguments =
                     settings.arguments as List<dynamic>;
                 return MaterialPageRoute(
                     builder: (_) => DriverMonitorScreen(
-                      type: arguments[0],
+                          type: arguments[0],
                           requestId: arguments[1],
                           userLocation: arguments[2],
                         ));
@@ -183,7 +190,7 @@ class MainApp extends StatelessWidget {
                     builder: (_) => DriverRequestWasteScreen(
                           dataDriver: dataDriver,
                         ));
-              
+
               case DriverReportWasteScreen.ROUTE_NAME:
                 final dataDriver = settings.arguments as userModel.User;
                 return MaterialPageRoute(
