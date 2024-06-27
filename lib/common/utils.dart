@@ -42,7 +42,22 @@ void showInfoSnackbar(BuildContext context, String message) {
   }
 }
 
-// bottom sheet
+// Timestamp to Datetime
+DateTime timestampToDatetime(String timestampStr) {
+  final regex = RegExp(r'Timestamp\(seconds=(\d+), nanoseconds=(\d+)\)');
+  final match = regex.firstMatch(timestampStr);
+
+  if (match != null) {
+    final seconds = int.parse(match.group(1)!);
+    final nanoseconds = int.parse(match.group(2)!);
+
+    // Convert seconds and nanoseconds to DateTime
+    return DateTime.fromMillisecondsSinceEpoch(seconds * 1000 + nanoseconds ~/ 1000000);
+  } else {
+    throw FormatException('Invalid timestamp format');
+  }
+}
+
 
 
 // compress file

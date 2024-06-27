@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -252,9 +253,12 @@ class DriverServiceProvider with ChangeNotifier {
 
       if (requestData != null) {
         // final selectedData = RequestService.fromFirestore(requestDoc, null);
-        print("Ada data");  
+        print("Ada data");
+
+
         final selectedData = {
-          'date': requestData['date'].toString(),
+          // 'date': timestampToDatetime(requestData['date']),
+          'date': requestData['date'],
           'description': requestData['description'],
           'idPetugas': requestData['idPetugas'],
           'imageUrl': requestData['imageUrl'],

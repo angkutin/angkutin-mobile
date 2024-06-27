@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/constant.dart';
+import '../../common/utils.dart';
 import '../../provider/user/user_daily_provider.dart';
 
 class DriverHistoryScreen extends StatelessWidget {
@@ -157,10 +158,22 @@ class _UserHaulHistoryState extends State<UserHaulHistory> {
 }
 
 Widget _historyItemCard(service, BuildContext context) {
+  final dateTime = timestampToDatetime(service['date'].toString());
+
   return Card(
-    child: ListTile(
-      title: Text(service['name'] ?? 'No Name'),
-      subtitle: Text('${service['senderEmail']}\n${service['wilayah']}'),
+    child: Container(
+      color: cBlueSoft,
+      child: ListTile(
+        title: Text(service['name'] ?? 'No Name'),
+        subtitle: Text('${service['senderEmail']}\n${service['wilayah']}'),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Diajukan"),
+            Text(formatDate(dateTime.toString()))
+          ],
+        ),
+      ),
     ),
   );
 }

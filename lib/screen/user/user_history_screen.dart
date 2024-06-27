@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:angkutin/common/utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -157,21 +159,28 @@ class _UserHaulHistoryState extends State<UserHaulHistory> {
 }
 
 Widget _historyItemCard(service) {
+  final dateTime = timestampToDatetime(service['date'].toString());
+
   return Card(
-    child: Column(
-      children: [
-        ListTile(
-          title: Text("Diangkut oleh : ${service['namaPetugas'] ?? 'Tidak Diangkut'}", style: const TextStyle(
-            overflow: TextOverflow.ellipsis
-          ),),
-          subtitle: Text('${service['wilayah']}'),
-          trailing: Text(service['isDelivered'] == true
-              ? service['isAcceptByDriver'] == false
-                  ? "Ditolak"
-                  : ""
-              : ""),
-        ),
-      ],
+    child: Container(
+      color: cBlueSoft,
+      child: Column(
+        children: [
+          ListTile(
+            title: Text("Diangkut oleh : ${service['namaPetugas'] ?? 'Tidak Diangkut'}", style: const TextStyle(
+              overflow: TextOverflow.ellipsis
+            ),),
+            subtitle: Text(
+              '${service['wilayah']}\nDiajukan ${formatDate(dateTime.toString())}'),
+            trailing: Text(service['isDelivered'] == true
+                ? service['isAcceptByDriver'] == false
+                    ? "Ditolak"
+                    : ""
+                : ""
+                )
+          ),
+        ],
+      ),
     ),
   );
 }
