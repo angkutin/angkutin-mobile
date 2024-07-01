@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
+import 'package:angkutin/screen/driver/driver_gome_screen.dart';
 import 'package:angkutin/screen/user/user_home_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
@@ -72,39 +72,56 @@ class LoginScreen extends StatelessWidget {
                           try {
                             await signInProvider.signInWithGoogleProv();
 
-                            // );
-
                             if (signInProvider.state == ResultState.success) {
                               // ngecek apakah user sudah ngisi data melalui local storage
-                              final String? _user =
+                              final String? user =
                                   await signInProvider.readUserDataLocally();
 
-                              userModel.User _userData =
-                                  userModel.User.fromJson(jsonDecode(_user!));
+                              userModel.User userData =
+                                  userModel.User.fromJson(jsonDecode(user!));
 
-                              if (_userData.role == "Masyarakat") {
+                              if (userData.role == "Masyarakat" ||
+                                  userData.role == "masyarakat") {
                                 signInProvider.saveRoleState("Masyarakat");
-                              } else {
+                              } else if (userData.role == "Petugas" ||
+                                  userData.role == "petugas") {
                                 signInProvider.saveRoleState("Petugas");
+                              } else {
+                                print("LOGIN SCREEN : ada masalah dalam membaca role");
                               }
 
-                              bool isFillData = _userData.latitude != null;
+                              bool isFillData = userData.latitude != null;
+                              String role = userData.role!;
 
+                              // checking status fill data user
                               if (isFillData) {
                                 signInProvider.saveLoginState(true);
+                                // Navigate to screen based on user role
                                 Future.delayed(
-                                    const Duration(milliseconds: 500), () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const UserHomeScreen(),
-                                    ),
-                                  );
+                                    const Duration(milliseconds: 200), () {
+                                  if (role == "Masyarakat" ||
+                                      role == "masyarakat") {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UserHomeScreen(),
+                                      ),
+                                    );
+                                  } else if (role == "Petugas" ||
+                                      role == "petugas") {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const DriverHomeScreen(),
+                                      ),
+                                    );
+                                  }
                                 });
                               } else {
                                 Future.delayed(
-                                    const Duration(milliseconds: 500), () {
+                                    const Duration(milliseconds: 200), () {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -139,7 +156,6 @@ class LoginScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   text: 'Dengan masuk, kamu menyetujui ',
-
                   style: const TextStyle(
                     color: Colors.black,
                   ), // Mengubah warna teks

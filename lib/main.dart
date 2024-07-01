@@ -56,22 +56,36 @@ Future<void> main() async {
   bool isOnboarding = await authProvider.getOnBoardingState();
   bool isLoggedIn = await authProvider.getLoginState();
   String userRole = await authProvider.getRoleState();
-  bool isMasyarakat = userRole == "Masyarakat";
-
-  bool isNotEmptyDataLocal = await authProvider.readUserDataLocally() != null;
+  // bool isMasyarakat = userRole == "Masyarakat";
   // Future<bool> isFillData = authProvider.getFillDataState();
 
-  print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
-  Widget initialScreen = isOnboarding
-          ?  isNotEmptyDataLocal
-           ? isMasyarakat
-              ? isLoggedIn
-                  ? ChangeNotifierProvider.value(
-                      value: authProvider, child: const UserHomeScreen())
-                  : const LoginScreen()
-              : const DriverHomeScreen()
-              : const LoginScreen()
-          : const OnBoardingScreen();
+  // print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
+
+
+  Widget getInitialScreen(AuthenticationProvider authProvider) {
+    print("isOnboarding $isOnboarding");
+    print("isLoggedIn $isLoggedIn");
+    print("role $userRole");
+
+     if (isOnboarding) {
+      if (isLoggedIn) {
+        if (userRole == "Masyarakat" || userRole == "masyarakat") {
+          return const UserHomeScreen();
+        } else if (userRole == "Petugas" || userRole == "petugas") {
+          return const DriverHomeScreen();
+        } else {
+          return const LoginScreen();
+        }
+      } else {
+        return const LoginScreen();
+      }
+    } else {
+      return const OnBoardingScreen();
+    }
+
+  }
+
+  Widget initialScreen = getInitialScreen(authProvider);
 
   runApp(
     ChangeNotifierProvider(

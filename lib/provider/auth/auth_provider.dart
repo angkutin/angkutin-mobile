@@ -38,8 +38,7 @@ class AuthenticationProvider with ChangeNotifier {
       notifyListeners();
     } finally {
       _isLoading = false;
-      print(
-          "Provider : current user | name ${_userData?.name} | email  ${_userData?.email} | role ${_userData?.role}");
+      // print("Provider : current user | name ${_userData?.name} | email  ${_userData?.email} | role ${_userData?.role}");
     }
   }
 
