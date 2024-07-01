@@ -58,7 +58,7 @@ flutter:
 
 flutter_native_splash:
     color: "#3997DA"
-    image: "assets/angkutin_logo_white.png"
+    image: "assets/logo.png"
 
 icons_launcher:
   image_path: "assets/angkutin_logo_fill_mini.png"
