@@ -5,6 +5,7 @@ import 'package:angkutin/widget/ServiceCard.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -57,6 +58,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
   // payment and type
   int? requestPrice;
   String? requestType;
+  bool? isChecked = false;
 
   @override
   void initState() {
@@ -117,7 +119,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                         ),
                 ),
               ),
-              const Divider(),
               widget.tipeAngkutan == 1
                   ? ListTile(
                       leading: const FaIcon(
@@ -133,7 +134,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                       onTap: () => _showPaymentTypeDialog(context),
                     )
                   : Container(),
-              const Divider(),
+        
               ListTile(
                 leading: const FaIcon(
                   FontAwesomeIcons.locationDot,
@@ -163,7 +164,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                   }
                 },
               ),
-              const Divider(),
               ListTile(
                 leading: const FaIcon(
                   FontAwesomeIcons.camera,
@@ -175,11 +175,35 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                 ),
                 onTap: () => _showImagePickerDialog(context),
               ),
-              const Divider(),
               const SizedBox(
                 height: 10,
               ),
               CustomBasicTextField(descController: _descController),
+              const SizedBox(
+                height: 10,
+              ),
+                    widget.tipeAngkutan == 1
+                  ? Row(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                          value: isChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              isChecked = value!;
+                              print(isChecked);
+                            });
+                          },
+                        ),
+                        Flexible(
+                          child: Text(
+                              'Saya memastikan bahwa ini bukanlah permintaan fiktif',
+                              // maxLines: 2,
+                              style: TextStyle(color: Colors.green[900])),
+                        )
+                      ],
+                    )
+                  : Container(),
               const SizedBox(
                 height: 20,
               ),
@@ -194,79 +218,80 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                         });
 
                         if (widget.tipeAngkutan == 1) {
-          if (coordinate == null || image == null || requestType == null || requestPrice == null) {
-            setState(() {
-              isLoading = false;
-            });
-            showInfoSnackbar(context, "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
-            return;
-          }
-        } else if (widget.tipeAngkutan == 2) {
-          if (coordinate == null || image == null) {
-            setState(() {
-              isLoading = false;
-            });
-            showInfoSnackbar(context, "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
-            return;
-          }
-        }
-
-        final requestId = FirebaseFirestore.instance
-                              .collection('requests')
-                              .doc()
-                              .id;
-                          final now = Timestamp.now();
-
-                          final storageService = StorageService();
-
-                          final imgUrl = await storageService.uploadImage(
-                              "requests", "$_urlPathImage/$requestId", image!);
-
-                          final request = RequestService(
-                              requestId: requestId,
-                              senderEmail: widget.user.email!,
-                              name: widget.user.name!,
-                              date: now,
-                              imageUrl: imgUrl,
-                              description: _descController.text,
-                              userLoc: GeoPoint(
-                                  coordinate!.latitude, coordinate!.longitude),
-                              type: widget.tipeAngkutan,
-                              isDelivered: false,
-                              isAcceptByDriver: false,
-                              isDone: false,
-                              wilayah: extractLastPart(address!),
-                              tipePermintaanAngkutan: widget.tipeAngkutan == 1
-                                  ? requestType
-                                  : "Laporan",
-                              biayaPengangkutan:
-                                  widget.tipeAngkutan == 1 ? requestPrice : 0,
-                              isPaying:
-                                  widget.tipeAngkutan == 1 ? false : true);
-
-                          // upload
-                          await requestServiceProvider.createRequest(
-                              path: _urlPathImage, requestService: request);
-
-                        
-                          
-
-                          if (requestServiceProvider.state ==
-                              ResultState.success) {
-                            Future.delayed(const Duration(seconds: 1), () {
-                              Navigator.pushNamed(
-                                  context, RequestAcceptedScreen.ROUTE_NAME);
-                            });
-                          } else {
+                          if (coordinate == null ||
+                              image == null ||
+                              requestType == null ||
+                              requestPrice == null ||
+                              isChecked == false) {
                             setState(() {
                               isLoading = false;
                             });
                             showInfoSnackbar(context,
-                                "Gagal mengunggah data, coba lagi nanti");
-                            print(
-                                "Error gagal unggah permintaan : ${requestServiceProvider.errorMessage}");
+                                "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
+                            return;
                           }
-                        
+                        } else if (widget.tipeAngkutan == 2) {
+                          if (coordinate == null || image == null) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                            showInfoSnackbar(context,
+                                "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
+                            return;
+                          }
+                        }
+
+                        final requestId = FirebaseFirestore.instance
+                            .collection('requests')
+                            .doc()
+                            .id;
+                        final now = Timestamp.now();
+
+                        final storageService = StorageService();
+
+                        final imgUrl = await storageService.uploadImage(
+                            "requests", "$_urlPathImage/$requestId", image!);
+
+                        final request = RequestService(
+                            requestId: requestId,
+                            senderEmail: widget.user.email!,
+                            name: widget.user.name!,
+                            date: now,
+                            imageUrl: imgUrl,
+                            description: _descController.text,
+                            userLoc: GeoPoint(
+                                coordinate!.latitude, coordinate!.longitude),
+                            type: widget.tipeAngkutan,
+                            isDelivered: false,
+                            isAcceptByDriver: false,
+                            isDone: false,
+                            wilayah: extractLastPart(address!),
+                            tipePermintaanAngkutan: widget.tipeAngkutan == 1
+                                ? requestType
+                                : "Laporan",
+                            biayaPengangkutan:
+                                widget.tipeAngkutan == 1 ? requestPrice : 0,
+                            isPaying: widget.tipeAngkutan == 1 ? false : true);
+
+                        // upload
+                        await requestServiceProvider.createRequest(
+                            path: _urlPathImage, requestService: request);
+
+                        if (requestServiceProvider.state ==
+                            ResultState.success) {
+                          Future.delayed(const Duration(seconds: 1), () {
+                            Navigator.pushNamed(
+                                context, RequestAcceptedScreen.ROUTE_NAME);
+                          });
+                        } else {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          showInfoSnackbar(context,
+                              "Gagal mengunggah data, coba lagi nanti");
+                          print(
+                              "Error gagal unggah permintaan : ${requestServiceProvider.errorMessage}");
+                        }
                       })
             ],
           ),
