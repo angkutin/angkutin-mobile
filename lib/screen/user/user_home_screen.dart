@@ -138,13 +138,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   await GoogleSignIn().signOut(); // untuk menghapus sesi login
 
                   // Navigasi ke layar login setelah beberapa saat
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
-                    );
-                  });
+                  // Future.delayed(const Duration(milliseconds: 500), () {
+                  //   Navigator.pushReplacement(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const LoginScreen()),
+                  //   );
+                  // });
                 },
                 child: Text(
                   "Logout",
@@ -178,6 +178,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text("Lokasi permintaan masih gaje, di driver lokasi user di Alpha, di user lokasinya di Gbunga", style: text18cgs18,),
                 StreamBuilder(
                   stream: Provider.of<UserDailyProvider>(context, listen: false)
                       .driverDataStream,

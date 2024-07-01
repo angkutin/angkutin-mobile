@@ -57,17 +57,21 @@ Future<void> main() async {
   bool isLoggedIn = await authProvider.getLoginState();
   String userRole = await authProvider.getRoleState();
   bool isMasyarakat = userRole == "Masyarakat";
+
+  bool isNotEmptyDataLocal = await authProvider.readUserDataLocally() != null;
   // Future<bool> isFillData = authProvider.getFillDataState();
 
   print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
   Widget initialScreen = isOnboarding
-      ? isMasyarakat
-          ? isLoggedIn
-              ? ChangeNotifierProvider.value(
-                  value: authProvider, child: const UserHomeScreen())
+          ?  isNotEmptyDataLocal
+           ? isMasyarakat
+              ? isLoggedIn
+                  ? ChangeNotifierProvider.value(
+                      value: authProvider, child: const UserHomeScreen())
+                  : const LoginScreen()
+              : const DriverHomeScreen()
               : const LoginScreen()
-          : const DriverHomeScreen()
-      : const OnBoardingScreen();
+          : const OnBoardingScreen();
 
   runApp(
     ChangeNotifierProvider(
