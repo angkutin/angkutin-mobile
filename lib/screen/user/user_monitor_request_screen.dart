@@ -33,11 +33,12 @@ class UserMonitorRequestScreen extends StatefulWidget {
 class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
   GoogleMapController? _mapController;
   // Position? _currentPosition;
-  final LatLng _userLocation =
-      const LatLng(3.575802989942146, 98.68665949148696);
+  final LatLng _userLocation = const LatLng(
+      3.575802989942146, 98.68665949148696); // mesjid raya untuk default saja
   Set<Marker> markers = {};
   Timer? _dataTimer;
   Set<Polyline> polylines = {};
+  String routeStatus = '';
 
   @override
   void dispose() {
@@ -56,7 +57,7 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
         markerId: const MarkerId('userMarker'),
         position: _userLocation,
         draggable: true,
-        infoWindow: const InfoWindow(title: 'Lokasi Anda'),
+        infoWindow: const InfoWindow(title: 'Lokasi Permintaan'),
       ),
     );
 
@@ -77,10 +78,44 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
   }
 
   _loadData() async {
-    Provider.of<MonitorProvider>(context, listen: false)
-        .getRequestDataStream(widget.type, widget.requestId);
+    final monitorProvider =
+        Provider.of<MonitorProvider>(context, listen: false);
+    monitorProvider.getRequestDataStream(widget.type, widget.requestId);
+
+    final snapshot = await monitorProvider.dataStream.first;
+    final request = snapshot;
+    final driverLocation = request.lokasiPetugas;
+    final userLocation = request.userLoc;
+    _fetchRoute(
+      LatLng(userLocation.latitude, userLocation.longitude),
+      LatLng(driverLocation!.latitude, driverLocation.longitude),
+    );
 
     print("Load data dijalankan");
+  }
+
+  Future<void> _fetchRoute(LatLng userLocation, LatLng driverLocation) async {
+    setState(() {
+      routeStatus = '';
+    });
+
+    final result = await RouteHelper.fetchRoute(userLocation, driverLocation);
+    if (result['status'] == 'success') {
+      setState(() {
+        polylines.clear();
+        polylines.add(Polyline(
+          width: 5,
+          polylineId: const PolylineId("poly"),
+          color: Colors.blue,
+          points: result['polylines'],
+        ));
+        routeStatus = '';
+      });
+    } else {
+      setState(() {
+        routeStatus = 'Ada masalah dalam menampilkan rute';
+      });
+    }
   }
 
   @override
@@ -97,7 +132,7 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
             final driverLocation = request.lokasiPetugas;
             final userLocation = request.userLoc;
 
-            print("ADA DATA \n $driverLocation \n$userLocation");
+            // print("ADA DATA \n $driverLocation \n$userLocation");
 
             // Update markers
             markers.clear();
@@ -120,27 +155,26 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
                       BitmapDescriptor.hueGreen)),
             );
 
-            // if (driverLocation != null) {
-
-            // }
-
             // Generate route
-            RouteHelper.fetchRoute(
-              LatLng(userLocation.latitude, userLocation.longitude),
-              LatLng(driverLocation!.latitude, driverLocation.longitude),
-            ).then((polylineCoordinates) {
-              if (mounted) {
-                setState(() {
-                  polylines.clear();
-                  polylines.add(Polyline(
-                    width: 5,
-                    polylineId: const PolylineId("poly"),
-                    color: Colors.blue,
-                    points: polylineCoordinates,
-                  ));
-                });
-              }
-            });
+
+            // _fetchRoute(LatLng(userLocation.latitude, userLocation.longitude),
+            //     LatLng(driverLocation.latitude, driverLocation.longitude));
+            // RouteHelper.fetchRoute(
+            //   LatLng(userLocation.latitude, userLocation.longitude),
+            //   LatLng(driverLocation.latitude, driverLocation.longitude),
+            // ).then((polylineCoordinates) {
+            //   if (mounted) {
+            //     setState(() {
+            //       polylines.clear();
+            //       polylines.add(Polyline(
+            //         width: 5,
+            //         polylineId: const PolylineId("poly"),
+            //         color: Colors.blue,
+            //         points: polylineCoordinates,
+            //       ));
+            //     });
+            //   }
+            // });
 
             return ListView(
               children: [
@@ -150,8 +184,8 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
                         height: mediaQueryHeight(context) / 2,
                         child: GoogleMap(
                           initialCameraPosition: CameraPosition(
-                            target: LatLng(driverLocation.latitude,
-                                driverLocation.longitude),
+                            target: LatLng(
+                                userLocation.latitude, userLocation.longitude),
                             zoom: 18,
                           ),
                           onMapCreated: (GoogleMapController controller) {
@@ -171,6 +205,16 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
                   child: Column(
                     // crossAxisAlignment: Cross,
                     children: [
+                      // Text(polylines.isNotEmpty
+                      //     ? "ada nih rute"
+                      //     : "Ada masalah dalam menampilkan rute"),
+                      
+                      routeStatus.isNotEmpty
+                          ? _routeIndicator(
+                              color: Colors.red[900]!,
+                              message: routeStatus,
+                            )
+                          : Container(),
                       const Text(
                         "Informasi pengangkutan",
                         style: text18cgs18,
@@ -183,11 +227,12 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
                   ),
                 ),
                 CustomListTile(
-                    title: "Nama petugas pengangkut", value: "An. ${request.namaPetugas}"),
+                    title: "Nama petugas pengangkut",
+                    value: "An. ${request.namaPetugas}"),
                 // const Divider(
                 //   color: Colors.green,
                 // ),
-          
+
                 CustomListTile(
                     title: "Waktu Permintaan",
                     value:
@@ -225,6 +270,34 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
           }
         },
       ),
+    );
+  }
+}
+
+class _routeIndicator extends StatelessWidget {
+  final Color color;
+  final String message;
+  const _routeIndicator({
+    Key? key,
+    required this.color,
+    required this.message,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        ),
+        const SizedBox(
+          width: 5,
+        ),
+        Text(message)
+      ],
     );
   }
 }

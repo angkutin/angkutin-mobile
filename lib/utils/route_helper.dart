@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RouteHelper {
-  static Future<List<LatLng>> fetchRoute(LatLng origin, LatLng destination) async {
+  static Future<Map<String, dynamic>> fetchRoute(LatLng origin, LatLng destination) async {
     final String apiKey = dotenv.env['OPENROUTESERVICE_API_KEY']!;
     final String url =
         'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$apiKey&start=${origin.longitude},${origin.latitude}&end=${destination.longitude},${destination.latitude}';
@@ -13,10 +13,15 @@ class RouteHelper {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final coordinates = data['features'][0]['geometry']['coordinates'];
-      return _createPolylines(coordinates);
+      return {
+        'status': 'success',
+        'polylines': _createPolylines(coordinates)
+      };
     } else {
-      print('Failed to fetch directions: ${response.body}');
-      return [];
+      return {
+        'status': 'error',
+        'message': 'Failed to fetch directions: ${response.body}'
+      };
     }
   }
 
