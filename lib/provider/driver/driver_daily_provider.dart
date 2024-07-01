@@ -68,6 +68,7 @@ class DriverDailyProvider with ChangeNotifier {
       // Query untuk mendapatkan semua pengguna yang memiliki alamat sesuai dengan kecamatan
       final userQuery = FirebaseFirestore.instance
           .collection('users')
+          .where("role", whereIn: ["Masyarakat", "masyarakat"])
           .where('address', isEqualTo: kecamatan);
 
       // Dapatkan dokumen pengguna

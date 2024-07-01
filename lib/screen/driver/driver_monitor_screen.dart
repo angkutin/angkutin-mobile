@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:angkutin/screen/driver/driver_gome_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -15,6 +16,7 @@ import '../../data/model/RequestModel.dart';
 import '../../provider/driver/driver_service_provider.dart';
 import '../../utils/route_helper.dart';
 import '../../widget/CustomButton.dart';
+import '../../widget/RouteIndicator.dart';
 
 class DriverMonitorScreen extends StatefulWidget {
   final int type;
@@ -45,6 +47,8 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   double latitude = 0;
   double longitude = 0;
   GeoPoint? userLocationLatLng;
+    String routeStatus = '';
+
 
   @override
   void dispose() {
@@ -111,26 +115,42 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
           _mapController
               ?.animateCamera(CameraUpdate.newLatLng(_driverLocation!));
 
-          // Generate route
-          RouteHelper.fetchRoute(
-            LatLng(widget.userLocation.latitude, widget.userLocation.longitude),
-            _driverLocation!,
-          ).then((polylineCoordinates) {
-            if (mounted) {
-              setState(() {
-                polylines.clear();
-                polylines.add(Polyline(
-                  width: 5,
-                  polylineId: const PolylineId("poly"),
-                  color: Colors.blue,
-                  points: polylineCoordinates,
-                ));
-              });
-            }
-          });
         });
       }
+
+      final userLoc = widget.userLocation;
+      _fetchRoute(LatLng(userLoc.latitude, userLoc.longitude), _driverLocation!);
     });
+  }
+
+    Future<void> _fetchRoute(LatLng userLocation, LatLng driverLocation) async {
+    if (mounted) {
+      setState(() {
+        routeStatus = '';
+      });
+    }
+
+    final result = await RouteHelper.fetchRoute(userLocation, driverLocation);
+    if (result['status'] == 'success') {
+      if (mounted) {
+        setState(() {
+          polylines.clear();
+          polylines.add(Polyline(
+            width: 5,
+            polylineId: const PolylineId("poly"),
+            color: Colors.blue,
+            points: result['polylines'],
+          ));
+          routeStatus = '';
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          routeStatus = 'Ada masalah dalam menampilkan rute';
+        });
+      }
+    }
   }
 
   _loadAndUpdateDriverLocation() async {
@@ -187,6 +207,8 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                       markers: markers,
                       polylines: polylines,
                     )),
+
+                  
                 Row(
                   children: [
                     const Spacer(),
@@ -209,8 +231,7 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                                   // balik ke home
                                   if (driverServiceProv.finishState ==
                                       ResultState.success) {
-                                    Navigator.pop(
-                                        context); // Ganti dengan Navigator.pop(context);
+                                        Navigator.pushReplacementNamed(context,DriverHomeScreen.ROUTE_NAME);
                                   } else {
                                     print("Gagal menyelesaikan orderan");
                                   }
@@ -221,6 +242,12 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                     )
                   ],
                 ),
+                 routeStatus.isNotEmpty
+                  ? RouteIndicator(
+                      color: Colors.red[900]!,
+                      message: routeStatus,
+                    )
+                  : Container(),
                 CustomListTile(
                     title: "Diajukan oleh", value: "An. ${request.name}"),
                 CustomListTile(

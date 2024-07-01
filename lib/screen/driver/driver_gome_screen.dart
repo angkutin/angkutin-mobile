@@ -42,7 +42,6 @@ class DriverHomeScreen extends StatefulWidget {
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
   UserModel.User? _user;
-  bool? _isDailyActive;
   UserModel.User? _updateUser;
   Timer? _locationUpdateTimer;
   StreamSubscription<List<RequestService>>? requestSubscription;
@@ -81,10 +80,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           .getUserStream(_user!.email!);
 
       Provider.of<DriverOngoingService>(context, listen: false)
-          .getOngoingRequest(_user!.email!); // NANTI DIGANTI
+          .getOngoingRequest(_user!.email!);
     }
 
-    // print("Nilai dariisDaily di init : $_isDailyActive");
   }
 
   void _listenToRequestsStream() {
@@ -95,10 +93,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         for (var req in requests) {
           _loadAndUpdateDriverLocation(req.type, req.requestId);
         }
-      } else {
-        // locationSubscription?.cancel();
-        print("Tidak ada requests");
-      }
+      } 
     });
   }
 
@@ -125,8 +120,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     final driverServiceProv =
         Provider.of<DriverServiceProvider>(context, listen: false);
     await driverServiceProv.updateDriverLocation(type, reqId, driverLoc);
-
-    // print("Lokasi diupdate pada __updateDriverLocation");
   }
 
   @override
@@ -168,7 +161,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             CustomDrawerItem(
                 title: "Permintaan Angkut",
                 onTap: () => Navigator.pushNamed(
-                    // MENGRIM DATA DRIVER DARI LOCAL SEHINGGA LOKASINYA TIDAK BERUBAH
                     context,
                     DriverRequestWasteScreen.ROUTE_NAME,
                     arguments: _updateUser)),
@@ -176,7 +168,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 title: "Laporan Timbunan Sampah",
                 onTap: () {
                   Navigator.pushNamed(
-                      // MENGRIM DATA DRIVER DARI LOCAL SEHINGGA LOKASINYA TIDAK BERUBAH
                       context,
                       DriverReportWasteScreen.ROUTE_NAME,
                       arguments: _updateUser);
@@ -273,12 +264,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         itemBuilder: (context, index) {
                           final req = requests[index];
                           return driverServiceCard(req: req);
-                          // if (req.type == 1) {
-                          //   return driverServiceCard(req: req);
-                          // } else {
-
-                          // }
-                        },
+                              },
                       );
                     }
                   },

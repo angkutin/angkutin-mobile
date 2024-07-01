@@ -54,7 +54,7 @@ class DriverServiceProvider with ChangeNotifier {
           .collection('items')
           .where('idPetugas', isEqualTo: driverId)
           // .where('isAcceptByDriver', isEqualTo: false)
-          // .where('isDone', isEqualTo: false)
+          .where('isDone', isEqualTo: false)
           .snapshots()
           .map((snapshot) => snapshot.docs
               .map((doc) => RequestService.fromFirestore(doc, null))

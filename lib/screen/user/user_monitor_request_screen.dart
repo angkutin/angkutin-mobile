@@ -13,6 +13,7 @@ import '../../common/constant.dart';
 import '../../data/model/RequestModel.dart';
 import '../../provider/monitor_provider.dart';
 import '../../utils/route_helper.dart';
+import '../../widget/RouteIndicator.dart';
 
 class UserMonitorRequestScreen extends StatefulWidget {
   final int type;
@@ -95,13 +96,16 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
   }
 
   Future<void> _fetchRoute(LatLng userLocation, LatLng driverLocation) async {
-    setState(() {
+    if (mounted) {
+       setState(() {
       routeStatus = '';
     });
-
+    }
+   
     final result = await RouteHelper.fetchRoute(userLocation, driverLocation);
     if (result['status'] == 'success') {
-      setState(() {
+      if (mounted) {
+         setState(() {
         polylines.clear();
         polylines.add(Polyline(
           width: 5,
@@ -111,10 +115,14 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
         ));
         routeStatus = '';
       });
+      }
+     
     } else {
-      setState(() {
+      if (mounted) {
+        setState(() {
         routeStatus = 'Ada masalah dalam menampilkan rute';
       });
+      }
     }
   }
 
@@ -131,8 +139,6 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
             final request = snapshot.data!;
             final driverLocation = request.lokasiPetugas;
             final userLocation = request.userLoc;
-
-            // print("ADA DATA \n $driverLocation \n$userLocation");
 
             // Update markers
             markers.clear();
@@ -154,28 +160,6 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
                   icon: BitmapDescriptor.defaultMarkerWithHue(
                       BitmapDescriptor.hueGreen)),
             );
-
-            // Generate route
-
-            // _fetchRoute(LatLng(userLocation.latitude, userLocation.longitude),
-            //     LatLng(driverLocation.latitude, driverLocation.longitude));
-            // RouteHelper.fetchRoute(
-            //   LatLng(userLocation.latitude, userLocation.longitude),
-            //   LatLng(driverLocation.latitude, driverLocation.longitude),
-            // ).then((polylineCoordinates) {
-            //   if (mounted) {
-            //     setState(() {
-            //       polylines.clear();
-            //       polylines.add(Polyline(
-            //         width: 5,
-            //         polylineId: const PolylineId("poly"),
-            //         color: Colors.blue,
-            //         points: polylineCoordinates,
-            //       ));
-            //     });
-            //   }
-            // });
-
             return ListView(
               children: [
                 driverLocation != null
@@ -203,14 +187,9 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
-                    // crossAxisAlignment: Cross,
                     children: [
-                      // Text(polylines.isNotEmpty
-                      //     ? "ada nih rute"
-                      //     : "Ada masalah dalam menampilkan rute"),
-                      
                       routeStatus.isNotEmpty
-                          ? _routeIndicator(
+                          ? RouteIndicator(
                               color: Colors.red[900]!,
                               message: routeStatus,
                             )
@@ -229,10 +208,7 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
                 CustomListTile(
                     title: "Nama petugas pengangkut",
                     value: "An. ${request.namaPetugas}"),
-                // const Divider(
-                //   color: Colors.green,
-                // ),
-
+              
                 CustomListTile(
                     title: "Waktu Permintaan",
                     value:
@@ -274,30 +250,4 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
   }
 }
 
-class _routeIndicator extends StatelessWidget {
-  final Color color;
-  final String message;
-  const _routeIndicator({
-    Key? key,
-    required this.color,
-    required this.message,
-  }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        Text(message)
-      ],
-    );
-  }
-}

@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 
 import '../../data/model/UserModel.dart';
 import '../../provider/auth/auth_provider.dart';
+import '../../widget/RouteIndicator.dart';
 import 'driver_gome_screen.dart';
 
 class DriverDetailServiceScreen extends StatefulWidget {
@@ -43,11 +44,15 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
   User? _user;
   StreamSubscription<Position>? locationSubscription;
   Set<Polyline> polylines = {};
+  String routeStatus = '';
+  Timer? _dataTimer;
 
   @override
   void dispose() {
     _mapController?.dispose();
     locationSubscription?.cancel();
+    _dataTimer?.cancel();
+
     super.dispose();
   }
 
@@ -57,7 +62,8 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
 
     _addDriverMarker(widget.driverLocation);
     _loadData();
-    _listenToLocationUpdates();
+    // _listenToLocationUpdates();
+    _startDataUpdates();
   }
 
   _loadData() async {
@@ -92,6 +98,13 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
     setState(() {});
   }
 
+  void _startDataUpdates() {
+    _dataTimer?.cancel();
+    _dataTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _listenToLocationUpdates();
+    });
+  }
+
   void _listenToLocationUpdates() {
     locationSubscription = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
@@ -105,44 +118,61 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
       var userLat = widget.serviceData.userLoc.latitude;
       var userLng = widget.serviceData.userLoc.longitude;
 
-      RouteHelper.fetchRoute(
-        LatLng(driverLat, driverLng),
-        LatLng(userLat, userLng),
-      ).then((polylineCoordinates) {
-        setState(() {
-          markers.removeWhere(
-              (marker) => marker.markerId.value == 'driver_location');
-          markers.add(
-            Marker(
-              markerId: const MarkerId('driver_location'),
-              position: LatLng(
-                driverLat,
-                driverLng,
-              ),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueGreen,
-              ),
-              infoWindow: const InfoWindow(
-                title: "Lokasi Kamu",
-              ),
+      setState(() {
+        markers.removeWhere(
+            (marker) => marker.markerId.value == 'driver_location');
+        markers.add(
+          Marker(
+            markerId: const MarkerId('driver_location'),
+            position: LatLng(
+              driverLat,
+              driverLng,
             ),
-          );
-
-          // Update polylines with new route
-          polylines.clear();
-          polylines.add(
-            Polyline(
-              width: 5,
-              polylineId: const PolylineId("poly"),
-              color: Colors.blue,
-              points: polylineCoordinates,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen,
             ),
-          );
+            infoWindow: const InfoWindow(
+              title: "Lokasi Kamu",
+            ),
+          ),
+        );
 
-          _showMarkersAndAdjustCamera(position.latitude, position.longitude);
-        });
+        _showMarkersAndAdjustCamera(position.latitude, position.longitude);
       });
+
+      // Generate route
+      _fetchRoute(LatLng(userLat, userLng), LatLng(driverLat, driverLng));
     });
+  }
+
+  Future<void> _fetchRoute(LatLng userLocation, LatLng driverLocation) async {
+    if (mounted) {
+      setState(() {
+        routeStatus = '';
+      });
+    }
+
+    final result = await RouteHelper.fetchRoute(userLocation, driverLocation);
+    if (result['status'] == 'success') {
+      if (mounted) {
+        setState(() {
+          polylines.clear();
+          polylines.add(Polyline(
+            width: 5,
+            polylineId: const PolylineId("poly"),
+            color: Colors.blue,
+            points: result['polylines'],
+          ));
+          routeStatus = '';
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          routeStatus = 'Ada masalah dalam menampilkan rute';
+        });
+      }
+    }
   }
 
   void _showMarkersAndAdjustCamera(double driverLat, double driverLng) {
@@ -282,6 +312,12 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                   ],
                 ),
               ),
+              routeStatus.isNotEmpty
+                  ? RouteIndicator(
+                      color: Colors.red[900]!,
+                      message: routeStatus,
+                    )
+                  : Container(),
               CustomListTile(
                 title: "Pengirim",
                 value: "An. ${requestData.name}",
