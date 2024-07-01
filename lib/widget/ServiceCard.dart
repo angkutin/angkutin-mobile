@@ -10,12 +10,14 @@ class ServiceCard extends StatelessWidget {
   final String subtitle;
   final String imageUrl;
   final VoidCallback onPressed;
-  const ServiceCard({
+  Widget? trailing;
+   ServiceCard({
     Key? key,
     required this.title,
     required this.subtitle,
     required this.imageUrl,
     required this.onPressed,
+    this.trailing
   }) : super(key: key);
 
   @override
@@ -45,7 +47,10 @@ class ServiceCard extends StatelessWidget {
                     // fontWeight: FontWeight.w500,
                     color: softBlackColor),
               ),
-            )),
+              trailing: trailing,
+            )
+            ),
+            
       ),
     );
   }

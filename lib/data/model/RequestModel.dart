@@ -18,6 +18,10 @@ class RequestService {
   GeoPoint? lokasiPetugas;
   String? idPetugas;
 
+  String? tipePermintaanAngkutan;
+  int? biayaPengangkutan;
+  bool? isPaying;
+
   RequestService(
       {required this.requestId, // Optional requestId constructor parameter
       required this.senderEmail,
@@ -33,7 +37,11 @@ class RequestService {
       required this.wilayah,
       this.namaPetugas,
       this.lokasiPetugas,
-      this.idPetugas
+      this.idPetugas,
+
+      this.tipePermintaanAngkutan,
+      this.biayaPengangkutan,
+      this.isPaying
       });
 
   factory RequestService.fromFirestore(
@@ -56,7 +64,10 @@ class RequestService {
       wilayah: data?['wilayah'] as String,
       namaPetugas: data?['namaPetugas'],
       lokasiPetugas: data?['lokasiPetugas'],
-      idPetugas: data?['idPetugas']
+      idPetugas: data?['idPetugas'],
+      tipePermintaanAngkutan: data?['tipePermintaanAngkutan'],
+      biayaPengangkutan: data?['biayaPengangkutan'],
+      isPaying: data?['isPaying']
     );
   }
 
@@ -76,7 +87,11 @@ class RequestService {
       'wilayah': wilayah,
       'namaPetugas': namaPetugas,
       'lokasiPetugas': lokasiPetugas,
-      'idPetugas': idPetugas
+      'idPetugas': idPetugas,
+      'tipePermintaanAngkutan': tipePermintaanAngkutan,
+      'biayaPengangkutan': biayaPengangkutan,
+      'isPaying': isPaying
     };
   }
 }
+

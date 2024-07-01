@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
+import 'package:angkutin/widget/ServiceCard.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -30,12 +31,11 @@ class RequestServiceScreen extends StatefulWidget {
 
   final int tipeAngkutan;
   // final String titleScreen;
-  const RequestServiceScreen({
-    Key? key,
-    required this.tipeAngkutan,
-    required this.user
-    // required this.titleScreen,
-  }) : super(key: key);
+  const RequestServiceScreen(
+      {Key? key, required this.tipeAngkutan, required this.user
+      // required this.titleScreen,
+      })
+      : super(key: key);
 
   @override
   State<RequestServiceScreen> createState() => _RequestServiceScreenState();
@@ -53,6 +53,10 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
   String? _urlPathImage;
 
   bool isLoading = false;
+
+  // payment and type
+  int? requestPrice;
+  String? requestType;
 
   @override
   void initState() {
@@ -114,15 +118,29 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                 ),
               ),
               const Divider(),
+              widget.tipeAngkutan == 1
+                  ? ListTile(
+                      leading: const FaIcon(
+                        FontAwesomeIcons.moneyBill,
+                        color: cGreenStrong,
+                      ),
+                      title: Text(
+                        requestPrice != null
+                            ? "Tipe $requestType | Rp. $requestPrice"
+                            : "Pilih tipe angkutan",
+                        style: const TextStyle(color: mainColor),
+                      ),
+                      onTap: () => _showPaymentTypeDialog(context),
+                    )
+                  : Container(),
+              const Divider(),
               ListTile(
                 leading: const FaIcon(
                   FontAwesomeIcons.locationDot,
                   color: cGreenStrong,
                 ),
                 title: Text(
-                  coordinate != null
-                      ? "Oke !"
-                      : "Lokasinya dimana?",
+                  coordinate != null ? "Oke !" : "Lokasinya dimana?",
                   style: const TextStyle(color: mainColor),
                 ),
                 onTap: () async {
@@ -142,8 +160,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                   } else {
                     print(
                         "Koordinat null: ${coordinate?.toString() ?? 'Not selected'}");
-                    // print('Address: ${address ?? 'Not selected'}');
-                    // print('Kecamatan: ${district ?? 'Not selected'}');
                   }
                 },
               ),
@@ -177,8 +193,25 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                           isLoading = true;
                         });
 
-                        if (coordinate != null && image != null) {
-                          final requestId = FirebaseFirestore.instance
+                        if (widget.tipeAngkutan == 1) {
+          if (coordinate == null || image == null || requestType == null || requestPrice == null) {
+            setState(() {
+              isLoading = false;
+            });
+            showInfoSnackbar(context, "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
+            return;
+          }
+        } else if (widget.tipeAngkutan == 2) {
+          if (coordinate == null || image == null) {
+            setState(() {
+              isLoading = false;
+            });
+            showInfoSnackbar(context, "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
+            return;
+          }
+        }
+
+        final requestId = FirebaseFirestore.instance
                               .collection('requests')
                               .doc()
                               .id;
@@ -202,11 +235,21 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                               isDelivered: false,
                               isAcceptByDriver: false,
                               isDone: false,
-                              wilayah: extractLastPart(address!));
-                              
+                              wilayah: extractLastPart(address!),
+                              tipePermintaanAngkutan: widget.tipeAngkutan == 1
+                                  ? requestType
+                                  : "Laporan",
+                              biayaPengangkutan:
+                                  widget.tipeAngkutan == 1 ? requestPrice : 0,
+                              isPaying:
+                                  widget.tipeAngkutan == 1 ? false : true);
+
                           // upload
                           await requestServiceProvider.createRequest(
                               path: _urlPathImage, requestService: request);
+
+                        
+                          
 
                           if (requestServiceProvider.state ==
                               ResultState.success) {
@@ -223,13 +266,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                             print(
                                 "Error gagal unggah permintaan : ${requestServiceProvider.errorMessage}");
                           }
-                        } else {
-                          setState(() {
-                            isLoading = false;
-                          });
-                          showInfoSnackbar(context,
-                              "Lengkapi data yang diperlukan untuk keperluan pengangkutan");
-                        }
+                        
                       })
             ],
           ),
@@ -255,9 +292,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                   image = imageService.image;
                   Navigator.pop(context);
                 });
-                // Future.delayed(const Duration(milliseconds: 500), () {
-
-                // });
               },
               child: const Text('Melalui Kamera'),
             ),
@@ -276,4 +310,62 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
       },
     );
   }
+
+  void _showPaymentTypeDialog(BuildContext context) {
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (context) {
+          return Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                ServiceCard(
+                    title: "Standar",
+                    subtitle: "Jumlah sampah normal",
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1718489211836-65a20ad6bd8d?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    trailing: _price("7 000"),
+                    onPressed: () {
+                      setState(() {
+                        requestPrice = 7000;
+                        requestType = "Standar";
+                      });
+                      Navigator.pop(context);
+                    }),
+                ServiceCard(
+                    title: "Sedang",
+                    subtitle: "Lebih banyak dari biasanya",
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1718489211836-65a20ad6bd8d?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    trailing: _price("15 000"),
+                    onPressed: () {
+                      setState(() {
+                        requestPrice = 15000;
+                        requestType = "Sedang";
+                      });
+                      Navigator.pop(context);
+                    }),
+                ServiceCard(
+                    title: "Banyak",
+                    subtitle: "cocok utk selesai acara, perabotan, dll",
+                    imageUrl:
+                        'https://images.unsplash.com/photo-1718489211836-65a20ad6bd8d?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    trailing: _price("30 000"),
+                    onPressed: () {
+                      setState(() {
+                        requestPrice = 30000;
+                        requestType = "Banyak";
+                      });
+                      Navigator.pop(context);
+                    }),
+              ]));
+        });
+  }
+
+  Text _price(String price) => Text(
+        "Rp.\n$price,-",
+        style: const TextStyle(fontSize: 14),
+      );
 }
