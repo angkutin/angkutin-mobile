@@ -178,6 +178,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text("Di user sudah buat pilih tipe dan pembayaran, di driver belom atur untuk permintaan request ni",style: text18cgs18,),
                 // Text("Lokasi permintaan masih gaje, di driver lokasi user di Alpha, di user lokasinya di Gbunga", style: text18cgs18,),
                 StreamBuilder(
                   stream: Provider.of<UserDailyProvider>(context, listen: false)
@@ -245,9 +246,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           final request = requests[index];
                           if (request.type == 1) {
                             return CarbageHaulCard(
-                              onPressed: () => 
-                              Navigator.pushNamed(
-                                  context, UserMonitorRequestScreen.ROUTE_NAME, arguments: [request.type, request.requestId]),
+                              onPressed: () => Navigator.pushNamed(
+                                  context, UserMonitorRequestScreen.ROUTE_NAME,
+                                  arguments: [request.type, request.requestId]),
                               req: request,
                             );
                           } else {

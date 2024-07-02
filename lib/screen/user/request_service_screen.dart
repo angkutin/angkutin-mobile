@@ -5,7 +5,6 @@ import 'package:angkutin/widget/ServiceCard.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -195,11 +194,11 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                             });
                           },
                         ),
-                        Flexible(
+                        const Flexible(
                           child: Text(
                               'Saya memastikan bahwa ini bukanlah permintaan fiktif',
                               // maxLines: 2,
-                              style: TextStyle(color: Colors.green[900])),
+                              style: TextStyle(color: mainColor)),
                         )
                       ],
                     )
@@ -348,9 +347,8 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                   children: <Widget>[
                 ServiceCard(
                     title: "Standar",
-                    subtitle: "Jumlah sampah normal",
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1718489211836-65a20ad6bd8d?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    subtitle: "Jumlah sampah normal seperti biasanya",
+                    imageUrl:dotenv.env['SAMPAH_STANDART']!,
                     trailing: _price("7 000"),
                     onPressed: () {
                       setState(() {
@@ -362,8 +360,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                 ServiceCard(
                     title: "Sedang",
                     subtitle: "Lebih banyak dari biasanya",
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1718489211836-65a20ad6bd8d?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    imageUrl:dotenv.env['SAMPAH_MEDIUM']!,
                     trailing: _price("15 000"),
                     onPressed: () {
                       setState(() {
@@ -375,8 +372,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                 ServiceCard(
                     title: "Banyak",
                     subtitle: "cocok utk selesai acara, perabotan, dll",
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1718489211836-65a20ad6bd8d?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    imageUrl:dotenv.env['SAMPAH_BIG']!,
                     trailing: _price("30 000"),
                     onPressed: () {
                       setState(() {
