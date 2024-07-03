@@ -13,3 +13,7 @@
 //               },
 //               markers: markers,
 //             ),),
+
+  // Text(
+  //                   "1.Rute di detail service blm tampil\n2. utk laporan, ketika selesai layanan ngestak di screen monitor\n3.driver gabisa ambil permintaan (mungkin karena ada tambahan atribut)\n4.Driver daily tidak berubah (apk)"),
+              

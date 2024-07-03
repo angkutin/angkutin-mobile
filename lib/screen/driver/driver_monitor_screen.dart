@@ -12,6 +12,7 @@ import 'package:angkutin/screen/driver/service/DriverLocationService.dart';
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/monitor_provider.dart';
 import 'package:angkutin/widget/CustomListTile.dart';
+import '../../common/constant.dart';
 import '../../data/model/RequestModel.dart';
 import '../../provider/driver/driver_service_provider.dart';
 import '../../utils/route_helper.dart';
@@ -47,8 +48,7 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   double latitude = 0;
   double longitude = 0;
   GeoPoint? userLocationLatLng;
-    String routeStatus = '';
-
+  String routeStatus = '';
 
   @override
   void dispose() {
@@ -79,7 +79,8 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   void _startDataUpdates() {
     _dataTimer?.cancel();
     _dataTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      _loadData();
+    _loadData(); 
+
     });
   }
 
@@ -114,16 +115,16 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
 
           _mapController
               ?.animateCamera(CameraUpdate.newLatLng(_driverLocation!));
-
         });
       }
 
       final userLoc = widget.userLocation;
-      _fetchRoute(LatLng(userLoc.latitude, userLoc.longitude), _driverLocation!);
+      _fetchRoute(
+          LatLng(userLoc.latitude, userLoc.longitude), _driverLocation!);
     });
   }
 
-    Future<void> _fetchRoute(LatLng userLocation, LatLng driverLocation) async {
+  Future<void> _fetchRoute(LatLng userLocation, LatLng driverLocation) async {
     if (mounted) {
       setState(() {
         routeStatus = '';
@@ -207,8 +208,6 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                       markers: markers,
                       polylines: polylines,
                     )),
-
-                  
                 Row(
                   children: [
                     const Spacer(),
@@ -221,20 +220,9 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                             width: 120,
                             child: CustomButton(
                                 title: "Sudah Diangkut",
-                                onPressed: () async {
-                                  await driverServiceProv.finishUserRequest(
-                                      request.type,
-                                      request.requestId,
-                                      request.senderEmail,
-                                      request.idPetugas!);
-
-                                  // balik ke home
-                                  if (driverServiceProv.finishState ==
-                                      ResultState.success) {
-                                        Navigator.pushReplacementNamed(context,DriverHomeScreen.ROUTE_NAME);
-                                  } else {
-                                    print("Gagal menyelesaikan orderan");
-                                  }
+                                onPressed: () {
+                                  _showFinishServiceDialog(context, widget.type,
+                                      driverServiceProv, request);
                                 }),
                           ),
                     const SizedBox(
@@ -242,12 +230,12 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                     )
                   ],
                 ),
-                 routeStatus.isNotEmpty
-                  ? RouteIndicator(
-                      color: Colors.red[900]!,
-                      message: routeStatus,
-                    )
-                  : Container(),
+                routeStatus.isNotEmpty
+                    ? RouteIndicator(
+                        color: Colors.red[900]!,
+                        message: routeStatus,
+                      )
+                    : Container(),
                 CustomListTile(
                     title: "Diajukan oleh", value: "An. ${request.name}"),
                 CustomListTile(
@@ -273,6 +261,9 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                   ),
+                ),
+                const SizedBox(
+                  height: 20,
                 )
               ],
             );
@@ -289,4 +280,96 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
       ),
     );
   }
+
+void _showFinishServiceDialog(BuildContext context, int type,
+    DriverServiceProvider serviceProvider, RequestService service) {
+  bool isChecked = false;
+  bool error = false;
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: const Text(
+              "Konfirmasi sampah sudah diangkut",
+              style: basicTextStyleBlack,
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Apakah kamu yakin ingin menyelesaikan layanan?",
+                  ),
+                  if (type == 1)
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: isChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              isChecked = value!;
+                            });
+                          },
+                        ),
+                        const Flexible(
+                          child: Text(
+                            'Saya memastikan bahwa semua sudah sesuai, termasuk biaya yang telah disepakati (tidak termasuk tips). Permintaan pengangkutan sampah telah selesai dan semua tugas telah dilakukan dengan baik.',
+                            style: TextStyle(color: mainColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (error)
+                    const Text(
+                      "Periksa kembali konfirmasi pengangkutan",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              if (serviceProvider.finishIsLoading == true)
+                const Center(
+                  child: CircularProgressIndicator(),
+                )
+              else
+                SizedBox(
+                  width: 120,
+                  child: CustomButton(
+                    title: "Selesaikan",
+                    onPressed: () async {
+                      if (type == 1 && !isChecked) {
+                        setState(() {
+                          error = true;
+                        });
+                        return;
+                      }
+                      
+                      await serviceProvider.finishUserRequest(
+                        service.type,
+                        service.requestId,
+                        service.senderEmail,
+                        service.idPetugas!,
+                      );
+
+                      if (serviceProvider.finishState == ResultState.success) {
+                        Navigator.pushReplacementNamed(
+                          context, DriverHomeScreen.ROUTE_NAME);
+                      } else {
+                        print("Gagal menyelesaikan orderan");
+                      }
+                    },
+                  ),
+                ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
 }

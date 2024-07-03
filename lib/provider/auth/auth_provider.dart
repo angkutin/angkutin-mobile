@@ -88,7 +88,7 @@ class AuthenticationProvider with ChangeNotifier {
     if (userDataString != null) {
       final userDataMap = json.decode(userDataString);
       _userData = user_model.User.fromJson(userDataMap);
-      // print("membaca data local provider : ${userDataString}");
+      print("membaca data local provider : ${userDataString}");
 
       notifyListeners();
     }

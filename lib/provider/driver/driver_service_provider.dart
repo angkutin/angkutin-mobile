@@ -53,7 +53,7 @@ class DriverServiceProvider with ChangeNotifier {
           .doc('report')
           .collection('items')
           .where('idPetugas', isEqualTo: driverId)
-          // .where('isAcceptByDriver', isEqualTo: false)
+          .where('isDelivered', isEqualTo: true)
           .where('isDone', isEqualTo: false)
           .snapshots()
           .map((snapshot) => snapshot.docs
@@ -61,7 +61,6 @@ class DriverServiceProvider with ChangeNotifier {
               .toList());
 
       dataStream.listen((data) {
-        // _requests = data;
         _reportController.add(data); // Add data to the stream
       });
       _repState = ResultState.success;

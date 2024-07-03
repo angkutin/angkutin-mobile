@@ -51,6 +51,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     // get data request
     // Provider.of<UserRequestProvider>(context).getOngoingRequest(userId);
     _loadData();
+
   }
 
   _loadData() async {
@@ -69,6 +70,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         print("user wilayah $_userWilayah");
       });
     }
+        print("update user ${_user?.email} ${_user?.address}");
+
 
     if (_isLogin) {
       Provider.of<UserRequestProvider>(context, listen: false)
@@ -77,6 +80,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
       //     .getUserStream(_userEmail!);
       Provider.of<UserDailyProvider>(context, listen: false)
           .getDailyDriverAvailable(_userWilayah!);
+
     }
   }
 

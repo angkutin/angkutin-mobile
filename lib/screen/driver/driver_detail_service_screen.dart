@@ -234,8 +234,8 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                             requestData.userLoc.latitude,
                             requestData.userLoc.longitude,
                           ),
-                          infoWindow: InfoWindow(
-                            title: requestData.name,
+                          infoWindow: const InfoWindow(
+                            title: "Lokasi Permintaan",
                           ),
                         ),
                       );
