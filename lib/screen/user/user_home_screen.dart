@@ -182,7 +182,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Di user sudah buat pilih tipe dan pembayaran, di driver belom atur untuk permintaan request ni",style: text18cgs18,),
+                // Text("Di user sudah buat pilih tipe dan pembayaran, di driver belom atur untuk permintaan request ni",style: text18cgs18,),
                 // Text("Lokasi permintaan masih gaje, di driver lokasi user di Alpha, di user lokasinya di Gbunga", style: text18cgs18,),
                 StreamBuilder(
                   stream: Provider.of<UserDailyProvider>(context, listen: false)

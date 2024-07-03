@@ -272,83 +272,59 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 const SizedBox(
                   height: 50,
                 ),
-                StreamBuilder(
-                  stream: Provider.of<UserDailyProvider>(context, listen: false)
-                      .dataStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (snapshot.hasData) {
-                      final data = snapshot.data!;
+              StreamBuilder(
+  stream: Provider.of<UserDailyProvider>(context, listen: false).dataStream,
+  builder: (context, snapshot) {
+    if (snapshot.hasError) {
+      return Center(child: Text('Error: ${snapshot.error}'));
+    } else if (snapshot.hasData) {
+      final data = snapshot.data!;
 
-                      SchedulerBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) {
-                          setState(() {
-                            _updateUser = data;
-                          });
-                        }
-                      });
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _updateUser = data;
+          });
+        }
+      });
 
-                      if (data.isDaily == true) {
-                        return Column(
-                          children: [
-                            const TitleSection(title: "Angkutan Harian Aktif"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            SizedBox(
-                              width: mediaQueryWidth(context),
-                              child: CustomButton(
-                                title: "Stop Layanan",
-                                color: redSoftColor,
-                                onPressed: () async {
-                                  if (_user != null) {
-                                    print('Updating isDaily to false');
-                                    await dailyProvider.updateDriverDaily(
-                                        _user!.email!, false);
-                                    await dailyProvider.updateMassDailyUsers(
-                                        _user!.address!, false);
-                                  } else {
-                                    print("Error: No user found!");
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return Column(
-                          children: [
-                            const TitleSection(
-                                title: "Aktifkan status angkutan harian ?"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            SizedBox(
-                              width: mediaQueryWidth(context),
-                              child: CustomButton(
-                                title: "Mulai",
-                                onPressed: () async {
-                                  if (_user != null) {
-                                    print('Updating isDaily to true');
-                                    await dailyProvider.updateDriverDaily(
-                                        _user!.email!, true);
-                                    await dailyProvider.updateMassDailyUsers(
-                                        _user!.address!, true);
-                                  } else {
-                                    print("Error: No user found!");
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
+      bool isDailyActive = data.isDaily ?? false;
+
+      return Column(
+        children: [
+           TitleSection(
+              title: isDailyActive ? "Angkutan Harian Aktif" : "Aktifkan status angkutan harian ?"),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: mediaQueryWidth(context),
+            child: CustomButton(
+              title: isDailyActive ? "Stop Layanan" : "Mulai",
+              color: isDailyActive ? redSoftColor : null,
+              onPressed: () async {
+                if (_user != null) {
+                  if (isDailyActive != true) {
+                    print('Updating isDaily to true');
+                    await dailyProvider.updateDriverDaily(_user!.email!, true);
+                    await dailyProvider.updateMassDailyUsers(_user!.address!, true);
+                  } else {
+                    print('Updating isDaily to false');
+                    await dailyProvider.updateDriverDaily(_user!.email!, false);
+                    await dailyProvider.updateMassDailyUsers(_user!.address!, false);
+                  }
+                } else {
+                  print("Error: No user found!");
+                }
+              },
+            ),
+          ),
+        ],
+      );
+    } else {
+      return const Center(child: CircularProgressIndicator());
+    }
+  },
+),
+
               ],
             ),
           ),

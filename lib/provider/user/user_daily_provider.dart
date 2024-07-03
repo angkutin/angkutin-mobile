@@ -67,10 +67,17 @@ class UserDailyProvider with ChangeNotifier {
         List<User> drivers =
             event.docs.map((doc) => User.fromSnapshot(doc)).toList();
 
-        print("Jumlah driver: ${drivers.length}");
+        // final tes = [
+        //   User(
+        //       email: "anu",
+        //       address: "Kecamatan Medan Denai",
+        //       isDaily: true,
+        //       role: "Petugas"),
+        // ];
 
         _driverDataController.add(drivers);
         _state = ResultState.success;
+        print("Jumlah driver: ${drivers.length}");
       }, onError: (error) {
         print("Listen failed: $error");
         _state = ResultState.error;

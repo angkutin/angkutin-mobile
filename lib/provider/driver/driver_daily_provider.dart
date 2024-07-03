@@ -58,7 +58,7 @@ class DriverDailyProvider with ChangeNotifier {
   ResultState? get massUpdateState => _massUpdateState;
   String? get massUpdateErrorMessage => _massUpdateErrorMessage;
   bool? get isMassUpdateLoading => _isMassUpdateLoading;
-  
+
   Future<void> updateMassDailyUsers(String kecamatan, bool value) async {
     _isMassUpdateLoading = true;
     _updateState = ResultState.loading;
@@ -68,8 +68,8 @@ class DriverDailyProvider with ChangeNotifier {
       // Query untuk mendapatkan semua pengguna yang memiliki alamat sesuai dengan kecamatan
       final userQuery = FirebaseFirestore.instance
           .collection('users')
-          .where("role", whereIn: ["Masyarakat", "masyarakat"])
-          .where('address', isEqualTo: kecamatan);
+          .where("role", whereIn: ["Masyarakat", "masyarakat"]).where('address',
+              isEqualTo: kecamatan);
 
       // Dapatkan dokumen pengguna
       final userSnapshot = await userQuery.get();
@@ -79,7 +79,12 @@ class DriverDailyProvider with ChangeNotifier {
         WriteBatch batch = FirebaseFirestore.instance.batch();
 
         for (var doc in userSnapshot.docs) {
-          batch.update(doc.reference, {'isDaily': value});
+          final currentData = doc.data();
+
+          if (currentData['isDaily'] != value) {
+            // Only update if there is a change
+            batch.update(doc.reference, {'isDaily': value});
+          }
         }
 
         // Commit batch update
