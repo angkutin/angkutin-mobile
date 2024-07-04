@@ -86,10 +86,11 @@ class _UserReportHistoryState extends State<UserReportHistory> {
             if (filteredServices.isEmpty) {
               return const Center(child: Text("Tidak ada data"));
             } else {
+              final reversedServices = filteredServices.reversed.toList();
               return ListView.builder(
-                itemCount: filteredServices.length,
+                itemCount: reversedServices.length,
                 itemBuilder: (context, index) {
-                  final service = filteredServices[index];
+                  final service = reversedServices[index];
                   return _historyItemCard(service);
                 },
               );
@@ -140,10 +141,11 @@ class _UserHaulHistoryState extends State<UserHaulHistory> {
             if (filteredServices.isEmpty) {
               return const Center(child: Text("Tidak ada data"));
             } else {
+              final reversedServices = filteredServices.reversed.toList();
               return ListView.builder(
-                itemCount: filteredServices.length,
+                itemCount: reversedServices.length,
                 itemBuilder: (context, index) {
-                  final service = filteredServices[index];
+                  final service = reversedServices[index];
                   return _historyItemCard(service);
                 },
               );
@@ -166,17 +168,19 @@ Widget _historyItemCard(service) {
       child: Column(
         children: [
           ListTile(
-            title: Text("Diangkut oleh : ${service['namaPetugas'] ?? 'Tidak Diangkut'}", style: const TextStyle(
-              overflow: TextOverflow.ellipsis
-            ),),
+            title: Text(
+              service['namaPetugas'] != null
+                  ? "Diangkut oleh : ${service['namaPetugas']}"
+                  : 'Tidak Diangkut',
+              style: const TextStyle(overflow: TextOverflow.ellipsis),
+            ),
             subtitle: Text(
-              '${service['wilayah']}\nDiajukan ${formatDate(dateTime.toString())}'),
-            trailing: Text(service['isDelivered'] == true
-                ? service['isAcceptByDriver'] == false
-                    ? "Ditolak"
-                    : ""
-                : ""
-                )
+                '${service['wilayah']}\nDiajukan ${formatDate(dateTime.toString())}'),
+            // trailing: Text(service['isDelivered'] == true
+            //     ? service['isAcceptByDriver'] == false
+            //         ? "Ditolak"
+            //         : ""
+            //     : ""),
           ),
         ],
       ),
