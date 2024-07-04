@@ -3,6 +3,7 @@
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/database/storage_service.dart';
 import 'package:angkutin/provider/auth/auth_provider.dart';
+import 'package:angkutin/provider/complain/complain_provider.dart';
 import 'package:angkutin/provider/driver/driver_daily_provider.dart';
 import 'package:angkutin/provider/driver/driver_ongoing_service.dart';
 import 'package:angkutin/provider/driver/driver_service_provider.dart';
@@ -11,6 +12,7 @@ import 'package:angkutin/provider/upload_provider.dart';
 import 'package:angkutin/provider/user/user_daily_provider.dart';
 import 'package:angkutin/provider/user/user_request_provider.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
+import 'package:angkutin/screen/complain/complain_screen.dart';
 import 'package:angkutin/screen/driver/driver_detail_service_screen.dart';
 import 'package:angkutin/screen/driver/driver_history_screen.dart';
 import 'package:angkutin/screen/driver/driver_monitor_screen.dart';
@@ -61,13 +63,12 @@ Future<void> main() async {
 
   // print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
 
-
   Widget getInitialScreen(AuthenticationProvider authProvider) {
     print("isOnboarding $isOnboarding");
     print("isLoggedIn $isLoggedIn");
     print("role $userRole");
 
-     if (isOnboarding) {
+    if (isOnboarding) {
       if (isLoggedIn) {
         if (userRole == "Masyarakat" || userRole == "masyarakat") {
           return const UserHomeScreen();
@@ -82,7 +83,6 @@ Future<void> main() async {
     } else {
       return const OnBoardingScreen();
     }
-
   }
 
   Widget initialScreen = getInitialScreen(authProvider);
@@ -121,6 +121,9 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DriverOngoingService()),
         ChangeNotifierProvider(create: (_) => UserDailyProvider()),
         ChangeNotifierProvider(create: (_) => MonitorProvider()),
+        ChangeNotifierProvider(create: (_) => ComplainProvider()),
+
+
       ],
       child: MaterialApp(
           home: initialScreen,
@@ -226,6 +229,16 @@ class MainApp extends StatelessWidget {
                           serviceData: arguments[0],
                           driverLocation: arguments[1],
                         ));
+
+              // Complain
+              case ComplainScreen.ROUTE_NAME:
+                final userModel.User user =
+                    settings.arguments as userModel.User;
+
+                // final serviceData = settings.arguments as RequestService;
+                return MaterialPageRoute(builder: (_) => ComplainScreen(
+                  userData:user ,
+                ));
               // final List<String> arguments = settings.arguments as List<String>;
               // final screenTitle = arguments[0];
               // final token = arguments[1];

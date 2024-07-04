@@ -6,6 +6,7 @@ import 'package:angkutin/provider/auth/auth_provider.dart';
 import 'package:angkutin/provider/driver/driver_daily_provider.dart';
 import 'package:angkutin/provider/driver/driver_ongoing_service.dart';
 import 'package:angkutin/screen/auth/login_screen.dart';
+import 'package:angkutin/screen/complain/complain_screen.dart';
 import 'package:angkutin/screen/driver/driver_monitor_screen.dart';
 import 'package:angkutin/screen/driver/driver_report_waste_screen.dart';
 import 'package:angkutin/screen/driver/driver_request_waste.dart';
@@ -19,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
@@ -82,7 +84,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       Provider.of<DriverOngoingService>(context, listen: false)
           .getOngoingRequest(_user!.email!);
     }
-
   }
 
   void _listenToRequestsStream() {
@@ -93,7 +94,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         for (var req in requests) {
           _loadAndUpdateDriverLocation(req.type, req.requestId);
         }
-      } 
+      }
     });
   }
 
@@ -161,15 +162,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             CustomDrawerItem(
                 title: "Permintaan Angkut",
                 onTap: () => Navigator.pushNamed(
-                    context,
-                    DriverRequestWasteScreen.ROUTE_NAME,
+                    context, DriverRequestWasteScreen.ROUTE_NAME,
                     arguments: _updateUser)),
             CustomDrawerItem(
                 title: "Laporan Timbunan Sampah",
                 onTap: () {
                   Navigator.pushNamed(
-                      context,
-                      DriverReportWasteScreen.ROUTE_NAME,
+                      context, DriverReportWasteScreen.ROUTE_NAME,
                       arguments: _updateUser);
                 }),
             CustomDrawerItem(
@@ -227,6 +226,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               },
               icon: const Icon(Icons.menu_rounded));
         }),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.pushNamed(context, ComplainScreen.ROUTE_NAME, arguments: _updateUser),
+              icon: const Icon(
+                Icons.report_outlined,
+              ))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -264,7 +270,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         itemBuilder: (context, index) {
                           final req = requests[index];
                           return driverServiceCard(req: req);
-                              },
+                        },
                       );
                     }
                   },
@@ -272,59 +278,65 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 const SizedBox(
                   height: 50,
                 ),
-              StreamBuilder(
-  stream: Provider.of<UserDailyProvider>(context, listen: false).dataStream,
-  builder: (context, snapshot) {
-    if (snapshot.hasError) {
-      return Center(child: Text('Error: ${snapshot.error}'));
-    } else if (snapshot.hasData) {
-      final data = snapshot.data!;
+                StreamBuilder(
+                  stream: Provider.of<UserDailyProvider>(context, listen: false)
+                      .dataStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (snapshot.hasData) {
+                      final data = snapshot.data!;
 
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {
-            _updateUser = data;
-          });
-        }
-      });
+                      SchedulerBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          setState(() {
+                            _updateUser = data;
+                          });
+                        }
+                      });
 
-      bool isDailyActive = data.isDaily ?? false;
+                      bool isDailyActive = data.isDaily ?? false;
 
-      return Column(
-        children: [
-           TitleSection(
-              title: isDailyActive ? "Angkutan Harian Aktif" : "Aktifkan status angkutan harian ?"),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: mediaQueryWidth(context),
-            child: CustomButton(
-              title: isDailyActive ? "Stop Layanan" : "Mulai",
-              color: isDailyActive ? redSoftColor : null,
-              onPressed: () async {
-                if (_user != null) {
-                  if (isDailyActive != true) {
-                    print('Updating isDaily to true');
-                    await dailyProvider.updateDriverDaily(_user!.email!, true);
-                    await dailyProvider.updateMassDailyUsers(_user!.address!, true);
-                  } else {
-                    print('Updating isDaily to false');
-                    await dailyProvider.updateDriverDaily(_user!.email!, false);
-                    await dailyProvider.updateMassDailyUsers(_user!.address!, false);
-                  }
-                } else {
-                  print("Error: No user found!");
-                }
-              },
-            ),
-          ),
-        ],
-      );
-    } else {
-      return const Center(child: CircularProgressIndicator());
-    }
-  },
-),
-
+                      return Column(
+                        children: [
+                          TitleSection(
+                              title: isDailyActive
+                                  ? "Angkutan Harian Aktif"
+                                  : "Aktifkan status angkutan harian ?"),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: mediaQueryWidth(context),
+                            child: CustomButton(
+                              title: isDailyActive ? "Stop Layanan" : "Mulai",
+                              color: isDailyActive ? redSoftColor : null,
+                              onPressed: () async {
+                                if (_user != null) {
+                                  if (isDailyActive != true) {
+                                    print('Updating isDaily to true');
+                                    await dailyProvider.updateDriverDaily(
+                                        _user!.email!, true);
+                                    await dailyProvider.updateMassDailyUsers(
+                                        _user!.address!, true);
+                                  } else {
+                                    print('Updating isDaily to false');
+                                    await dailyProvider.updateDriverDaily(
+                                        _user!.email!, false);
+                                    await dailyProvider.updateMassDailyUsers(
+                                        _user!.address!, false);
+                                  }
+                                } else {
+                                  print("Error: No user found!");
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+                ),
               ],
             ),
           ),

@@ -26,6 +26,7 @@ import '../../data/model/UserModel.dart' as UserModel;
 import '../../widget/CarbageHaulCard.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../../widget/ServiceCard.dart';
+import '../complain/complain_screen.dart';
 import '../driver/driver_monitor_screen.dart';
 import 'request_service_screen.dart';
 
@@ -174,6 +175,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               },
               icon: const Icon(Icons.menu_rounded));
         }),
+         actions: [
+          IconButton(
+              onPressed: () => Navigator.pushNamed(context, ComplainScreen.ROUTE_NAME, arguments: _user),
+              icon: const Icon(
+                Icons.report_outlined,
+              ))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
