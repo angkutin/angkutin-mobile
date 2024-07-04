@@ -73,7 +73,6 @@ class _DriverRequestWasteScreenState extends State<DriverReportWasteScreen> {
               final requests = snapshot.data!;
               return ListView.builder(
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
                 itemCount: requests.length,
                 itemBuilder: (context, index) {
                   final request = requests[index];
