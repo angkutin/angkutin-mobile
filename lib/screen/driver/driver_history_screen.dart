@@ -86,10 +86,12 @@ class _UserReportHistoryState extends State<UserReportHistory> {
             if (filteredServices.isEmpty) {
               return const Center(child: Text("Tidak ada data"));
             } else {
+              final reversedServices = filteredServices.reversed.toList();
+
               return ListView.builder(
-                itemCount: filteredServices.length,
+                itemCount: reversedServices.length,
                 itemBuilder: (context, index) {
-                  final service = filteredServices[index];
+                  final service = reversedServices[index];
                   return _historyItemCard(service, context);
                 },
               );
@@ -140,10 +142,12 @@ class _UserHaulHistoryState extends State<UserHaulHistory> {
             if (filteredServices.isEmpty) {
               return const Center(child: Text("Tidak ada data"));
             } else {
+              final reversedServices = filteredServices.reversed.toList();
+
               return ListView.builder(
-                itemCount: filteredServices.length,
+                itemCount: reversedServices.length,
                 itemBuilder: (context, index) {
-                  final service = filteredServices[index];
+                  final service = reversedServices[index];
                   return _historyItemCard(service, context);
                 },
               );
