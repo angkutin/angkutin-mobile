@@ -27,7 +27,6 @@ import '../../widget/CarbageHaulCard.dart';
 import '../../widget/CustomDrawerItem.dart';
 import '../../widget/ServiceCard.dart';
 import '../complain/complain_screen.dart';
-import '../driver/driver_monitor_screen.dart';
 import 'request_service_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
@@ -40,7 +39,6 @@ class UserHomeScreen extends StatefulWidget {
 }
 
 class _UserHomeScreenState extends State<UserHomeScreen> {
-  // late dynamic  _requestsFuture;
   String? _userEmail;
   String? _userWilayah;
   UserModel.User? _user;
@@ -49,10 +47,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   void initState() {
     super.initState();
 
-    // get data request
-    // Provider.of<UserRequestProvider>(context).getOngoingRequest(userId);
     _loadData();
-
   }
 
   _loadData() async {
@@ -71,24 +66,20 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         print("user wilayah $_userWilayah");
       });
     }
-        print("update user ${_user?.email} ${_user?.address}");
-
+    print("update user ${_user?.email} ${_user?.address}");
 
     if (_isLogin) {
       Provider.of<UserRequestProvider>(context, listen: false)
           .getOngoingRequest(_userEmail!);
-      // Provider.of<UserDailyProvider>(context, listen: false)
-      //     .getUserStream(_userEmail!);
+
       Provider.of<UserDailyProvider>(context, listen: false)
           .getDailyDriverAvailable(_userWilayah!);
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
-    // final UserModel.User? user = authProvider.currentUser;
 
     return Scaffold(
       drawer: Drawer(
@@ -101,8 +92,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     blendMode: BlendMode.srcIn,
                     shaderCallback: (Rect bounds) {
                       return const LinearGradient(
-                        // begin: Alignment.topCenter,
-                        // end: Alignment.bottomCenter,
                         colors: mainApkGradientList,
                       ).createShader(bounds);
                     },
@@ -175,9 +164,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               },
               icon: const Icon(Icons.menu_rounded));
         }),
-         actions: [
+        actions: [
           IconButton(
-              onPressed: () => Navigator.pushNamed(context, ComplainScreen.ROUTE_NAME, arguments: _user),
+              onPressed: () => Navigator.pushNamed(
+                  context, ComplainScreen.ROUTE_NAME,
+                  arguments: _user),
               icon: const Icon(
                 Icons.report_outlined,
               ))
@@ -404,21 +395,20 @@ Widget _statusReport(RequestService req, VoidCallback onPressed) {
       return const Text("Laporan Valid\nPetugas akan datang.",
           style: text18cgs18);
     } else {
-      return Column(children: [
-        Text("Laporan Tidak Valid",
-            style: text18cgs18.copyWith(color: Colors.red[900])),
-        Row(children: [
-          const Spacer(),
-          GestureDetector(
-              onTap: onPressed,
-              child: const FaIcon(
-                FontAwesomeIcons.trashCan,
-                size: 12,
-              )),
-        ])
-      ]);
+      return const Text("Laporan Valid\nMenunggu petugas", style: text18cgs18);
     }
   } else {
-    return const Text("Menunggu Tinjauan", style: text18cgs18);
+    return Column(children: [
+      const Text("Menunggu Tinjauan", style: text18cgs18),
+      Row(children: [
+        const Spacer(),
+        GestureDetector(
+            onTap: onPressed,
+            child: const FaIcon(
+              FontAwesomeIcons.trashCan,
+              size: 12,
+            )),
+      ])
+    ]);
   }
 }
