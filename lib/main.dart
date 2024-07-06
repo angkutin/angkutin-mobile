@@ -52,7 +52,7 @@ Future<void> main() async {
 
 // initial screen
   await authProvider.readUserDataLocally();
-  print("Data user local : ${authProvider.readUserDataLocally()}");
+  // print("Data user local : ${authProvider.readUserDataLocally()}");
 
   // onboarding state
   bool isOnboarding = await authProvider.getOnBoardingState();
@@ -122,12 +122,19 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserDailyProvider()),
         ChangeNotifierProvider(create: (_) => MonitorProvider()),
         ChangeNotifierProvider(create: (_) => ComplainProvider()),
-
-
       ],
       child: MaterialApp(
           home: initialScreen,
           navigatorObservers: [routeObserver],
+          onUnknownRoute: (settings) {
+            return MaterialPageRoute(builder: (_) {
+              return const Scaffold(
+                body: Center(
+                  child: Text('Page not found :('),
+                ),
+              );
+            });
+          },
           onGenerateRoute: (RouteSettings settings) {
             switch (settings.name) {
               // onboarding
@@ -235,18 +242,10 @@ class MainApp extends StatelessWidget {
                 final userModel.User user =
                     settings.arguments as userModel.User;
 
-                // final serviceData = settings.arguments as RequestService;
-                return MaterialPageRoute(builder: (_) => ComplainScreen(
-                  userData:user ,
-                ));
-              // final List<String> arguments = settings.arguments as List<String>;
-              // final screenTitle = arguments[0];
-              // final token = arguments[1];
-              // return MaterialPageRoute(
-              //     builder: (_) => AbsensiScreen(
-              //           screenTitle: screenTitle,
-              //           token: token,
-              //         ));
+                return MaterialPageRoute(
+                    builder: (_) => ComplainScreen(
+                          userData: user,
+                        ));
 
               default:
                 return MaterialPageRoute(builder: (_) {

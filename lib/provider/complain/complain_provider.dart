@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:angkutin/common/utils.dart';
-import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:angkutin/data/model/UserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -33,10 +31,14 @@ class ComplainProvider extends ChangeNotifier {
             'senderName': user.fullName,
             'role': user.role,
             'address' : user.address,
+            'activePhoneNumber':user.activePhoneNumber,
+            'optionalPhoneNumber':user.optionalPhoneNumber,
 
             'title' : titleComplain,
             'description' : contentComplain,
             'imageUrl' : imgUrl,
+
+            'isDone': false,
 
             'time': time
           });

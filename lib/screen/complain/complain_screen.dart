@@ -178,6 +178,10 @@ class _ComplainScreenState extends State<ComplainScreen> {
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
                   child: SizedBox(
                     height: 160,
                     child: image != null
@@ -197,7 +201,7 @@ class _ComplainScreenState extends State<ComplainScreen> {
                   ),
                 ),
               ),
-               const Divider(
+              const Divider(
                 color: Colors.transparent,
               ),
               isLoading == true
