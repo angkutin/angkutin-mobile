@@ -124,6 +124,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
 
             TextButton(
                 onPressed: () async {
+                  
+
+                  Provider.of<UserRequestProvider>(context, listen: false)
+                      .cancelSubscription();
+
                   // Logout dari Firebase
                   await FirebaseAuth.instance.signOut();
                   await authProvider.deleteUserDataLocally();

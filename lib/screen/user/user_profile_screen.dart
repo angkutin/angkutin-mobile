@@ -85,11 +85,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ? _user!.optionalPhoneNumber.toString()
                   : "tidak diatur",
             ),
-            CustomListTile(
-              title: "Koordinat",
-              value:
-                  "Latitude : ${_user?.latitude}\nLongitude : ${_user?.longitude}",
-            ),
+            // CustomListTile(
+            //   title: "Koordinat",
+            //   value: "Latitude : ${_user?.latitude}\nLongitude : ${_user?.longitude}",
+            // ),
             const SizedBox(height: 20,)
           ],
         ),

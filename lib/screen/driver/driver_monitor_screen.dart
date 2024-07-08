@@ -50,6 +50,9 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   GeoPoint? userLocationLatLng;
   String routeStatus = '';
 
+  bool isChecked = false;
+  bool error = false;
+
   @override
   void dispose() {
     _mapController?.dispose();
@@ -61,6 +64,10 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.type == 2) {
+      isChecked = true;
+    }
 
     markers.add(
       Marker(
@@ -79,8 +86,7 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
   void _startDataUpdates() {
     _dataTimer?.cancel();
     _dataTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-    _loadData(); 
-
+      _loadData();
     });
   }
 
@@ -190,82 +196,131 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
                   LatLng(driverLocation.latitude, driverLocation.longitude);
               _updateDriverLocation(newLocation);
             }
-            return ListView(
-              children: [
-                SizedBox(
-                    width: mediaQueryWidth(context),
-                    height: mediaQueryHeight(context) / 2,
-                    child: GoogleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: _driverLocation ??
-                            const LatLng(3.5649873243206964,
-                                98.71563527362277), // initial data
-                        zoom: 18,
-                      ),
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                      },
-                      markers: markers,
-                      polylines: polylines,
-                    )),
-                Row(
-                  children: [
-                    const Spacer(),
-                    driverServiceProv.finishIsLoading == true
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : Container(
-                            margin: const EdgeInsets.all(8),
-                            width: 120,
-                            child: CustomButton(
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Text("Camera belum OKE"),
+                  SizedBox(
+                      width: mediaQueryWidth(context),
+                      height: mediaQueryHeight(context) / 2,
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: _driverLocation ??
+                              const LatLng(3.5649873243206964,
+                                  98.71563527362277), // initial data
+                          zoom: 18,
+                        ),
+                        onMapCreated: (GoogleMapController controller) {
+                          _mapController = controller;
+                        },
+                        markers: markers,
+                        polylines: polylines,
+                      )),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      Container(
+                        margin: const EdgeInsets.all(8),
+                        width: 120,
+                        child: driverServiceProv.finishIsLoading == true
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : CustomButton(
                                 title: "Sudah Diangkut",
-                                onPressed: () {
-                                  _showFinishServiceDialog(context, widget.type,
-                                      driverServiceProv, request);
+                                onPressed: () async {
+                                  if (isChecked == false) {
+                                    setState(() {
+                                      error = true;
+                                    });
+                                  } else {
+                                    await driverServiceProv.finishUserRequest(
+                                      request.type,
+                                      request.requestId,
+                                      request.senderEmail,
+                                      request.idPetugas!,
+                                    );
+
+                                    if (driverServiceProv.finishState ==
+                                        ResultState.success) {
+                                      Future.delayed(
+                                          const Duration(milliseconds: 200),
+                                          () {
+                                        Navigator.pop(context);
+                                      });
+                                    }
+                                  }
                                 }),
-                          ),
-                    const SizedBox(
-                      width: 10,
-                    )
-                  ],
-                ),
-                routeStatus.isNotEmpty
-                    ? RouteIndicator(
-                        color: Colors.red[900]!,
-                        message: routeStatus,
+                      ),
+                      const SizedBox(
+                        width: 10,
                       )
-                    : Container(),
-                CustomListTile(
-                    title: "Diajukan oleh", value: "An. ${request.name}"),
-                CustomListTile(
-                    title: "Waktu Permintaan",
-                    value:
-                        "${formatDate(request.date.toDate().toString())}, ${formatTime(request.date.toDate().toString())}"),
-                CustomListTile(
-                    title: "Deskripsi",
-                    value: request.description! != ''
-                        ? request.description!
-                        : "-"),
-                Container(
-                  width: mediaQueryWidth(context),
-                  height: 200,
-                  padding: const EdgeInsets.all(16),
-                  child: CachedNetworkImage(
-                    imageUrl: request.imageUrl,
-                    fit: BoxFit.cover,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            CircularProgressIndicator(
-                                value: downloadProgress.progress),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
+                    ],
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                )
-              ],
+                  routeStatus.isNotEmpty
+                      ? RouteIndicator(
+                          color: Colors.red[900]!,
+                          message: routeStatus,
+                        )
+                      : Container(),
+                  if (request.type == 1)
+                    SizedBox(
+                      width: mediaQueryWidth(context),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: isChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                isChecked = value!;
+                              });
+                            },
+                          ),
+                          const Flexible(
+                            child: Text(
+                              "Pengangkutan sampah selesai, biaya sesuai (diluar tips) dan semua tugas beres.",
+                              style: TextStyle(color: mainColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (error)
+                    const Text(
+                      "Periksa kembali konfirmasi pengangkutan",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  CustomListTile(
+                      title: "Diajukan oleh", value: "An. ${request.name}"),
+                  CustomListTile(
+                      title: "Waktu Permintaan",
+                      value:
+                          "${formatDate(request.date.toDate().toString())}, ${formatTime(request.date.toDate().toString())}"),
+                  CustomListTile(
+                      title: "Deskripsi",
+                      value: request.description! != ''
+                          ? request.description!
+                          : "-"),
+                  Container(
+                    width: mediaQueryWidth(context),
+                    height: 200,
+                    padding: const EdgeInsets.all(16),
+                    child: CachedNetworkImage(
+                      imageUrl: request.imageUrl,
+                      fit: BoxFit.cover,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  )
+                ],
+              ),
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -280,96 +335,5 @@ class _DriverMonitorScreenState extends State<DriverMonitorScreen> {
       ),
     );
   }
-
-void _showFinishServiceDialog(BuildContext context, int type,
-    DriverServiceProvider serviceProvider, RequestService service) {
-  bool isChecked = false;
-  bool error = false;
-
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            title: const Text(
-              "Konfirmasi sampah sudah diangkut",
-              style: basicTextStyleBlack,
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Apakah kamu yakin ingin menyelesaikan layanan?",
-                  ),
-                  if (type == 1)
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              isChecked = value!;
-                            });
-                          },
-                        ),
-                        const Flexible(
-                          child: Text(
-                            'Saya memastikan bahwa semua sudah sesuai, termasuk biaya yang telah disepakati (tidak termasuk tips). Permintaan pengangkutan sampah telah selesai dan semua tugas telah dilakukan dengan baik.',
-                            style: TextStyle(color: mainColor),
-                          ),
-                        ),
-                      ],
-                    ),
-                  if (error)
-                    const Text(
-                      "Periksa kembali konfirmasi pengangkutan",
-                      style: TextStyle(color: Colors.red),
-                    ),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              if (serviceProvider.finishIsLoading == true)
-                const Center(
-                  child: CircularProgressIndicator(),
-                )
-              else
-                SizedBox(
-                  width: 120,
-                  child: CustomButton(
-                    title: "Selesaikan",
-                    onPressed: () async {
-                      if (type == 1 && !isChecked) {
-                        setState(() {
-                          error = true;
-                        });
-                        return;
-                      }
-                      
-                      await serviceProvider.finishUserRequest(
-                        service.type,
-                        service.requestId,
-                        service.senderEmail,
-                        service.idPetugas!,
-                      );
-
-                      if (serviceProvider.finishState == ResultState.success) {
-                        Navigator.pushReplacementNamed(
-                          context, DriverHomeScreen.ROUTE_NAME);
-                      } else {
-                        print("Gagal menyelesaikan orderan");
-                      }
-                    },
-                  ),
-                ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
 
 }

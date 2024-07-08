@@ -34,13 +34,6 @@ class _ComplainScreenState extends State<ComplainScreen> {
   final ImageService imageService = ImageService();
   bool isLoading = false;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    print("user data ${widget.userData.email}");
-  }
-
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
@@ -115,7 +108,7 @@ class _ComplainScreenState extends State<ComplainScreen> {
         title: const Text('Lapor Keluhan'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -173,7 +166,6 @@ class _ComplainScreenState extends State<ComplainScreen> {
                   await imageService.pickImageFromGallery();
                   setState(() {
                     image = imageService.image;
-                    // Navigator.pop(context);
                   });
                 },
                 child: Container(

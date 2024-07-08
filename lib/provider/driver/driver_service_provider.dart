@@ -298,7 +298,7 @@ class DriverServiceProvider with ChangeNotifier {
       }
 
       // hapus dari path asli
-      requestRef.delete();
+      // requestRef.delete();
 
       _finishState = ResultState.success;
     } catch (error) {

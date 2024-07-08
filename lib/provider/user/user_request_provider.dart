@@ -53,6 +53,8 @@ class UserRequestProvider with ChangeNotifier {
   bool? _reqIsLoading = false;
   StreamController<List<RequestService>> _requestsController =
       StreamController.broadcast();
+        StreamSubscription? _subscription;
+
 
   ResultState? get reqState => _reqState;
   String? get reqErrorMessage => _reqErrorMessage;
@@ -64,8 +66,14 @@ class UserRequestProvider with ChangeNotifier {
   @override
   void dispose() {
     _requestsController.close();
+    _subscription?.cancel();
     super.dispose();
   }
+
+void cancelSubscription(){
+    _subscription?.cancel();
+
+}
 
   Future<void> getOngoingRequest(String senderEmail) async {
     _reqState = ResultState.loading;
@@ -103,7 +111,7 @@ class UserRequestProvider with ChangeNotifier {
         (carbageData, reportData) => [...carbageData, ...reportData],
       );
 
-      dataStream.listen((data) {
+      _subscription = dataStream.listen((data) {
         _requestsController.add(data); // Add data to the stream
       });
       _reqState = ResultState.success;

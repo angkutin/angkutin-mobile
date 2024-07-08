@@ -19,6 +19,7 @@ class UserDailyProvider with ChangeNotifier {
   void dispose() {
     _userDataController.close();
     _driverDataController.close();
+    _subscription?.cancel();
     super.dispose();
   }
 
@@ -49,6 +50,8 @@ class UserDailyProvider with ChangeNotifier {
 
   StreamController<List<User>> _driverDataController =
       StreamController.broadcast();
+  StreamSubscription? _subscription;
+
   Stream<List<User>> get driverDataStream => _driverDataController.stream;
 
   Future<void> getDailyDriverAvailable(String kecamatan) async {
@@ -59,22 +62,12 @@ class UserDailyProvider with ChangeNotifier {
     try {
       final docRef = db
           .collection("users")
-          .where("role", isEqualTo: "Petugas")
+          .where("role", whereIn: ["Petugas", "petugas"])
           .where("address", isEqualTo: kecamatan)
           .where("isDaily", isEqualTo: true);
 
-      docRef.snapshots().listen((event) {
-        List<User> drivers =
-            event.docs.map((doc) => User.fromSnapshot(doc)).toList();
-
-        // final tes = [
-        //   User(
-        //       email: "anu",
-        //       address: "Kecamatan Medan Denai",
-        //       isDaily: true,
-        //       role: "Petugas"),
-        // ];
-
+      _subscription = docRef.snapshots().listen((event) {
+        List<User> drivers = event.docs.map((doc) => User.fromSnapshot(doc)).toList();
         _driverDataController.add(drivers);
         _state = ResultState.success;
         print("Jumlah driver: ${drivers.length}");

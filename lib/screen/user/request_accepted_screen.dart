@@ -31,7 +31,7 @@ class RequestAcceptedScreen extends StatelessWidget {
             const AnimatedWidgetWrapper(child:  TitleSection(title: "Permintaan Terkirim!")),
             const AnimatedWidgetWrapper(
               child:  SmallTextGrey(
-                  description: "Selanjutnya tunggu update status permintaan ya"),
+                  description: "Selanjutnya tunggu update statusnya ya"),
             ),
             const SizedBox(
               height: 30,

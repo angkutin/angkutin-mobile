@@ -169,18 +169,13 @@ Widget _historyItemCard(service) {
         children: [
           ListTile(
             title: Text(
-              service['namaPetugas'] != null
+              service['idPetugas'] != null
                   ? "Diangkut oleh : ${service['namaPetugas']}"
                   : 'Tidak Diangkut',
               style: const TextStyle(overflow: TextOverflow.ellipsis),
             ),
             subtitle: Text(
                 '${service['wilayah']}\nDiajukan ${formatDate(dateTime.toString())}'),
-            // trailing: Text(service['isDelivered'] == true
-            //     ? service['isAcceptByDriver'] == false
-            //         ? "Ditolak"
-            //         : ""
-            //     : ""),
           ),
         ],
       ),

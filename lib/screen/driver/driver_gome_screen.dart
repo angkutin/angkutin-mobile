@@ -67,6 +67,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   _loadData() async {
+    final _isLogin =
+        await Provider.of<AuthenticationProvider>(context, listen: false)
+            .getLoginState();
+
     final prefs =
         await Provider.of<AuthenticationProvider>(context, listen: false)
             .readUserDataLocally();
@@ -75,11 +79,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         _user = UserModel.User.fromJson(jsonDecode(prefs));
       });
 
-      Provider.of<UserDailyProvider>(context, listen: false)
-          .getUserStream(_user!.email!);
+      if (_isLogin) {
+        Provider.of<UserDailyProvider>(context, listen: false)
+            .getUserStream(_user!.email!);
 
-      Provider.of<DriverOngoingService>(context, listen: false)
-          .getOngoingRequest(_user!.email!);
+        Provider.of<DriverOngoingService>(context, listen: false)
+            .getOngoingRequest(_user!.email!);
+      }
     }
   }
 
@@ -225,7 +231,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         }),
         actions: [
           IconButton(
-              onPressed: () => Navigator.pushNamed(context, ComplainScreen.ROUTE_NAME, arguments: _updateUser),
+              onPressed: () => Navigator.pushNamed(
+                  context, ComplainScreen.ROUTE_NAME,
+                  arguments: _updateUser),
               icon: const Icon(
                 Icons.report_outlined,
               ))

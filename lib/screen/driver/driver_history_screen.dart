@@ -143,7 +143,6 @@ class _UserHaulHistoryState extends State<UserHaulHistory> {
               return const Center(child: Text("Tidak ada data"));
             } else {
               final reversedServices = filteredServices.reversed.toList();
-
               return ListView.builder(
                 itemCount: reversedServices.length,
                 itemBuilder: (context, index) {
