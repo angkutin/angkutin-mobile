@@ -192,7 +192,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   locationSubscription?.cancel();
 
                   // Logout dari Firebase
-                  await FirebaseAuth.instance.signOut();
+                  // await FirebaseAuth.instance.signOut();
                   await authProvider.deleteUserDataLocally();
                   await authProvider.saveLoginState(false);
                   await authProvider.deleteRoleLocally();

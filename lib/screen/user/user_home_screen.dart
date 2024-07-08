@@ -130,7 +130,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       .cancelSubscription();
 
                   // Logout dari Firebase
-                  await FirebaseAuth.instance.signOut();
+                  // await FirebaseAuth.instance.signOut();
                   await authProvider.deleteUserDataLocally();
                   await authProvider.saveLoginState(false);
                   await authProvider.deleteRoleLocally();
