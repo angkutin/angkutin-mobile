@@ -34,7 +34,7 @@ class _DriverRequestWasteScreenState extends State<DriverRequestWasteScreen> {
         Provider.of<DriverServiceProvider>(context, listen: false)
           ..getCarbageRequestFromUser(widget.dataDriver.address!));
 
-    print("data driver ${widget.dataDriver.name}");
+    print("data driver address ${widget.dataDriver.address!}");
   }
 
   @override

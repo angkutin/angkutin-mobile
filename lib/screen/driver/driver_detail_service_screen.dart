@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/provider/driver/driver_service_provider.dart';
+import 'package:angkutin/screen/driver/service/DriverLocationService.dart';
 import 'package:angkutin/utils/route_helper.dart';
 import 'package:angkutin/widget/CustomButton.dart';
 import 'package:angkutin/widget/CustomListTile.dart';
@@ -41,8 +42,10 @@ class DriverDetailServiceScreen extends StatefulWidget {
 class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
   GoogleMapController? _mapController;
   Set<Marker> markers = {};
+  LatLng? _driverLocation;
+  LatLng? _previousDriverLocation;
   User? _user;
-  StreamSubscription<Position>? locationSubscription;
+  StreamSubscription<GeoPoint>? locationSubscription;
   Set<Polyline> polylines = {};
   String routeStatus = '';
   Timer? _dataTimer;
@@ -52,17 +55,13 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
     _mapController?.dispose();
     locationSubscription?.cancel();
     _dataTimer?.cancel();
-
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-
-    _addDriverMarker(widget.driverLocation);
     _loadData();
-    // _listenToLocationUpdates();
     _startDataUpdates();
   }
 
@@ -75,6 +74,13 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
         _user = User.fromJson(jsonDecode(prefs));
       });
     }
+  }
+
+  void _startDataUpdates() {
+    _dataTimer?.cancel();
+    _dataTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _loadAndUpdateDriverLocation();
+    });
   }
 
   Future<void> _addDriverMarker(GeoPoint driverLocation) async {
@@ -98,50 +104,42 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
     setState(() {});
   }
 
-  void _startDataUpdates() {
-    _dataTimer?.cancel();
-    _dataTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      _listenToLocationUpdates();
-    });
-  }
+  void _updateDriverLocation(LatLng newLocation) {
+    if (_previousDriverLocation == newLocation) {
+      return; // Avoid unnecessary updates
+    }
 
-  void _listenToLocationUpdates() {
-    locationSubscription = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
-      ),
-    ).listen((Position position) {
-      var driverLat = position.latitude;
-      var driverLng = position.longitude;
+    _previousDriverLocation = newLocation;
 
-      var userLat = widget.serviceData.userLoc.latitude;
-      var userLng = widget.serviceData.userLoc.longitude;
-
-      setState(() {
-        markers.removeWhere(
-            (marker) => marker.markerId.value == 'driver_location');
-        markers.add(
-          Marker(
-            markerId: const MarkerId('driver_location'),
-            position: LatLng(
-              driverLat,
-              driverLng,
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _driverLocation = newLocation;
+          markers.removeWhere(
+              (marker) => marker.markerId == const MarkerId('driver_location'));
+          markers.add(
+            Marker(
+              markerId: const MarkerId('driver_location'),
+              position: _driverLocation!,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueGreen),
+              infoWindow: const InfoWindow(title: 'Lokasi Petugas'),
             ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen,
-            ),
-            infoWindow: const InfoWindow(
-              title: "Lokasi Kamu",
-            ),
-          ),
-        );
+          );
 
-        _showMarkersAndAdjustCamera(position.latitude, position.longitude);
-      });
+          // Adjust camera to show both user and driver locations
+          _showMarkersAndAdjustCamera(
+            widget.serviceData.userLoc.latitude,
+            widget.serviceData.userLoc.longitude,
+            _driverLocation!.latitude,
+            _driverLocation!.longitude,
+          );
+        });
+      }
 
-      // Generate route
-      _fetchRoute(LatLng(userLat, userLng), LatLng(driverLat, driverLng));
+      final userLoc = widget.serviceData.userLoc;
+      _fetchRoute(
+          LatLng(userLoc.latitude, userLoc.longitude), _driverLocation!);
     });
   }
 
@@ -175,29 +173,35 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
     }
   }
 
-  void _showMarkersAndAdjustCamera(double driverLat, double driverLng) {
-    var requestData = widget.serviceData;
+  _loadAndUpdateDriverLocation() async {
+    LocationService locationService = LocationService();
 
+    locationSubscription =
+        locationService.locationStream.listen((userLocation) {
+      if (mounted) {
+        setState(() {
+          var latitude = userLocation.latitude;
+          var longitude = userLocation.longitude;
+          _updateDriverLocation(LatLng(latitude, longitude));
+        });
+      }
+    });
+  }
+
+  void _showMarkersAndAdjustCamera(double userLat, double userLng,
+      double driverLat, double driverLng) {
     var bounds = LatLngBounds(
       southwest: LatLng(
-        requestData.userLoc.latitude < driverLat
-            ? requestData.userLoc.latitude
-            : driverLat,
-        requestData.userLoc.longitude < driverLng
-            ? requestData.userLoc.longitude
-            : driverLng,
+        userLat < driverLat ? userLat : driverLat,
+        userLng < driverLng ? userLng : driverLng,
       ),
       northeast: LatLng(
-        requestData.userLoc.latitude > driverLat
-            ? requestData.userLoc.latitude
-            : driverLat,
-        requestData.userLoc.longitude > driverLng
-            ? requestData.userLoc.longitude
-            : driverLng,
+        userLat > driverLat ? userLat : driverLat,
+        userLng > driverLng ? userLng : driverLng,
       ),
     );
 
-    _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 18));
+    _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
   }
 
   @override
@@ -240,11 +244,14 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                         ),
                       );
 
-                      // Call the function to adjust the camera
-                      _showMarkersAndAdjustCamera(
-                        widget.driverLocation.latitude,
-                        widget.driverLocation.longitude,
-                      );
+                      // Call the function to adjust the camera to user's location
+                      _mapController?.animateCamera(CameraUpdate.newLatLngZoom(
+                        LatLng(
+                          requestData.userLoc.latitude,
+                          requestData.userLoc.longitude,
+                        ),
+                        15,
+                      ));
                     });
                   },
                   markers: markers,
@@ -256,7 +263,6 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                   rotateGesturesEnabled: true,
                 ),
               ),
-
               const SizedBox(
                 height: 5,
               ),

@@ -17,7 +17,10 @@ class RequestAcceptedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+          automaticallyImplyLeading: false,
+      ),
+      
       body: SizedBox(
         width: mediaQueryWidth(context),
         child: Column(

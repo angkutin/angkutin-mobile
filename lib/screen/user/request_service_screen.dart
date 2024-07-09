@@ -85,7 +85,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
 
       appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
         child: SizedBox(
           height: mediaQueryHeight(context),
           child: ListView(
