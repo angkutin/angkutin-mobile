@@ -133,7 +133,6 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                       onTap: () => _showPaymentTypeDialog(context),
                     )
                   : Container(),
-        
               ListTile(
                 leading: const FaIcon(
                   FontAwesomeIcons.locationDot,
@@ -181,7 +180,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
               const SizedBox(
                 height: 10,
               ),
-                    widget.tipeAngkutan == 1
+              widget.tipeAngkutan == 1
                   ? Row(
                       // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -345,45 +344,67 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                ServiceCard(
-                    title: "Standar",
-                    subtitle: "Jumlah sampah normal seperti biasanya",
-                    imageUrl:dotenv.env['SAMPAH_STANDART']!,
-                    trailing: _price("7 000"),
-                    onPressed: () {
-                      setState(() {
-                        requestPrice = 7000;
-                        requestType = "Standar";
-                      });
-                      Navigator.pop(context);
-                    }),
-                ServiceCard(
-                    title: "Sedang",
-                    subtitle: "Lebih banyak dari biasanya",
-                    imageUrl:dotenv.env['SAMPAH_MEDIUM']!,
-                    trailing: _price("15 000"),
-                    onPressed: () {
-                      setState(() {
-                        requestPrice = 15000;
-                        requestType = "Sedang";
-                      });
-                      Navigator.pop(context);
-                    }),
-                ServiceCard(
-                    title: "Banyak",
-                    subtitle: "cocok utk selesai acara, perabotan, dll",
-                    imageUrl:dotenv.env['SAMPAH_BIG']!,
-                    trailing: _price("30 000"),
-                    onPressed: () {
-                      setState(() {
+                _typeItem(
+                    "Standar",
+                    "Cocok untuk kebutuhan harian, seperti sampah rumah tangga sehari-hari.",
+                    dotenv.env['SAMPAH_STANDART']!,
+                    '7 000', () {
+                  setState(() {
+                    requestPrice = 7000;
+                    requestType = "Standar";
+                  });
+                  Navigator.pop(context);
+                }),
+                _typeItem(
+                    'Sedang',
+                    'cocok utk jumlah sampah menangah, setelah acara kecil, dsb',
+                    dotenv.env['SAMPAH_MEDIUM']!,
+                    '15 000',
+                    () {
+                  setState(() {
+                    requestPrice = 15000;
+                    requestType = "Sedang";
+                  });
+                  Navigator.pop(context);
+                }),
+                _typeItem("Banyak", 'cocok utk selesai acara, pembersihan perabotan, renovasi rumah, dll' , dotenv.env['SAMPAH_BIG']!, '30 000', () {  setState(() {
                         requestPrice = 30000;
                         requestType = "Banyak";
                       });
-                      Navigator.pop(context);
-                    }),
+                      Navigator.pop(context);}),
               ]));
         });
   }
+
+  _typeItem(String title, String subtitle, String imageUrl, String price, VoidCallback onTap) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 6.0),
+      color: Colors.white,
+      width: mediaQueryWidth(context),
+      child: ListTile(
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w500, color: blackColor),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(color: softBlackColor),
+        ),
+        leading: CachedNetworkImage(
+          imageUrl: imageUrl,
+          progressIndicatorBuilder: (context, url, downloadProgress) =>
+              CircularProgressIndicator(value: downloadProgress.progress),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
+        trailing: _price(price),
+      ),
+    ),
+  );
+}
+
+
 
   Text _price(String price) => Text(
         "Rp.\n$price,-",
