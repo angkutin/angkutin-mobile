@@ -5,16 +5,19 @@ import 'package:flutter/material.dart';
 class CustomDrawerItem extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
+  final Widget? trailing;
   const CustomDrawerItem({
     Key? key,
     required this.title,
     required this.onTap,
+    this.trailing
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(title, style: basicTextStyleBlack),
+      trailing: trailing,
       onTap: onTap,
     );
   }

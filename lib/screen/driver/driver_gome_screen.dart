@@ -49,6 +49,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   double longitude = 0;
 
   GeoPoint? userLocationLatLng;
+  bool hasReports = false;
 
   @override
   void initState() {
@@ -84,8 +85,28 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
         Provider.of<DriverOngoingService>(context, listen: false)
             .getOngoingRequest(_user!.email!);
+
+        // Listen to reports item
+        _listenToReportStream(_user!.email!);
       }
     }
+  }
+
+  void _listenToReportStream(String email) {
+    Provider.of<DriverServiceProvider>(context, listen: false)
+          .getReportFromUser(email);
+
+    final reportStream = Provider.of<DriverServiceProvider>(context, listen: false)
+        .reportStream;
+    reportStream.listen((reports) {
+      if (reports.isNotEmpty) {
+
+        setState(() {
+                  hasReports = true;
+
+        });
+      }
+    });
   }
 
   void _listenToRequestsStream() {
@@ -166,13 +187,29 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 onTap: () => Navigator.pushNamed(
                     context, DriverRequestWasteScreen.ROUTE_NAME,
                     arguments: _updateUser)),
-            CustomDrawerItem(
-                title: "Laporan Timbunan Sampah",
-                onTap: () {
-                  Navigator.pushNamed(
-                      context, DriverReportWasteScreen.ROUTE_NAME,
-                      arguments: _updateUser);
-                }),
+
+            StreamBuilder<List<RequestService>>(
+              stream: Provider.of<DriverServiceProvider>(context, listen: false)
+                  .reportStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  hasReports = true;
+                }
+                return CustomDrawerItem(
+                    title: "Laporan Timbunan Sampah",
+                    trailing: hasReports
+                        ? Badge(
+                            backgroundColor: Colors.red[900],
+                          )
+                        : null,
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, DriverReportWasteScreen.ROUTE_NAME,
+                          arguments: _updateUser);
+                    });
+              },
+            ),
+
             CustomDrawerItem(
                 title: "Riwayat",
                 onTap: () {
@@ -222,11 +259,21 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         leading: Builder(builder: (context) {
-          return IconButton(
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              icon: const Icon(Icons.menu_rounded));
+          return Stack(children: [
+            IconButton(
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                icon: const Icon(Icons.menu_rounded)),
+            hasReports == true
+                ? Positioned(
+                    right: 15,
+                    top: 10,
+                    child: Badge(
+                      backgroundColor: Colors.red[900],
+                    ))
+                : Container()
+          ]);
         }),
         actions: [
           IconButton(

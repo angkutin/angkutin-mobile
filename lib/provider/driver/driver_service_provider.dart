@@ -54,6 +54,7 @@ class DriverServiceProvider with ChangeNotifier {
           .collection('items')
           .where('idPetugas', isEqualTo: driverId)
           .where('isDelivered', isEqualTo: true)
+          .where('isAcceptByDriver', isEqualTo: false)
           .where('isDone', isEqualTo: false)
           .snapshots()
           .map((snapshot) => snapshot.docs

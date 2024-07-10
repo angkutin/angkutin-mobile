@@ -99,7 +99,7 @@ class _DriverRequestWasteScreenState extends State<DriverReportWasteScreen> {
                           trailing: TextButton(
                               onPressed: () {
                                 final driverLoc = widget.dataDriver;
-                                print("Mengirim lokasi ${driverLoc.latitude} ke detail");
+                                // print("Mengirim lokasi ${driverLoc.latitude} ke detail");
                                 
                                 Navigator.pushNamed(context,
                                   DriverDetailServiceScreen.ROUTE_NAME,
