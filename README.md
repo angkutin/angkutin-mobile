@@ -2,7 +2,7 @@
 ### Aplikasi mobile android Angkutin untuk Masyarakat & Petugas Kebersihan
 <!-- BACKGROUND PROJECT -->
 <p align="center">
-<img width="300px" src="https://github.com/angkutin/angkutin-mobile/blob/master/assets/logo.png"> 
+<img width="200px" src="https://github.com/angkutin/angkutin-mobile/blob/master/assets/logo.png"> 
 
   <br>
   <p align="justify">
