@@ -1,5 +1,5 @@
 # Angkutin
-## Aplikasi mobile andoir Angkutin untuk Masyarakat & Petugas Kebersihan
+### Aplikasi mobile android Angkutin untuk Masyarakat & Petugas Kebersihan
 <!-- BACKGROUND PROJECT -->
 <p align="center">
 <img width="300px" src="https://github.com/angkutin/angkutin-mobile/blob/master/assets/logo.png"> 
@@ -31,7 +31,8 @@ Fitur utama yang ada pada aplikasi mobile Masyarakat ialah :
 - Membuat laporan timbunan sampah liar
 - Memantau status permintaan pengangkutan sampah & laporan timbunan sampah liar
 - Memantau lokasi petugas yang akan melakukan pengangkutan 
-<br>
+
+  
 ### Petugas Kebersihan
 Fitur utama yang ada pada aplikasi mobile Petugas Kebersihan ialah :
 - Mengaktfikan/non-aktifkan status pengangkutan harian
@@ -39,7 +40,7 @@ Fitur utama yang ada pada aplikasi mobile Petugas Kebersihan ialah :
 - Melihat tugas laporan timbunan sampah liar yang sudah diverifikasi oleh Admin
 - Memantau layanan yang sedang berjalan (permintaan/sampah liar)
 
-<br>
+
 <!-- Contributor -->
 ## Contributors :brain:
 Aplikasi mobile Angkutin dibangun oleh seorang mahasiswa Teknik Informatika, dengan pengerjaan kurang lebih dua bulan.
