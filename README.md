@@ -40,11 +40,9 @@ Fitur utama yang ada pada aplikasi mobile Petugas Kebersihan ialah :
 - Melihat tugas laporan timbunan sampah liar yang sudah diverifikasi oleh Admin
 - Memantau layanan yang sedang berjalan (permintaan/sampah liar)
 
-
-<!-- Contributor -->
 ## Contributors :brain:
-Aplikasi mobile Angkutin dibangun oleh seorang mahasiswa Teknik Informatika, dengan pengerjaan kurang lebih dua bulan.
-[Fadhil Muhammad](https://www.linkedin.com/in/fadhil-muhammad79/)
+Aplikasi mobile Angkutin dibangun oleh seorang mahasiswa Teknik Informatika, dengan pengerjaan kurang lebih dua bulan. <br>
+Lihat Profil [Fadhil Muhammad](https://www.linkedin.com/in/fadhil-muhammad79/)
 
 <br>
 Salam hangat, Angkutin
