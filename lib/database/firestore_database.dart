@@ -26,18 +26,14 @@ Future<User?> getUserFromFirebaseOrCreateNewUser(String email) async {
     await FirebaseFirestore.instance.collection('users').doc(userId).set({
       'email': email,
       'name': name,
-      'fullName': "",
-      'address': "",
-      'role': "not set",
+      'role': "Masyarakat",
       // 'created_at': FieldValue.serverTimestamp(),
     });
 
     final Map<String, dynamic> newUser = {
       'email': email,
       'name': name,
-      'fullName': "",
-      'address': "",
-      'role': "not set",
+      'role': "Masyarakat",
       // 'created_at': FieldValue.serverTimestamp(),
     };
 
@@ -54,3 +50,33 @@ Future<void> updateUserData(String email, Map<String, dynamic> data) async {
     print(e);
   }
 }
+
+// Future<void> createRequest(RequestService request) async {
+//   await FirebaseFirestore.instance
+//       .collection('requests')
+//       .doc(request.requestId)
+//       .set(request.toFirestore());
+// }
+
+// Stream<List<RequestService>> getUserRequests(String userId) {
+//   // Use collection group to access subcollections across documents
+//   try {
+//     final requestsStream = FirebaseFirestore.instance
+//         .collection(
+//             'requests') // Use collectionGroup for filtering across subcollections
+//         .doc('carbage')
+//         .collection('items')
+//         .where('userId',
+//             isEqualTo: userId) // Filter by userId ganti nanti jadi user.uid
+//         .where('isDone', isEqualTo: false) // Filter by isDone
+//         .snapshots()
+//         .map((snapshot) => snapshot.docs
+//             .map((doc) => RequestService.fromFirestore(doc, null))
+//             .toList());
+
+//     return requestsStream;
+//   } catch (e) {
+//     print('Error fetching user requests: $e');
+//     return Stream<List<RequestService>>.empty();
+//   }
+// }

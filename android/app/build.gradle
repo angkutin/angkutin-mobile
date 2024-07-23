@@ -24,10 +24,15 @@ if (flutterVersionName == null) {
 }
 
 
+
+
+
 android {
     namespace "com.example.angkutin"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+
+    
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -54,6 +59,16 @@ android {
 
         // for firebase
         multiDexEnabled true
+
+        // api key
+        // resValue "string", "google_maps_api_key", dotenv.env['GOOGLE_MAPS_API_KEY']
+        def envFile = rootProject.file(".env")
+        if (envFile.exists()) {
+            def env = new Properties()
+            env.load(new FileInputStream(envFile))
+            buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\"${env.getProperty("GOOGLE_MAPS_API_KEY")}\""
+        }
+
     }
 
     buildTypes {
@@ -63,6 +78,8 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    
 }
 
 flutter {

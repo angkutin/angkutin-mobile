@@ -20,11 +20,27 @@ dependencies:
   # flutter_svg: ^2.0.10+1
   # flutter_form_builder: ^9.2.1
   shared_preferences: ^2.2.3
-  # cached_network_image: ^3.3.1
+  cached_network_image: ^3.2.3
   permission_handler: ^11.0.1
   device_info_plus: ^9.1.1
   flutter_image_compress: ^2.1.0
   path_provider: ^2.1.1
+  introduction_screen: ^3.1.14
+  image_picker: ^1.1.1
+  geolocator: ^12.0.0
+  google_maps_flutter: ^2.2.8
+
+  # 2 bawah ni rencana mw diapus
+  geocoding: ^3.0.0
+  location: ^6.0.2
+  firebase_storage: ^11.7.6
+  font_awesome_flutter: ^10.7.0
+  lottie: ^3.1.2
+  icons_launcher: ^2.1.7
+  intl: ^0.19.0
+  rxdart: ^0.27.7
+  http: ^1.2.1
+  badges: ^3.1.2
 
 
 dev_dependencies:
@@ -36,6 +52,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/lotties/succesfully-lottie.json
+    # - assets/images/successfuly_image.png
     - .env
   
 
@@ -43,5 +61,11 @@ flutter_native_splash:
     color: "#3997DA"
     image: "assets/angkutin_logo_white.png"
 
-    
+icons_launcher:
+  image_path: "assets/logo.png"
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
 

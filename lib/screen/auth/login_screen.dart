@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:angkutin/common/constant.dart';
 import 'package:angkutin/common/state_enum.dart';
 import 'package:angkutin/screen/auth/fill_user_data_screen.dart';
+import 'package:angkutin/screen/driver/driver_gome_screen.dart';
+import 'package:angkutin/screen/user/user_home_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +15,7 @@ import '../../common/utils.dart';
 import '../../provider/auth/auth_provider.dart';
 import '../../widget/CustomButton.dart';
 import '../../widget/TitleSectionBlue.dart';
+import '../../data/model/UserModel.dart' as userModel;
 
 class LoginScreen extends StatelessWidget {
   static const ROUTE_NAME = '/login';
@@ -32,7 +37,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(
                 height: 36,
               ),
-              const TitleSectionBlue(
+              const TitleSection(
                 title: 'Masuk',
               ),
               const Text(
@@ -46,7 +51,13 @@ class LoginScreen extends StatelessWidget {
                 width: mediaQueryWidth(context),
                 height: mediaQueryHeight(context) / 2.5,
                 // color: Colors.amber,
-                child: Image.network(imageUrl!)
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl!,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
               ),
               const Spacer(),
               signInProvider.isLoading == true
@@ -62,17 +73,64 @@ class LoginScreen extends StatelessWidget {
                             await signInProvider.signInWithGoogleProv();
 
                             if (signInProvider.state == ResultState.success) {
-                              // Navigation after successful sign-in
-                              Future.delayed(const Duration(milliseconds: 500),
-                                  () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const FillUserDataScreen(),
-                                  ),
-                                );
-                              });
+                              // ngecek apakah user sudah ngisi data melalui local storage
+                              final String? user =
+                                  await signInProvider.readUserDataLocally();
+
+                              userModel.User userData =
+                                  userModel.User.fromJson(jsonDecode(user!));
+
+                              if (userData.role == "Masyarakat" ||
+                                  userData.role == "masyarakat") {
+                                signInProvider.saveRoleState("Masyarakat");
+                              } else if (userData.role == "Petugas" ||
+                                  userData.role == "petugas") {
+                                signInProvider.saveRoleState("Petugas");
+                              } else {
+                                print("LOGIN SCREEN : ada masalah dalam membaca role");
+                              }
+
+                              bool isFillData = userData.latitude != null;
+                              String role = userData.role!;
+
+                              // checking status fill data user
+                              if (isFillData) {
+                                signInProvider.saveLoginState(true);
+                                // Navigate to screen based on user role
+                                Future.delayed(
+                                    const Duration(milliseconds: 200), () {
+                                  if (role == "Masyarakat" ||
+                                      role == "masyarakat") {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UserHomeScreen(),
+                                      ),
+                                    );
+                                  } else if (role == "Petugas" ||
+                                      role == "petugas") {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const DriverHomeScreen(),
+                                      ),
+                                    );
+                                  }
+                                });
+                              } else {
+                                Future.delayed(
+                                    const Duration(milliseconds: 200), () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const FillUserDataScreen(),
+                                    ),
+                                  );
+                                });
+                              }
                             } else {
                               // Handle non-success states (loading, error)
                               if (signInProvider.state == ResultState.loading) {
@@ -98,7 +156,6 @@ class LoginScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   text: 'Dengan masuk, kamu menyetujui ',
-
                   style: const TextStyle(
                     color: Colors.black,
                   ), // Mengubah warna teks
