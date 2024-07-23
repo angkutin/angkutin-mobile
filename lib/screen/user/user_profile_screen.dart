@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/constant.dart';
@@ -50,23 +49,29 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const Text(
+            _user?.imageUrl != null
+            ? const Text(
               "Foto Rumah",
               style: basicTextStyleBlack,
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              width: 200,
-              padding: const EdgeInsets.all(16),
-              decoration: containerBorderWithRadius.copyWith(
-                  border: Border.all(color: softBlueColor)),
-              child: CachedNetworkImage(
-                imageUrl: _user?.imageUrl ?? dotenv.env['TUMPUKAN_SAMPAH_ILUSTRASI_IMAGE']!,
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
-            ),
+            ) : Container(),
+            _user?.imageUrl != null
+                ? Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    width: 200,
+                    padding: const EdgeInsets.all(16),
+                    decoration: containerBorderWithRadius.copyWith(
+                        border: Border.all(color: softBlueColor)),
+                    child: CachedNetworkImage(
+                      imageUrl: _user!.imageUrl!,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  )
+                : Container(),
             CustomListTile(
               title: "Nama",
               value: _user?.name ?? "None",
@@ -89,7 +94,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             //   title: "Koordinat",
             //   value: "Latitude : ${_user?.latitude}\nLongitude : ${_user?.longitude}",
             // ),
-            const SizedBox(height: 20,)
+            const SizedBox(
+              height: 20,
+            )
           ],
         ),
       ),
