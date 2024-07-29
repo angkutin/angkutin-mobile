@@ -22,7 +22,7 @@ Dengan fitur-fitur tersebut, Angkutin memberikan kemudahan bagi masyarakat untuk
 <br>
 
 <!-- Feature -->
-## Main Feature :bulb:
+## Fitur Utama :bulb:
 Aplikasi mobile angkutin dibagi menjadi dua role yaitu Masyarakat dan Petugas Kebersihan. Berikut fitur yang ditawarkan oleh Angkutin :
 ### Masyarakat
 Fitur utama yang ada pada aplikasi mobile Masyarakat ialah :
@@ -40,9 +40,20 @@ Fitur utama yang ada pada aplikasi mobile Petugas Kebersihan ialah :
 - Melihat tugas laporan timbunan sampah liar yang sudah diverifikasi oleh Admin
 - Memantau layanan yang sedang berjalan (permintaan/sampah liar)
 
+
+
+#### :computer:
+- Flutter
+- Firebase Firestore
+- Google Sign In
+- Google Maps API
+- Openrouteservice
+
+
 ## Contributors :brain:
 Aplikasi mobile Angkutin dibangun oleh seorang mahasiswa Teknik Informatika, dengan pengerjaan kurang lebih dua bulan. <br>
-Lihat Profil [Fadhil Muhammad](https://www.linkedin.com/in/fadhil-muhammad79/)
+Lihat Profil  [Fadhil Muhammad](https://www.linkedin.com/in/fadhil-muhammad79/)
 
-<br>
+
+
 Salam hangat, Angkutin
