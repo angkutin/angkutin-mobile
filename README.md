@@ -42,7 +42,8 @@ Fitur utama yang ada pada aplikasi mobile Petugas Kebersihan ialah :
 
 
 
-#### :computer:
+#### Teknologi yang digunakan :computer:
+- Figma
 - Flutter
 - Firebase Firestore
 - Google Sign In
