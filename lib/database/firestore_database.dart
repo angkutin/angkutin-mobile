@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../data/model/UserModel.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -27,14 +26,12 @@ Future<User?> getUserFromFirebaseOrCreateNewUser(String email) async {
       'email': email,
       'name': name,
       'role': "Masyarakat",
-      // 'created_at': FieldValue.serverTimestamp(),
     });
 
     final Map<String, dynamic> newUser = {
       'email': email,
       'name': name,
       'role': "Masyarakat",
-      // 'created_at': FieldValue.serverTimestamp(),
     };
 
     return User.fromJson(newUser);
@@ -50,33 +47,3 @@ Future<void> updateUserData(String email, Map<String, dynamic> data) async {
     print(e);
   }
 }
-
-// Future<void> createRequest(RequestService request) async {
-//   await FirebaseFirestore.instance
-//       .collection('requests')
-//       .doc(request.requestId)
-//       .set(request.toFirestore());
-// }
-
-// Stream<List<RequestService>> getUserRequests(String userId) {
-//   // Use collection group to access subcollections across documents
-//   try {
-//     final requestsStream = FirebaseFirestore.instance
-//         .collection(
-//             'requests') // Use collectionGroup for filtering across subcollections
-//         .doc('carbage')
-//         .collection('items')
-//         .where('userId',
-//             isEqualTo: userId) // Filter by userId ganti nanti jadi user.uid
-//         .where('isDone', isEqualTo: false) // Filter by isDone
-//         .snapshots()
-//         .map((snapshot) => snapshot.docs
-//             .map((doc) => RequestService.fromFirestore(doc, null))
-//             .toList());
-
-//     return requestsStream;
-//   } catch (e) {
-//     print('Error fetching user requests: $e');
-//     return Stream<List<RequestService>>.empty();
-//   }
-// }

@@ -33,8 +33,6 @@ class _DriverRequestWasteScreenState extends State<DriverRequestWasteScreen> {
     Future.microtask(() =>
         Provider.of<DriverServiceProvider>(context, listen: false)
           ..getCarbageRequestFromUser(widget.dataDriver.address!));
-
-    print("data driver address ${widget.dataDriver.address!}");
   }
 
   @override

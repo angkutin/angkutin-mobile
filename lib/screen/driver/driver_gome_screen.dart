@@ -94,16 +94,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   void _listenToReportStream(String email) {
     Provider.of<DriverServiceProvider>(context, listen: false)
-          .getReportFromUser(email);
+        .getReportFromUser(email);
 
-    final reportStream = Provider.of<DriverServiceProvider>(context, listen: false)
-        .reportStream;
+    final reportStream =
+        Provider.of<DriverServiceProvider>(context, listen: false).reportStream;
     reportStream.listen((reports) {
       if (reports.isNotEmpty) {
-
         setState(() {
-                  hasReports = true;
-
+          hasReports = true;
         });
       }
     });
@@ -228,7 +226,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   locationSubscription?.cancel();
 
                   // Logout dari Firebase
-                  // await FirebaseAuth.instance.signOut();
                   await authProvider.deleteUserDataLocally();
                   await authProvider.saveLoginState(false);
                   await authProvider.deleteRoleLocally();
@@ -363,13 +360,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               onPressed: () async {
                                 if (_user != null) {
                                   if (isDailyActive != true) {
-                                    print('Updating isDaily to true');
+                                    // print('Updating isDaily to true');
                                     await dailyProvider.updateDriverDaily(
                                         _user!.email!, true);
                                     await dailyProvider.updateMassDailyUsers(
                                         _user!.address!, true);
                                   } else {
-                                    print('Updating isDaily to false');
+                                    // print('Updating isDaily to false');
                                     await dailyProvider.updateDriverDaily(
                                         _user!.email!, false);
                                     await dailyProvider.updateMassDailyUsers(
@@ -411,8 +408,6 @@ class driverServiceCard extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, DriverMonitorScreen.ROUTE_NAME,
             arguments: [req.type, req.requestId, req.userLoc]);
-
-        print("tipe ${req.type} reqId ${req.requestId} userLoc ${req.userLoc}");
       },
       child: Card(
         child: Container(

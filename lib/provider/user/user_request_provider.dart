@@ -8,7 +8,6 @@ import '../../common/state_enum.dart';
 import '../../database/storage_service.dart';
 
 class UserRequestProvider with ChangeNotifier {
-  // final StorageService storageService;
   final StorageService storageService;
   UserRequestProvider(this.storageService);
 
@@ -51,7 +50,7 @@ class UserRequestProvider with ChangeNotifier {
   ResultState? _reqState;
   String? _reqErrorMessage;
   bool? _reqIsLoading = false;
-  StreamController<List<RequestService>> _requestsController =
+  final StreamController<List<RequestService>> _requestsController =
       StreamController.broadcast();
         StreamSubscription? _subscription;
 
@@ -59,7 +58,6 @@ class UserRequestProvider with ChangeNotifier {
   ResultState? get reqState => _reqState;
   String? get reqErrorMessage => _reqErrorMessage;
   bool? get reqIsLoading => _reqIsLoading;
-  // List<RequestService> get requests => _requests;
 
   Stream<List<RequestService>> get requestsStream => _requestsController.stream;
 
@@ -118,7 +116,6 @@ void cancelSubscription(){
     } catch (error) {
       _reqState = ResultState.error;
       _reqErrorMessage = error.toString();
-      print("Errornya $_reqErrorMessage");
     } finally {
       _reqIsLoading = false;
       notifyListeners();
@@ -145,7 +142,7 @@ void cancelSubscription(){
           .delete();
       notifyListeners();
     } catch (error) {
-      print("Error deleting request: $error");
+      // print("Error deleting request: $error");
     }
   }
 }

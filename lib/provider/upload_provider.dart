@@ -18,17 +18,6 @@ class UploadProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool? get isLoading => _isLoading;
 
-  // Future<String> uploadImage(String collection, String docId, File image) async {
-  //   final fileName = path.basename(image.path);
-  //   final storageRef =
-  //       FirebaseStorage.instance.ref().child('$collection/$docId/$fileName');
-  //   final uploadTask = storageRef.putFile(image);
-
-  //   final snapshot = await uploadTask.whenComplete(() => {});
-  //   final downloadUrl = await snapshot.ref.getDownloadURL();
-  //   return downloadUrl;
-  // }
-
   String? _imageUrl;
   String? get imageUrl => _imageUrl; 
 
@@ -70,21 +59,7 @@ class UploadProvider with ChangeNotifier {
               merge:
                   true)); // agar menambah atribut tanpa menghapus yang sudah ada
 
-      // final String userDataKey = 'user_data';
-
-      // final prefs = await SharedPreferences.getInstance();
-      // final userDataString = jsonEncode({
-      //   'fullName': fullName,
-      //   'activePhoneNumber': activePhoneNumber,
-      //   'optionalPhoneNumber': optionalPhoneNumber,
-      //   'imageUrl': _imageUrl,
-      //   'latitude': latitude,
-      //   'longitude': longitude,
-      // });
-      // prefs.setString(userDataKey, userDataString);
-      // print("berhasil simpan data lengkap ke local : ${jsonDecode(userDataString)}");
-
-      _state = ResultState.success;
+         _state = ResultState.success;
     } catch (error) {
       _state = ResultState.error;
       _errorMessage = error.toString();

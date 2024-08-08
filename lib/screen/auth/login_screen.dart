@@ -87,7 +87,7 @@ class LoginScreen extends StatelessWidget {
                                   userData.role == "petugas") {
                                 signInProvider.saveRoleState("Petugas");
                               } else {
-                                print("LOGIN SCREEN : ada masalah dalam membaca role");
+                                // print("LOGIN SCREEN : ada masalah dalam membaca role");
                               }
 
                               bool isFillData = userData.latitude != null;

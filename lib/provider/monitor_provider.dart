@@ -8,7 +8,7 @@ import '../../database/firestore_database.dart';
 class MonitorProvider with ChangeNotifier {
   ResultState? _state;
   String? _errorMessage;
-  StreamController<RequestService> _serviceDataController =
+  final StreamController<RequestService> _serviceDataController =
       StreamController.broadcast();
 
   ResultState? get state => _state;
@@ -22,46 +22,40 @@ class MonitorProvider with ChangeNotifier {
     super.dispose();
   }
 
- Future<void> getRequestDataStream(int type, String requestId) async {
-  _state = ResultState.loading;
-  _errorMessage = null;
-  notifyListeners();
-
-  try {
-    String collectionPath;
-    if (type == 1) {
-      collectionPath = "carbage";
-    } else if (type == 2) {
-      collectionPath = "report";
-    } else {
-      throw Exception("Invalid type");
-    }
-
-    final docRef = db
-        .collection("requests")
-        .doc(collectionPath)
-        .collection("items")
-        .doc(requestId);
-
-    docRef.snapshots().listen((event) {
-      _serviceDataController.add(RequestService.fromFirestore(event, null));
-      _state = ResultState.success;
-      print("current data: ${event.data()}");
-      notifyListeners();
-    }, onError: (error) {
-      print("Listen failed: $error");
-      _state = ResultState.error;
-      _errorMessage = error.toString();
-      print("Error: $_errorMessage");
-      notifyListeners();
-    });
-
-  } catch (e) {
-    _state = ResultState.error;
-    _errorMessage = e.toString();
-    print("Error: $_errorMessage");
+  Future<void> getRequestDataStream(int type, String requestId) async {
+    _state = ResultState.loading;
+    _errorMessage = null;
     notifyListeners();
-  }
-}
 
+    try {
+      String collectionPath;
+      if (type == 1) {
+        collectionPath = "carbage";
+      } else if (type == 2) {
+        collectionPath = "report";
+      } else {
+        throw Exception("Invalid type");
+      }
+
+      final docRef = db
+          .collection("requests")
+          .doc(collectionPath)
+          .collection("items")
+          .doc(requestId);
+
+      docRef.snapshots().listen((event) {
+        _serviceDataController.add(RequestService.fromFirestore(event, null));
+        _state = ResultState.success;
+        notifyListeners();
+      }, onError: (error) {
+        _state = ResultState.error;
+        _errorMessage = error.toString();
+        notifyListeners();
+      });
+    } catch (e) {
+      _state = ResultState.error;
+      _errorMessage = e.toString();
+      notifyListeners();
+    }
+  }
 }

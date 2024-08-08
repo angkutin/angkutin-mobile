@@ -156,10 +156,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                       address = result['address'];
                       district = result['district'];
                     });
-                  } else {
-                    print(
-                        "Koordinat null: ${coordinate?.toString() ?? 'Not selected'}");
-                  }
+                  } 
                 },
               ),
               ListTile(

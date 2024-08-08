@@ -17,12 +17,6 @@ class LocationService {
     startLocationUpdates();
   }
 
-  //  void _initLocationService() async {
-  //   await checkAndRequestLocationServices();
-  //   await checkAndRequestLocationPermission();
-  //   _startLocationUpdates();
-  // }
-
   void dispose() {
     _locationStreamController.close();
     location.changeSettings(
@@ -36,7 +30,6 @@ class LocationService {
       serviceEnabled = await location.requestService();
 
       if (!serviceEnabled) {
-        print("Service disabled");
         serviceEnabled = await location.requestService();
       }
     }

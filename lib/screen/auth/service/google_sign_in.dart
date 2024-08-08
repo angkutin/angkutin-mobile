@@ -31,7 +31,7 @@ Future<user_model.User> signInWithGoogle() async {
     if (firebaseUser != null) {
       return firebaseUser;
     } else {
-      print('Error: Unable to get or create user data for email: $email');
+      // print('Error: Unable to get or create user data for email: $email');
       throw Exception('Error: Unable to get or create user data for email: $email');
     }
   } else {

@@ -97,31 +97,30 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
 
   Future<void> _fetchRoute(LatLng userLocation, LatLng driverLocation) async {
     if (mounted) {
-       setState(() {
-      routeStatus = '';
-    });
+      setState(() {
+        routeStatus = '';
+      });
     }
-   
+
     final result = await RouteHelper.fetchRoute(userLocation, driverLocation);
     if (result['status'] == 'success') {
       if (mounted) {
-         setState(() {
-        polylines.clear();
-        polylines.add(Polyline(
-          width: 5,
-          polylineId: const PolylineId("poly"),
-          color: Colors.blue,
-          points: result['polylines'],
-        ));
-        routeStatus = '';
-      });
+        setState(() {
+          polylines.clear();
+          polylines.add(Polyline(
+            width: 5,
+            polylineId: const PolylineId("poly"),
+            color: Colors.blue,
+            points: result['polylines'],
+          ));
+          routeStatus = '';
+        });
       }
-     
     } else {
       if (mounted) {
         setState(() {
-        routeStatus = 'Ada masalah dalam menampilkan rute';
-      });
+          routeStatus = 'Ada masalah dalam menampilkan rute';
+        });
       }
     }
   }
@@ -208,7 +207,6 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
                 CustomListTile(
                     title: "Nama petugas pengangkut",
                     value: "An. ${request.namaPetugas}"),
-              
                 CustomListTile(
                     title: "Waktu Permintaan",
                     value:
@@ -249,5 +247,3 @@ class _UserMonitorRequestScreenState extends State<UserMonitorRequestScreen> {
     );
   }
 }
-
-

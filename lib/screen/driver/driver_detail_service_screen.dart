@@ -301,7 +301,7 @@ class _DriverDetailServiceScreenState extends State<DriverDetailServiceScreen> {
                                     widget.driverLocation,
                                   );
                                 } else {
-                                  print("user null");
+                                  // print("user null");
                                 }
 
                                 if (driverServiceProv.servState ==

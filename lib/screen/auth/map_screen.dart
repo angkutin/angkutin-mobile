@@ -57,7 +57,6 @@ class _UserFillDataMapScreenState extends State<UserFillDataMapScreen> {
                 _mapController?.animateCamera(
                   CameraUpdate.newLatLng(newPosition),
                 );
-                print("User Loc new: $newPosition");
               });
             },
             infoWindow: const InfoWindow(title: 'Lokasi Anda'),
@@ -67,7 +66,6 @@ class _UserFillDataMapScreenState extends State<UserFillDataMapScreen> {
         _mapController?.animateCamera(
           CameraUpdate.newLatLng(_userLocation!),
         );
-        print("Use location : $_userLocation");
       });
     }
   }

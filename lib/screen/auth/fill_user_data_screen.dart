@@ -215,7 +215,6 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
           });
         } else {
           showInfoSnackbar(context, "Gagal mengunggah data, coba lagi nanti");
-          print("Error gagal unggah data : ${uploadProvider.errorMessage}");
         }
       }
       errorMessage = "Belum diatur";
@@ -325,14 +324,8 @@ class _FillDataScreenState extends State<FillUserDataScreen> {
           district = result['district'];
           _locationMessage = "${coordinate?.latitude}, ${coordinate?.longitude}\n${extractLastPart(address!)}";
         });
-        print("Koordinat : ${coordinate?.toString() ?? 'Not selected'}");
-        print('Address: ${address ?? 'Not selected'}');
-        print('Kecamatan: ${district ?? 'Not selected'}');
-      } else {
-        print("Koordinat null: ${coordinate?.toString() ?? 'Not selected'}");
-        print('Address: ${address ?? 'Not selected'}');
-        print('Kecamatan: ${district ?? 'Not selected'}');
-      }
+
+      } 
     }
 
     return SizedBox(

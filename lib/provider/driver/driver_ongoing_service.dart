@@ -11,7 +11,7 @@ class DriverOngoingService with ChangeNotifier {
   ResultState? _reqState;
   String? _reqErrorMessage;
   bool? _reqIsLoading = false;
-  StreamController<List<RequestService>> _requestsController =
+  final StreamController<List<RequestService>> _requestsController =
       StreamController.broadcast();
 
   ResultState? get reqState => _reqState;
@@ -70,7 +70,6 @@ class DriverOngoingService with ChangeNotifier {
     } catch (error) {
       _reqState = ResultState.error;
       _reqErrorMessage = error.toString();
-      print("Errornya $_reqErrorMessage");
     } finally {
       _reqIsLoading = false;
       notifyListeners();

@@ -38,7 +38,6 @@ class AuthenticationProvider with ChangeNotifier {
       notifyListeners();
     } finally {
       _isLoading = false;
-      // print("Provider : current user | name ${_userData?.name} | email  ${_userData?.email} | role ${_userData?.role}");
     }
   }
 
@@ -71,14 +70,12 @@ class AuthenticationProvider with ChangeNotifier {
   }
 
 // save user data to local
-
   final String userDataKey = 'user_data';
 
   Future<void> saveUserDataLocally(user_model.User userData) async {
     final prefs = await SharedPreferences.getInstance();
     final userDataString = jsonEncode(userData.toMinimalJson());
     prefs.setString(userDataKey, userDataString);
-    print("berhasil simpan data ke local : ${jsonDecode(userDataString)}");
   }
 
   Future<String?> readUserDataLocally() async {
@@ -100,7 +97,6 @@ class AuthenticationProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove(userDataKey);
     _userData = null;
-    print("user data deleted locally");
     notifyListeners();
   }
 
@@ -150,16 +146,5 @@ class AuthenticationProvider with ChangeNotifier {
     prefs.remove(roleKey);
     notifyListeners();
   }
-// save fill data state
-  // final String fillDataKey = 'fill_data_key';
 
-  // Future<void> saveFillDataState(bool state) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   prefs.setBool(fillDataKey, state);
-  // }
-
-  // Future<bool> getFillDataState() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   return prefs.getBool(fillDataKey) ?? false;
-  // }
 }

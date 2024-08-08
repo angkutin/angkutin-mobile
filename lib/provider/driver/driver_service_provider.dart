@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:angkutin/common/utils.dart';
 import 'package:angkutin/data/model/RequestModel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,13 +10,12 @@ class DriverServiceProvider with ChangeNotifier {
   ResultState? _reqState;
   String? _reqErrorMessage;
   bool? _reqIsLoading = false;
-  StreamController<List<RequestService>> _requestsController =
+  final StreamController<List<RequestService>> _requestsController =
       StreamController.broadcast();
 
   ResultState? get reqState => _reqState;
   String? get reqErrorMessage => _reqErrorMessage;
   bool? get reqIsLoading => _reqIsLoading;
-  // List<RequestService> get requests => _requests;
 
   Stream<List<RequestService>> get requestsStream => _requestsController.stream;
 
@@ -37,7 +35,6 @@ class DriverServiceProvider with ChangeNotifier {
   ResultState? get repState => _repState;
   String? get repErrorMessage => _repErrorMessage;
   bool? get repIsLoading => _repIsLoading;
-  // List<RequestService> get requests => _requests;
 
   Stream<List<RequestService>> get reportStream => _reportController.stream;
 
@@ -112,7 +109,6 @@ class DriverServiceProvider with ChangeNotifier {
   ResultState? _servState;
   String? _servErrorMessage;
   bool? _servIsLoading = false;
-  // StreamController<List<RequestService>> _requestsController = StreamController.broadcast();
 
   ResultState? get servState => _servState;
   String? get servErrorMessage => _servErrorMessage;
@@ -197,11 +193,10 @@ class DriverServiceProvider with ChangeNotifier {
         await requestRef.update({
           'lokasiPetugas': driverLoc,
         });
-        print("Lokasi Driver ${type == 1 ? 'Request' : 'Report'} diupdate!");
       }
     }
   } catch (error) {
-    print("Error updating driver location: $error");
+    // print("Error updating driver location: $error");
   }
 }
 
@@ -244,7 +239,6 @@ class DriverServiceProvider with ChangeNotifier {
           await requestRef.update({
             'isDone': true,
           });
-          print("Permintaan sudah selesai");
         }
       }
 
@@ -252,12 +246,9 @@ class DriverServiceProvider with ChangeNotifier {
       final requestData = requestDoc.data();
 
       if (requestData != null) {
-        // final selectedData = RequestService.fromFirestore(requestDoc, null);
-        print("Ada data");
 
 
         final selectedData = {
-          // 'date': timestampToDatetime(requestData['date']),
           'date': requestData['date'],
           'description': requestData['description'],
           'idPetugas': requestData['idPetugas'],
@@ -295,7 +286,7 @@ class DriverServiceProvider with ChangeNotifier {
           });
         }
       } else{
-        print("Request data null");
+        // print("Request data null");
       }
 
       // hapus dari path asli
@@ -305,7 +296,6 @@ class DriverServiceProvider with ChangeNotifier {
     } catch (error) {
       _finishState = ResultState.error;
 
-      print("Error menyelesaikan permintaan: $error");
     } finally {
       _finishIsLoading = false;
       notifyListeners();
