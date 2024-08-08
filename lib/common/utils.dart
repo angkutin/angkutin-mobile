@@ -141,10 +141,10 @@ class ImageService {
         int imageSize = await image!.length();
         int originalImageSize = await originalImage.length();
 
-        print('Image Size Original: ${originalImageSize} bytes');
-        print('Image Size Compressed: $imageSize bytes');
+        // print('Image Size Original: ${originalImageSize} bytes');
+        // print('Image Size Compressed: $imageSize bytes');
       } else {
-        print("Image picking canceled");
+        // print("Image picking canceled");
       }
     }
     return null;
@@ -164,10 +164,10 @@ class ImageService {
         int imageSize = await image!.length();
         int originalImageSize = await originalImage.length();
 
-        print('Image Size Original: ${originalImageSize} bytes');
-        print('Image Size Compressed: $imageSize bytes');
+        // print('Image Size Original: ${originalImageSize} bytes');
+        // print('Image Size Compressed: $imageSize bytes');
       } else {
-        print("Image picking canceled");
+        // print("Image picking canceled");
       }
     }
     return null;
@@ -187,7 +187,7 @@ String formatDate(String input) {
   // Define the time format and convert to WIB (UTC+7)
   
 
-  return '$formattedDate';
+  return formattedDate;
 }
 String formatTime(String input) {
   // Parse the input string to a DateTime object

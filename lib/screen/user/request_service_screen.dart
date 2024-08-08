@@ -278,7 +278,7 @@ class _RequestServiceScreenState extends State<RequestServiceScreen> {
                         if (requestServiceProvider.state ==
                             ResultState.success) {
                           Future.delayed(const Duration(seconds: 1), () {
-                            Navigator.pushNamed(
+                            Navigator.pushReplacementNamed(
                                 context, RequestAcceptedScreen.ROUTE_NAME);
                           });
                         } else {
