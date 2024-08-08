@@ -52,22 +52,13 @@ Future<void> main() async {
 
 // initial screen
   await authProvider.readUserDataLocally();
-  // print("Data user local : ${authProvider.readUserDataLocally()}");
 
   // onboarding state
   bool isOnboarding = await authProvider.getOnBoardingState();
   bool isLoggedIn = await authProvider.getLoginState();
   String userRole = await authProvider.getRoleState();
-  // bool isMasyarakat = userRole == "Masyarakat";
-  // Future<bool> isFillData = authProvider.getFillDataState();
-
-  // print('onboarding : $isOnboarding || isLogin : $isLoggedIn');
 
   Widget getInitialScreen(AuthenticationProvider authProvider) {
-    print("isOnboarding $isOnboarding");
-    print("isLoggedIn $isLoggedIn");
-    print("role $userRole");
-
     if (isOnboarding) {
       if (isLoggedIn) {
         if (userRole == "Masyarakat" || userRole == "masyarakat") {
